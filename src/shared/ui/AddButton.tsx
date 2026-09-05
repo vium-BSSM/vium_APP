@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, Image } from 'react-native';
-
-const photoIcon = require('@/../assets/icons/photo-icon.svg');
-const plusIcon = require('@/../assets/icons/plus-icon.svg');
+import { View, Text, Pressable } from 'react-native';
+import PhotoIcon from '@/../assets/icons/photo-icon.svg';
+import PlusIcon from '@/../assets/icons/plus-icon.svg';
 
 interface AddButtonProps {
   icon?: 'photo' | 'plus';
@@ -36,7 +35,7 @@ export const AddButton: React.FC<AddButtonProps> = ({
               onReceiptPress?.();
             }}
           >
-            <Text className="text-text-100 text-text14 text-right">
+            <Text className="text-text-100 text-text14 text-right font-sans">
               영수증 등록
             </Text>
           </Pressable>
@@ -47,7 +46,7 @@ export const AddButton: React.FC<AddButtonProps> = ({
               onCartPress?.();
             }}
           >
-            <Text className="text-text-100 text-text14 text-right">
+            <Text className="text-text-100 text-text14 text-right font-sans">
               온라인 장바구니 등록
             </Text>
           </Pressable>
@@ -58,11 +57,11 @@ export const AddButton: React.FC<AddButtonProps> = ({
         className="w-[43px] h-[43px] bg-neutral-500 rounded-full items-center justify-center"
         onPress={handlePress}
       >
-        <Image
-          source={isPhoto ? photoIcon : plusIcon}
-          className="w-6 h-6"
-          resizeMode="contain"
-        />
+        {isPhoto ? (
+          <PhotoIcon width={24} height={24} />
+        ) : (
+          <PlusIcon width={24} height={24} />
+        )}
       </Pressable>
     </View>
   );

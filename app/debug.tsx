@@ -11,51 +11,51 @@ export default function DebugPage() {
   return (
     <View className="flex-1 bg-white">
       <ScrollView className="flex-1 p-4">
-        <Text className="text-title font-bold mt-6 mb-4 text-text-100">
+        <Text className="text-title font-bold mt-6 mb-4 text-text-100 font-sans">
           Component Debug Page
         </Text>
 
         {/* Check Component */}
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100">
+          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
             Check Component
           </Text>
           <View className="flex-row" style={{ gap: 16 }}>
             <View className="items-center">
               <Check variant="true" />
-              <Text className="text-text14 mt-2 text-text-100">True</Text>
+              <Text className="text-text14 mt-2 text-text-100 font-sans">True</Text>
             </View>
             <View className="items-center">
               <Check variant="false" />
-              <Text className="text-text14 mt-2 text-text-100">False</Text>
+              <Text className="text-text14 mt-2 text-text-100 font-sans">False</Text>
             </View>
           </View>
         </View>
 
         {/* StateBall Component */}
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100">
+          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
             StateBall Component
           </Text>
           <View className="flex-row items-center" style={{ gap: 16 }}>
             <View className="items-center">
               <StateBall state="위험" />
-              <Text className="text-text14 mt-2 text-text-100">위험</Text>
+              <Text className="text-text14 mt-2 text-text-100 font-sans">위험</Text>
             </View>
             <View className="items-center">
               <StateBall state="보통" />
-              <Text className="text-text14 mt-2 text-text-100">보통</Text>
+              <Text className="text-text14 mt-2 text-text-100 font-sans">보통</Text>
             </View>
             <View className="items-center">
               <StateBall state="굿" />
-              <Text className="text-text14 mt-2 text-text-100">굿</Text>
+              <Text className="text-text14 mt-2 text-text-100 font-sans">굿</Text>
             </View>
           </View>
         </View>
 
         {/* Banner Component */}
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100">
+          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
             Banner Component
           </Text>
           <View style={{ gap: 16 }}>
@@ -67,12 +67,12 @@ export default function DebugPage() {
 
         {/* InputBox Component */}
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100">
+          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
             InputBox Component
           </Text>
           <View style={{ gap: 16 }}>
             <View>
-              <Text className="text-text14 mb-2 text-text-100">Email Input</Text>
+              <Text className="text-text14 mb-2 text-text-100 font-sans">Email Input</Text>
               <InputBox
                 type="email"
                 value={email}
@@ -81,7 +81,7 @@ export default function DebugPage() {
               />
             </View>
             <View>
-              <Text className="text-text14 mb-2 text-text-100">Password Input</Text>
+              <Text className="text-text14 mb-2 text-text-100 font-sans">Password Input</Text>
               <InputBox
                 type="password"
                 value={password}
@@ -90,7 +90,7 @@ export default function DebugPage() {
               />
             </View>
             <View>
-              <Text className="text-text14 mb-2 text-text-100">Email with Check</Text>
+              <Text className="text-text14 mb-2 text-text-100 font-sans">Email with Check</Text>
               <InputBox
                 type="email"
                 value={emailWithCheck}
@@ -99,7 +99,7 @@ export default function DebugPage() {
               />
             </View>
             <View>
-              <Text className="text-text14 mb-2 text-text-100">Password with Check</Text>
+              <Text className="text-text14 mb-2 text-text-100 font-sans">Password with Check</Text>
               <InputBox
                 type="password"
                 value={passwordWithCheck}
@@ -112,7 +112,7 @@ export default function DebugPage() {
 
         {/* Button Component */}
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100">
+          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
             Button Component
           </Text>
           <View className="items-center" style={{ gap: 16 }}>
@@ -130,7 +130,7 @@ export default function DebugPage() {
 
         {/* AddButton Component */}
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100">
+          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
             AddButton Component
           </Text>
           <View className="flex-row justify-center" style={{ gap: 16 }}>

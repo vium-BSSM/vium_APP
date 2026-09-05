@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Pressable, Image, TextInputProps } from 'react-native';
+import { View, TextInput, Pressable, TextInputProps } from 'react-native';
 import { Check } from '@/shared/ui/Check';
-
-const eyeIcon = require('@/../assets/icons/eye-icon.svg');
-const eyeOffIcon = require('@/../assets/icons/eye-off-icon.svg');
+import EyeIcon from '@/../assets/icons/eye-icon.svg';
+import EyeOffIcon from '@/../assets/icons/eye-off-icon.svg';
 
 interface InputBoxProps extends Omit<TextInputProps, 'secureTextEntry'> {
   type?: 'email' | 'password';
@@ -38,8 +37,8 @@ export const InputBox: React.FC<InputBoxProps> = ({
   return (
     <View className="bg-neutral-50 rounded-lg px-2.5 py-[15px] flex-row items-center justify-between h-12" style={style}>
       <TextInput
-        className="flex-1 text-text15"
-        style={{ color: getTextColor() }}
+        className="flex-1 text-text15 font-sans"
+        style={{ color: getTextColor(), fontFamily: 'Paperlogy' }}
         value={value}
         onChangeText={onChangeText}
         placeholder={getPlaceholder()}
@@ -53,11 +52,11 @@ export const InputBox: React.FC<InputBoxProps> = ({
       <View className="flex-row items-center gap-2.5">
         {type === 'password' && isActive && (
           <Pressable onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-            <Image
-              source={isPasswordVisible ? eyeIcon : eyeOffIcon}
-              className="w-[22px] h-[22px]"
-              resizeMode="contain"
-            />
+            {isPasswordVisible ? (
+              <EyeIcon width={22} height={22} />
+            ) : (
+              <EyeOffIcon width={22} height={22} />
+            )}
           </Pressable>
         )}
         {showCheck && <Check />}

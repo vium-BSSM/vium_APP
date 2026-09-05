@@ -7,6 +7,7 @@ SplashScreen.preventAutoHideAsync();
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [fontsLoaded] = useFonts({
+    'Paperlogy': require('@/../assets/fonts/Paperlogy-4Regular.ttf'),
     'Paperlogy-Thin': require('@/../assets/fonts/Paperlogy-1Thin.ttf'),
     'Paperlogy-ExtraLight': require('@/../assets/fonts/Paperlogy-2ExtraLight.ttf'),
     'Paperlogy-Light': require('@/../assets/fonts/Paperlogy-3Light.ttf'),

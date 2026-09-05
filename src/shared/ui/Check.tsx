@@ -1,8 +1,7 @@
 import React from 'react';
-import { Image } from 'react-native';
-
-const checkIcon = require('@/../assets/icons/check-icon.svg');
-const checkIconVariant = require('@/../assets/icons/check-icon-variant.svg');
+import { View } from 'react-native';
+import CheckIcon from '@/../assets/icons/check-icon.svg';
+import CheckIconVariant from '@/../assets/icons/check-icon-variant.svg';
 
 interface CheckProps {
   variant?: 'true' | 'false';
@@ -11,13 +10,11 @@ interface CheckProps {
 
 export const Check: React.FC<CheckProps> = ({ variant = 'true', style }) => {
   const isVariant2 = variant === 'false';
+  const Icon = isVariant2 ? CheckIconVariant : CheckIcon;
 
   return (
-    <Image
-      source={isVariant2 ? checkIconVariant : checkIcon}
-      className="w-[18px] h-[18px]"
-      style={style}
-      resizeMode="contain"
-    />
+    <View style={style}>
+      <Icon width={18} height={18} />
+    </View>
   );
 };

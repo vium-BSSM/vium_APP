@@ -41,6 +41,8 @@ All design tokens are defined in `tailwind.config.js`:
 - Use `className` prop for all styling
 - Follow Tailwind utility classes
 - Do NOT create separate CSS/style files
+- **IMPORTANT**: Always add `font-sans` class to all `<Text>` components to apply Paperlogy font
+- For `<TextInput>`, add both `font-sans` class AND `style={{ fontFamily: 'Paperlogy' }}`
 - Font weights map to Paperlogy variants automatically:
   - `font-normal` → Paperlogy-Regular (400)
   - `font-medium` → Paperlogy-Medium (500)
@@ -50,28 +52,46 @@ All design tokens are defined in `tailwind.config.js`:
 ### Example Component Styling
 ```tsx
 <View className="flex-1 bg-white px-4">
-  <Text className="text-title font-bold text-text-100">
+  <Text className="text-title font-bold text-text-100 font-sans">
     Title
   </Text>
-  <Text className="text-text14 text-text-200">
+  <Text className="text-text14 text-text-200 font-sans">
     Body text
   </Text>
+  <TextInput
+    className="text-text15 font-sans"
+    style={{ fontFamily: 'Paperlogy' }}
+    placeholder="Input text"
+  />
 </View>
 ```
 
 ## Font Management
 
 ### Paperlogy Font
-- All Paperlogy fonts are loaded in `src/app/providers/index.tsx`
+- All Paperlogy fonts are loaded in `src/providers/AppProvider.tsx`
 - Fonts are registered in `app.json` under expo-font plugin
 - Available weights: 100 (Thin) ~ 900 (Black)
 - Default font family is set in `tailwind.config.js`
+- **CRITICAL**: Base 'Paperlogy' key must be registered in `useFonts` for NativeWind to work
+
+### Font Loading Configuration
+```tsx
+// src/providers/AppProvider.tsx
+const [fontsLoaded] = useFonts({
+  'Paperlogy': require('@/../assets/fonts/Paperlogy-4Regular.ttf'),  // Base key is required!
+  'Paperlogy-Thin': require('@/../assets/fonts/Paperlogy-1Thin.ttf'),
+  'Paperlogy-Regular': require('@/../assets/fonts/Paperlogy-4Regular.ttf'),
+  // ... other weights
+});
+```
 
 ### Adding New Fonts
 1. Place `.ttf` files in `assets/fonts/`
 2. Register in `app.json` expo-font plugin
-3. Load in `src/app/providers/index.tsx` using `useFonts` hook
+3. Load in `src/providers/AppProvider.tsx` using `useFonts` hook
 4. Update `tailwind.config.js` if needed
+5. Add base font key (e.g., 'Paperlogy') in addition to weight-specific keys
 
 ## Component Rules
 
@@ -111,10 +131,13 @@ export { Input } from './Input';
 ### Images and Icons
 - SVG icons: `assets/icons/`
 - Images: `assets/`
+- **IMPORTANT**: Always use `expo-image` for Image component (supports SVG)
 - Import using `require()`:
   ```tsx
+  import { Image } from 'expo-image';
+
   const icon = require('@/../assets/icons/icon-name.svg');
-  <Image source={icon} />
+  <Image source={icon} contentFit="contain" className="w-6 h-6" />
   ```
 
 ### Asset Organization
@@ -189,3 +212,5 @@ router.push('/path');
 ❌ Do NOT use relative imports beyond 2 levels (use `@/` alias)
 ❌ Do NOT modify font files or remove font loading logic
 ❌ Do NOT create components outside `src/shared/ui/` without reason
+❌ Do NOT use `react-native` Image component (use `expo-image` instead for SVG support)
+❌ Do NOT use `resizeMode` prop (use `contentFit` with expo-image)

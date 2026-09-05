@@ -18,7 +18,7 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled}
       {...props}
     >
-      <Text className="text-text-400 text-subtitle text-center">
+      <Text className="text-text-400 text-subtitle text-center font-sans">
         {children}
       </Text>
     </Pressable>

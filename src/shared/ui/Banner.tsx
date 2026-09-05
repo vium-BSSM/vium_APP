@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, Image, Pressable } from 'react-native';
-
-const tomatoImage = require('@/../assets/tomato.svg');
-const potatoImage = require('@/../assets/potato.svg');
-const onionImage = require('@/../assets/onion.svg');
+import { View, Text, Pressable } from 'react-native';
+import TomatoImage from '@/../assets/tomato.svg';
+import PotatoImage from '@/../assets/potato.svg';
+import OnionImage from '@/../assets/onion.svg';
 
 interface BannerProps {
   variant?: 'tomato' | 'potato' | 'onion';
@@ -20,7 +19,8 @@ export const Banner: React.FC<BannerProps> = ({ variant = 'tomato', onPress, sty
           title1: '지금 무지방 우유의 ',
           title2: '소비기한이 3일 남았어요!',
           action: '레시피 바로가기 >',
-          image: tomatoImage,
+          ImageComponent: TomatoImage,
+          imageSize: { width: 104, height: 114 },
         };
       case 'potato':
         return {
@@ -28,7 +28,8 @@ export const Banner: React.FC<BannerProps> = ({ variant = 'tomato', onPress, sty
           title1: '이번달에 가장',
           title2: '많이 남긴 음식은 뭘까요?',
           action: '리포트 바로가기 >',
-          image: potatoImage,
+          ImageComponent: PotatoImage,
+          imageSize: { width: 104, height: 114 },
         };
       case 'onion':
         return {
@@ -36,7 +37,8 @@ export const Banner: React.FC<BannerProps> = ({ variant = 'tomato', onPress, sty
           title1: '곧 마트를 가야할',
           title2: '시기네요!',
           action: '추천 장보기 목록 >',
-          image: onionImage,
+          ImageComponent: OnionImage,
+          imageSize: { width: 100, height: 136 },
         };
     }
   };
@@ -52,25 +54,21 @@ export const Banner: React.FC<BannerProps> = ({ variant = 'tomato', onPress, sty
       >
         <View className="flex-1 justify-between h-full py-2">
           <View>
-            <Text className="text-text-50 text-[11px] mb-1">
+            <Text className="text-text-50 text-[14px] mb-1 font-sans">
               {content.subtitle}
             </Text>
-            <Text className="text-text-100 text-subtitle font-medium">
+            <Text className="text-text-100 text-subtitle font-medium font-sans">
               {content.title1}
             </Text>
-            <Text className="text-text-100 text-subtitle font-medium">
+            <Text className="text-text-100 text-subtitle font-medium font-sans">
               {content.title2}
             </Text>
           </View>
-          <Text className="text-text-50 text-[12px]">
+          <Text className="text-text-50 text-[12px] font-sans">
             {content.action}
           </Text>
         </View>
-        <Image
-          source={content.image}
-          className={variant === 'onion' ? 'w-[100px] h-[136px]' : 'w-[104px] h-[114px]'}
-          resizeMode="contain"
-        />
+        <content.ImageComponent {...content.imageSize} />
       </Pressable>
 
       <View className="flex-row items-center justify-center gap-[11px] mt-[19px]">
