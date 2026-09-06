@@ -1,18 +1,11 @@
-import { View, Text, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { router } from 'expo-router';
 
 export default function Index() {
-  const router = useRouter();
+  useEffect(() => {
+    // 앱 시작 시 splash 페이지로 리다이렉트
+    router.replace('/splash');
+  }, []);
 
-  return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-title font-bold mb-4 text-text-100 font-sans">Welcome</Text>
-      <Pressable
-        className="bg-neutral-500 rounded-3xl px-6 py-4"
-        onPress={() => router.push('/debug')}
-      >
-        <Text className="text-text-400 text-subtitle font-sans">Go to Debug Page</Text>
-      </Pressable>
-    </View>
-  );
+  return null;
 }
