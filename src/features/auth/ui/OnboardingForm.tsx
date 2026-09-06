@@ -34,7 +34,7 @@ export const OnboardingForm = () => {
               key={index}
               onPress={() => setSelectedOption(index)}
               className={`h-[42px] rounded-lg px-3 justify-center ${
-                selectedOption === index ? 'bg-neutral-500' : 'bg-neutral-50'
+                selectedOption === index ? 'bg-neutral-300' : 'bg-neutral-50'
               }`}
             >
               <Text

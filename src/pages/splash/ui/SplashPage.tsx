@@ -6,8 +6,8 @@ import { Text, View } from 'react-native';
 export const SplashPage = () => {
   return (
     <View className="flex-1 bg-white items-center justify-center px-[51.5px]">
-      <View className="items-center mb-[180px]">
-        <Text className="text-[48px] leading-[114px] font-extrabold text-text-100 text-center font-sans">
+      <View className="items-center mb-[200px]">
+        <Text className="text-[48px] leading-tight tracking-normal font-extrabold text-text-100 text-center font-sans mt-[130px]">
           문구로고{"\n"}뭐그런거
         </Text>
         <Text className="text-subtitle font-medium text-text-100 text-center mt-4 font-sans">
