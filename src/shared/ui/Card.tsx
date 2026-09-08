@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { Image } from 'expo-image';
+import React from 'react';
+import { Pressable, Text, View } from 'react-native';
 import { StateBall } from './StateBall';
 
 interface CardProps {
@@ -40,31 +40,41 @@ export const Card: React.FC<CardProps> = ({
 
   // Default Card
   const content = (
-    <View className="w-[111px] bg-white rounded-lg border border-neutral-50 overflow-hidden" style={style}>
-      {/* Image Area */}
-      <View className="w-full h-[90px] bg-neutral-10 items-center justify-center relative">
-        {image ? (
-          <Image source={image} contentFit="cover" className="w-full h-full" />
-        ) : (
-          <View className="w-full h-full bg-neutral-10" />
-        )}
-
-        {/* Status Ball - Top Right */}
-        {visible && status && (
-          <View className="absolute top-2 right-2">
-            <StateBall state={status} />
-          </View>
-        )}
+    <View className="w-[111px] bg-white rounded-lg border-2 border-neutral-400" style={style}>
+      {/* Image Area with padding */}
+      <View className="p-2">
+        <View className="w-full h-[90px] bg-neutral-10 rounded items-center justify-center">
+          {image ? (
+            <Image source={image} contentFit="cover" className="w-full h-full rounded" />
+          ) : (
+            <View className="w-full h-full bg-neutral-10 rounded" />
+          )}
+        </View>
       </View>
 
-      {/* Text Area */}
-      <View className="p-2">
-        <Text className="text-text-100 text-text14 font-medium font-sans mb-0.5">
-          {title}
-        </Text>
-        <Text className="text-text-200 text-[12px] font-sans">
-          {subtitle}
-        </Text>
+      {/* Text Area with Status Ball */}
+      <View className="px-2 pb-2 flex-row items-center justify-between">
+        <View className="flex-1">
+          <View className='flex flex flex-row justify-between
+          
+          
+        |\
+        ÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷'>
+            <Text className="text-text-100 text-text14 font-medium font-sans mb-0.5">
+              {title}
+            </Text>
+            {visible && status && (
+            <View className="ml-1">
+              <StateBall state={status} />
+            </View>
+            )}
+          </View>
+          <Text className="text-text-200 text-[12px] font-sans">
+            {subtitle}
+          </Text>
+        </View>
+
+        
       </View>
     </View>
   );
