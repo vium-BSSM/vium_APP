@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Check, StateBall, Banner, InputBox, Button, AddButton, NavBar, Card } from '@/shared/ui';
 
 export default function DebugPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailWithCheck, setEmailWithCheck] = useState('25_57@bssm.hs.kr');
@@ -25,6 +27,11 @@ export default function DebugPage() {
             activeItem={activeNavItem}
             onItemPress={(item) => {
               setActiveNavItem(item);
+              if (item === 'home') {
+                router.push('/');
+              } else if (item === 'fridge') {
+                router.push('/fridge');
+              }
               console.log('Nav item pressed:', item);
             }}
           />
