@@ -15,7 +15,7 @@ export const OnboardingForm = () => {
 
   const handleStart = () => {
     // TODO: Save onboarding data
-    router.push('/debug');
+    router.push('/main');
   };
 
   return (

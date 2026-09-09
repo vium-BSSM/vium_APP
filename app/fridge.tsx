@@ -29,7 +29,9 @@ export default function FridgePage() {
   const handleNavItemPress = (item: 'home' | 'fridge' | 'receipt' | 'settings') => {
     setActiveNavItem(item);
     if (item === 'home') {
-      router.push('/');
+      router.push('/main');
+    } else if (item === 'settings') {
+      router.push('/debug');
     }
     // fridge is current page, no navigation needed
   };

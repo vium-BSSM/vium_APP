@@ -16,10 +16,13 @@ export default function MainPage() {
 
   const handleNavItemPress = (item: 'home' | 'fridge' | 'receipt' | 'settings') => {
     setActiveNavItem(item);
-    if (item === 'fridge') {
+    if (item === 'home') {
+      router.push('/main');
+    } else if (item === 'fridge') {
       router.push('/fridge');
+    } else if (item === 'settings') {
+      router.push('/debug');
     }
-    // home is current page, no navigation needed
   };
 
   const menuItems = [
@@ -40,7 +43,9 @@ export default function MainPage() {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Header */}
         <View className="px-7 pt-[74px] pb-[35px] flex-row items-center justify-between">
-          <Text className="text-text-100 text-text16 font-sans">Logo</Text>
+          <Pressable onPress={() => router.push('/splash')}>
+            <Text className="text-text-100 text-text16 font-sans">Logo</Text>
+          </Pressable>
           <View className="w-[35px] h-[35px] items-center justify-center">
             <View className="w-6 h-6 bg-neutral-200 rounded-full" />
           </View>
