@@ -30,10 +30,8 @@ export default function FridgePage() {
     setActiveNavItem(item);
     if (item === 'home') {
       router.push('/');
-    } else if (item === 'fridge') {
-      router.push('/fridge');
     }
-    console.log('Nav item pressed:', item);
+    // fridge is current page, no navigation needed
   };
 
   return (
