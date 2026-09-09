@@ -4,7 +4,7 @@ import { Button } from '@/shared/ui/Button';
 import { InputBox } from '@/shared/ui/InputBox';
 import { router } from 'expo-router';
 
-export const SignUpForm = () => {
+export const SignUpPage = () => {
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

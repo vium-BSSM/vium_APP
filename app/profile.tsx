@@ -1,5 +1,5 @@
-import { ProfileForm } from '@/features/auth';
+import { ProfilePage } from '@/pages/auth';
 
-export default function ProfileScreen() {
-  return <ProfileForm />;
+export default function Profile() {
+  return <ProfilePage />;
 }

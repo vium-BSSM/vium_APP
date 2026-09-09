@@ -10,7 +10,7 @@ const SHOPPING_FREQUENCY_OPTIONS = [
   '1년에 한 번',
 ] as const;
 
-export const OnboardingForm = () => {
+export const OnboardingPage = () => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
   const handleStart = () => {

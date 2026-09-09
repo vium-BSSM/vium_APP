@@ -1,5 +1,5 @@
-import { OnboardingForm } from '@/features/auth';
+import { OnboardingPage } from '@/pages/auth';
 
-export default function OnboardingScreen() {
-  return <OnboardingForm />;
+export default function Onboarding() {
+  return <OnboardingPage />;
 }
