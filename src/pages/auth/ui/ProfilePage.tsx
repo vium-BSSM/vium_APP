@@ -3,7 +3,7 @@ import { View, Text, Pressable, TextInput } from 'react-native';
 import { Button } from '@/shared/ui/Button';
 import { router } from 'expo-router';
 
-export const ProfileForm = () => {
+export const ProfilePage = () => {
   const [nickname, setNickname] = useState('');
 
   const handleNext = () => {

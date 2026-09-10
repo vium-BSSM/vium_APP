@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { Check, StateBall, Banner, InputBox, Button, AddButton } from '@/shared/ui';
+import { useRouter } from 'expo-router';
+import { Check, StateBall, Banner, InputBox, Button, AddButton, NavBar, Card } from '@/shared/ui';
 
 export default function DebugPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailWithCheck, setEmailWithCheck] = useState('25_57@bssm.hs.kr');
   const [passwordWithCheck, setPasswordWithCheck] = useState('password123');
+  const [activeNavItem, setActiveNavItem] = useState<'home' | 'fridge' | 'receipt' | 'settings'>('home');
 
   return (
     <View className="flex-1 bg-white">
@@ -14,6 +17,25 @@ export default function DebugPage() {
         <Text className="text-title font-bold mt-6 mb-4 text-text-100 font-sans">
           Component Debug Page
         </Text>
+
+        {/* NavBar Component */}
+        <View className="mb-8">
+          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
+            NavBar Component
+          </Text>
+          <NavBar
+            activeItem={activeNavItem}
+            onItemPress={(item) => {
+              setActiveNavItem(item);
+              if (item === 'home') {
+                router.push('/');
+              } else if (item === 'fridge') {
+                router.push('/fridge');
+              }
+              console.log('Nav item pressed:', item);
+            }}
+          />
+        </View>
 
         {/* Check Component */}
         <View className="mb-8">
@@ -50,6 +72,47 @@ export default function DebugPage() {
               <StateBall state="굿" />
               <Text className="text-text14 mt-2 text-text-100 font-sans">굿</Text>
             </View>
+          </View>
+        </View>
+
+        {/* Card Component */}
+        <View className="mb-8">
+          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
+            Card Component
+          </Text>
+          <View className="flex-row flex-wrap" style={{ gap: 16 }}>
+            <Card
+              variant="empty"
+              onPress={() => console.log('Add new card pressed')}
+            />
+            <Card
+              title="당근"
+              subtitle="소비기한 D-3"
+              status="위험"
+              visible={true}
+              onPress={() => console.log('Card pressed')}
+            />
+            <Card
+              title="감자"
+              subtitle="소비기한 D-5"
+              status="보통"
+              visible={true}
+              onPress={() => console.log('Card pressed')}
+            />
+            <Card
+              title="양파"
+              subtitle="소비기한 D-10"
+              status="굿"
+              visible={true}
+              onPress={() => console.log('Card pressed')}
+            />
+            <Card
+              title="상추"
+              subtitle="소비기한 D-15"
+              status="굿"
+              visible={false}
+              onPress={() => console.log('Card pressed')}
+            />
           </View>
         </View>
 

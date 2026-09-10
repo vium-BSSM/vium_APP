@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-export const LoginForm = () => {
+export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 

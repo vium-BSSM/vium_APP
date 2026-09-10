@@ -1,5 +1,5 @@
-import { LoginForm } from '@/features/auth';
+import { LoginPage } from '@/pages/auth';
 
-export default function LoginScreen() {
-  return <LoginForm />;
+export default function Login() {
+  return <LoginPage />;
 }
