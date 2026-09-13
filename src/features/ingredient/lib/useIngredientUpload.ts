@@ -4,6 +4,11 @@ import * as Device from 'expo-device';
 
 export const useIngredientUpload = () => {
   const isCameraAvailable = async () => {
+    // 웹 환경에서는 카메라를 다르게 처리
+    if (Platform.OS === 'web') {
+      return true; // 웹에서는 input capture 속성으로 처리
+    }
+
     // 시뮬레이터/에뮬레이터에서는 카메라를 사용할 수 없음
     console.log('Device.isDevice:', Device.isDevice);
     if (!Device.isDevice) {
@@ -18,6 +23,11 @@ export const useIngredientUpload = () => {
   };
 
   const pickImageFromCamera = async () => {
+    // 웹 환경에서는 웹캠으로 직접 촬영
+    if (Platform.OS === 'web') {
+      return pickImageFromWebCamera();
+    }
+
     // 카메라 사용 가능 여부 확인
     const available = await isCameraAvailable();
 
@@ -57,6 +67,11 @@ export const useIngredientUpload = () => {
   };
 
   const pickImageFromGallery = async () => {
+    // 웹 환경에서는 파일 선택으로 처리
+    if (Platform.OS === 'web') {
+      return pickImageFromWebGallery();
+    }
+
     // 미디어 라이브러리 권한 요청
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -79,6 +94,119 @@ export const useIngredientUpload = () => {
     return null;
   };
 
+  const pickImageFromWebCamera = async (): Promise<string | null> => {
+    try {
+      // 웹캠 스트림 요청
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }, // 후면 카메라 우선
+        audio: false,
+      });
+
+      return new Promise((resolve) => {
+        // 비디오 요소 생성
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.autoplay = true;
+        video.playsInline = true;
+
+        // 캔버스 요소 생성
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+
+        // 오버레이 UI 생성
+        const overlay = document.createElement('div');
+        overlay.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: black;
+          z-index: 10000;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        `;
+
+        video.style.cssText = 'max-width: 100%; max-height: 80vh;';
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = 'margin-top: 20px; display: flex; gap: 10px;';
+
+        const captureButton = document.createElement('button');
+        captureButton.textContent = '📷 촬영';
+        captureButton.style.cssText = 'padding: 15px 30px; font-size: 18px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 5px;';
+
+        const cancelButton = document.createElement('button');
+        cancelButton.textContent = '❌ 취소';
+        cancelButton.style.cssText = 'padding: 15px 30px; font-size: 18px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 5px;';
+
+        buttonContainer.appendChild(captureButton);
+        buttonContainer.appendChild(cancelButton);
+
+        overlay.appendChild(video);
+        overlay.appendChild(buttonContainer);
+        document.body.appendChild(overlay);
+
+        const cleanup = () => {
+          stream.getTracks().forEach(track => track.stop());
+          document.body.removeChild(overlay);
+        };
+
+        captureButton.onclick = () => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          context?.drawImage(video, 0, 0);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          cleanup();
+          resolve(dataUrl);
+        };
+
+        cancelButton.onclick = () => {
+          cleanup();
+          resolve(null);
+        };
+      });
+    } catch (error) {
+      console.error('Camera access error:', error);
+      alert('카메라에 접근할 수 없습니다. 권한을 확인해주세요.');
+      return null;
+    }
+  };
+
+  const pickImageFromWebGallery = (): Promise<string | null> => {
+    return new Promise((resolve) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+
+      input.onchange = (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        const file = target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve(reader.result as string);
+          };
+          reader.onerror = () => {
+            console.error('Failed to read file');
+            resolve(null);
+          };
+          reader.readAsDataURL(file);
+        } else {
+          resolve(null);
+        }
+      };
+
+      input.oncancel = () => {
+        resolve(null);
+      };
+
+      input.click();
+    });
+  };
+
   const showIngredientUploadOptions = async (onImageSelected?: (uri: string) => void) => {
     const handleImageSelected = async (picker: () => Promise<string | null>) => {
       const uri = await picker();
@@ -88,7 +216,15 @@ export const useIngredientUpload = () => {
       }
     };
 
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === 'web') {
+      // 웹: confirm으로 카메라/갤러리 선택
+      const useCamera = confirm('사진을 촬영하시겠습니까?\n\n확인: 카메라로 촬영\n취소: 파일에서 선택');
+      if (useCamera) {
+        handleImageSelected(pickImageFromCamera);
+      } else {
+        handleImageSelected(pickImageFromGallery);
+      }
+    } else if (Platform.OS === 'ios') {
       // iOS: 항상 모든 옵션 표시 (시뮬레이터에서도 UI 확인 가능)
       ActionSheetIOS.showActionSheetWithOptions(
         {
