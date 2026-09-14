@@ -49,11 +49,26 @@
             "./assets/fonts/Paperlogy-9Black.ttf"
           ]
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "앱에서 사진을 선택할 수 있도록 허용해주세요.",
+          "cameraPermission": "앱에서 카메라를 사용할 수 있도록 허용해주세요."
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {
+        "root": "./app"
+      },
+      "eas": {
+        "projectId": "061074a9-2855-4362-9833-31427026dd41"
+      }
     }
   }
 }

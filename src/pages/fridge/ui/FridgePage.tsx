@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useIngredientUpload } from '@/features/ingredient';
 import { FridgeHeader, FridgeGrid } from '@/widgets';
 import { BottomNavigation } from '@/widgets';
 import { AddButton } from '@/shared/ui';
@@ -8,6 +9,7 @@ import { AddButton } from '@/shared/ui';
 export const FridgePage = () => {
   const router = useRouter();
   const [activeNavItem, setActiveNavItem] = useState<'home' | 'fridge' | 'receipt' | 'settings'>('fridge');
+  const { showIngredientUploadOptions } = useIngredientUpload();
 
   const fridgeItems = [
     { id: 1, title: '당근', subtitle: '소비기한 D-3', status: '위험' as const },
@@ -36,6 +38,13 @@ export const FridgePage = () => {
     // fridge is current page, no navigation needed
   };
 
+  const handleReceiptPress = () => {
+    showIngredientUploadOptions((uri) => {
+      // TODO: 선택된 이미지 처리 로직 추가 (API 업로드, OCR 등)
+      console.log('처리할 재료 이미지:', uri);
+    });
+  };
+
   return (
     <View className="flex-1 bg-white">
       <FridgeHeader
@@ -52,7 +61,7 @@ export const FridgePage = () => {
 
       <AddButton
         icon="photo"
-        onReceiptPress={() => console.log('영수증 등록')}
+        onReceiptPress={handleReceiptPress}
         onCartPress={() => console.log('온라인 장바구니 등록')}
         style={{ position: 'absolute', bottom: 120, right: 29 }}
       />

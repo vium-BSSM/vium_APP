@@ -28,7 +28,7 @@ export default function DebugPage() {
             onItemPress={(item) => {
               setActiveNavItem(item);
               if (item === 'home') {
-                router.push('/');
+                router.push('/main');
               } else if (item === 'fridge') {
                 router.push('/fridge');
               }
