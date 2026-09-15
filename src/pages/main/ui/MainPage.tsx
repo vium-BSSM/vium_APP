@@ -42,7 +42,7 @@ export const MainPage = () => {
     <View className="flex-1 bg-white">
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Header */}
-        <View className="px-7 pt-[74px] pb-[35px] flex-row items-center justify-between">
+        <View className="px-5 md:px-10 lg:px-20 pt-[74px] pb-[35px] flex-row items-center justify-between max-w-[1200px] w-full mx-auto">
           <Pressable onPress={() => router.push('/splash')}>
             <Text className="text-text-100 text-text16 font-sans">Logo</Text>
           </Pressable>
@@ -52,18 +52,18 @@ export const MainPage = () => {
         </View>
 
         {/* Banner */}
-        <View className="px-5 mb-8">
+        <View className="px-5 md:px-10 lg:px-20 mb-8 max-w-[1200px] w-full mx-auto">
           <Banner variant="tomato" onPress={() => console.log('Banner pressed')} />
         </View>
 
         {/* Menu Grid */}
-        <View className="px-7 mb-10">
+        <View className="px-5 md:px-10 lg:px-20 mb-10 max-w-[1200px] w-full mx-auto">
           <View className="bg-white rounded-2xl py-5 px-3">
-            <View className="flex-row flex-wrap">
+            <View className="flex-row flex-wrap -mx-2">
               {menuItems.map((item, index) => (
                 <Pressable
                   key={index}
-                  className="items-center mb-6"
+                  className="items-center mb-6 px-2"
                   style={{ width: '33.33%' }}
                   onPress={item.onPress}
                 >
@@ -81,7 +81,7 @@ export const MainPage = () => {
         </View>
 
         {/* Recipe Section */}
-        <View className="px-5">
+        <View className="px-5 md:px-10 lg:px-20 max-w-[1200px] w-full mx-auto">
           <View className="flex-row items-center justify-between mb-[12px]">
             <Text className="text-text-100 text-[19px] font-medium font-sans">
               오늘의 냉털 레시피
@@ -97,11 +97,11 @@ export const MainPage = () => {
             {recipes.map((recipe) => (
               <Pressable
                 key={recipe.id}
-                className="bg-white rounded-2xl p-2.5 w-[212px] h-[112px]"
+                className="bg-white rounded-2xl p-2.5 w-[212px] md:w-[280px] lg:w-[320px] h-[112px] md:h-[140px]"
                 style={{ borderWidth: 1, borderColor: '#E0E0E0' }}
                 onPress={() => console.log('Recipe pressed:', recipe.title)}
               >
-                <View className="flex-row gap-[11px] mb-[5px]">
+                <View className="flex-row gap-[11px] mb-[5px] flex-wrap">
                   {recipe.ingredients.map((ingredient, idx) => (
                     <View
                       key={idx}

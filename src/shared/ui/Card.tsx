@@ -29,10 +29,10 @@ export const Card: React.FC<CardProps> = ({
     return (
       <Pressable onPress={onPress}>
         <View
-          className="w-[111px] h-[140px] bg-white rounded-lg border-2 border-dashed border-neutral-100 items-center justify-center"
+          className="w-full aspect-[111/140] bg-white rounded-lg border-2 border-dashed border-neutral-100 items-center justify-center"
           style={style}
         >
-          <Text className="text-neutral-300 text-[40px] font-sans">+</Text>
+          <Text className="text-neutral-300 text-[40px] md:text-[48px] font-sans">+</Text>
         </View>
       </Pressable>
     );
@@ -40,10 +40,10 @@ export const Card: React.FC<CardProps> = ({
 
   // Default Card
   const content = (
-    <View className="w-[111px] bg-white rounded-lg border-2 border-neutral-400" style={style}>
+    <View className="w-full bg-white rounded-lg border-2 border-neutral-400" style={style}>
       {/* Image Area with padding */}
       <View className="p-2">
-        <View className="w-full h-[90px] bg-neutral-10 rounded items-center justify-center">
+        <View className="w-full aspect-[95/90] bg-neutral-10 rounded items-center justify-center">
           {image ? (
             <Image source={image} contentFit="cover" className="w-full h-full rounded" />
           ) : (
@@ -55,7 +55,7 @@ export const Card: React.FC<CardProps> = ({
       {/* Text Area with Status Ball */}
       <View className="px-2 pb-2">
         <View className="flex-row items-center justify-between mb-0.5">
-          <Text className="text-text-100 text-text14 font-medium font-sans flex-1">
+          <Text className="text-text-100 text-text14 md:text-text15 font-medium font-sans flex-1">
             {title}
           </Text>
           {visible && status && (
@@ -64,7 +64,7 @@ export const Card: React.FC<CardProps> = ({
             </View>
           )}
         </View>
-        <Text className="text-text-200 text-[12px] font-sans">
+        <Text className="text-text-200 text-[12px] md:text-[13px] font-sans">
           {subtitle}
         </Text>
       </View>
