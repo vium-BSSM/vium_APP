@@ -15,13 +15,15 @@ export const MainPage = () => {
   const [activeNavItem, setActiveNavItem] = useState<'home' | 'fridge' | 'receipt' | 'settings'>('home');
 
   const handleNavItemPress = (item: 'home' | 'fridge' | 'receipt' | 'settings') => {
-    setActiveNavItem(item);
     if (item === 'home') {
-      router.push('/main');
+      // Already on home page, just update state
+      setActiveNavItem(item);
     } else if (item === 'fridge') {
       router.push('/fridge');
     } else if (item === 'settings') {
       router.push('/debug');
+    } else {
+      setActiveNavItem(item);
     }
   };
 

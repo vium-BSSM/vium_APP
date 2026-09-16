@@ -101,6 +101,20 @@ const [fontsLoaded] = useFonts({
 - Use TypeScript interfaces for props
 - Follow existing component patterns
 
+### Available Components
+- **Button**: Primary action button with fullWidth option
+- **InputBox**: Email/password input with validation check
+- **LabelInput**: Form input with label (used in forms)
+- **ImageUpload**: Image upload with camera icon button
+- **Card**: Item card with default/empty variants
+- **StateBall**: Status indicator (위험/보통/굿)
+- **StatusBadge**: Status badge display
+- **DetailInfoRow**: Label-value pair row
+- **Check**: Checkmark icon
+- **Banner**: Banner component
+- **AddButton**: Floating action button with icons
+- **NavBar**: Navigation bar
+
 ### Component Props Pattern
 ```tsx
 interface ComponentProps {
@@ -131,13 +145,22 @@ export { Input } from './Input';
 ### Images and Icons
 - SVG icons: `assets/icons/`
 - Images: `assets/`
-- **IMPORTANT**: Always use `expo-image` for Image component (supports SVG)
-- Import using `require()`:
+- **IMPORTANT**: SVG files must be imported as components, NOT using require()
+- **CORRECT** SVG import:
+  ```tsx
+  import BackIcon from '@/../assets/icons/back-icon.svg';
+  <BackIcon width={30} height={30} />
+  ```
+- **INCORRECT** SVG import:
+  ```tsx
+  // ❌ DO NOT DO THIS
+  const icon = require('@/../assets/icons/back-icon.svg');
+  <Image source={icon} />
+  ```
+- For raster images (PNG, JPG), use `expo-image`:
   ```tsx
   import { Image } from 'expo-image';
-
-  const icon = require('@/../assets/icons/icon-name.svg');
-  <Image source={icon} contentFit="contain" className="w-6 h-6" />
+  <Image source={{ uri: imageUrl }} contentFit="cover" className="w-full h-full" />
   ```
 
 ### Asset Organization
@@ -188,11 +211,26 @@ const [value, setValue] = useState('');
 
 ### Form Inputs
 ```tsx
+// Email/Password Input
 <InputBox
   type="email"
   value={email}
   onChangeText={setEmail}
   showCheck={isValid}
+/>
+
+// Label Input (for forms)
+<LabelInput
+  label="양"
+  value={amount}
+  onChangeText={setAmount}
+  placeholder="입력하세요"
+/>
+
+// Image Upload
+<ImageUpload
+  imageUri={imageUri}
+  onPress={handleImagePick}
 />
 ```
 
@@ -202,15 +240,68 @@ import { useRouter } from 'expo-router';
 
 const router = useRouter();
 router.push('/path');
+router.back();
+
+// For dynamic routes, use 'as any' to avoid type errors
+router.push('/fridge/add' as any);
+```
+
+### Image Picker (expo-image-picker)
+```tsx
+import * as ImagePicker from 'expo-image-picker';
+
+const handleImagePick = async () => {
+  // Request permission
+  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (status !== 'granted') {
+    Alert.alert('권한 필요', '사진 라이브러리 접근 권한이 필요합니다.');
+    return;
+  }
+
+  // Launch image picker
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: 'images' as any,
+    allowsEditing: true,
+    aspect: [16, 9],
+    quality: 1,
+  });
+
+  if (!result.canceled && result.assets[0]) {
+    setImageUri(result.assets[0].uri);
+  }
+};
+```
+
+### React State Updates and Navigation
+**IMPORTANT**: Avoid updating state before navigation to prevent React errors
+```tsx
+// ❌ INCORRECT - causes "Can't perform a React state update" error
+const handleNavItemPress = (item) => {
+  setActiveNavItem(item);  // State update
+  router.push('/main');     // Navigation - component unmounts
+};
+
+// ✅ CORRECT - only update state if staying on current page
+const handleNavItemPress = (item) => {
+  if (item === 'home') {
+    router.push('/main');
+  } else {
+    setActiveNavItem(item);  // Only update if not navigating
+  }
+};
 ```
 
 ## Don'ts
 
 ❌ Do NOT create separate CSS/SCSS files
 ❌ Do NOT use inline styles (use `className` instead)
+❌ Do NOT hardcode colors or font sizes (use tailwind tokens: `text-text16`, `text-neutral-200`, etc.)
 ❌ Do NOT create files in `src/shared/config/` (use `tailwind.config.js`)
 ❌ Do NOT use relative imports beyond 2 levels (use `@/` alias)
 ❌ Do NOT modify font files or remove font loading logic
 ❌ Do NOT create components outside `src/shared/ui/` without reason
-❌ Do NOT use `react-native` Image component (use `expo-image` instead for SVG support)
+❌ Do NOT use `react-native` Image component (use `expo-image` instead for raster images)
 ❌ Do NOT use `resizeMode` prop (use `contentFit` with expo-image)
+❌ Do NOT use `require()` for SVG files (import as components instead)
+❌ Do NOT update state before navigating with router (causes React errors)
+❌ Do NOT use fixed widths without `max-w-*` for responsive layouts
