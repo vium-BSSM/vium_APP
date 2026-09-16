@@ -1,6 +1,5 @@
-import { Image } from 'expo-image';
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, View, Image } from 'react-native';
 import PhotoIcon from '@/../assets/icons/photo-icon.svg';
 
 interface ImageUploadProps {
@@ -21,8 +20,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         {imageUri ? (
           <Image
             source={{ uri: imageUri }}
-            contentFit="cover"
-            className="w-full h-full"
+            style={{ width: '100%', height: '100%' }}
+            resizeMode="cover"
           />
         ) : (
           <View className="w-full h-full bg-neutral-50" />
