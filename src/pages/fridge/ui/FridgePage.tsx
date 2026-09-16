@@ -20,13 +20,13 @@ export const FridgePage = () => {
   }));
 
   const handleNavItemPress = (item: 'home' | 'fridge' | 'receipt' | 'settings') => {
-    setActiveNavItem(item);
     if (item === 'home') {
       router.push('/main');
     } else if (item === 'settings') {
       router.push('/debug');
+    } else {
+      setActiveNavItem(item);
     }
-    // fridge is current page, no navigation needed
   };
 
   const handleReceiptPress = () => {
@@ -46,7 +46,7 @@ export const FridgePage = () => {
 
       <FridgeGrid
         items={fridgeItems}
-        onAddPress={() => console.log('Add new item')}
+        onAddPress={() => router.push('/fridge/add' as any)}
         onItemPress={(item) => router.push(`/fridge/${item.id}` as any)}
       />
 

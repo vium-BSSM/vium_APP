@@ -8,3 +8,5 @@ export { NavBar } from './NavBar';
 export { Card } from './Card';
 export { StatusBadge } from './StatusBadge';
 export { DetailInfoRow } from './DetailInfoRow';
+export { ImageUpload } from './ImageUpload';
+export { LabelInput } from './LabelInput';

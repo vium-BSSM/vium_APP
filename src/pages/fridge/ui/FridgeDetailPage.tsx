@@ -26,13 +26,14 @@ export const FridgeDetailPage = () => {
   }
 
   const handleNavItemPress = (navItem: 'home' | 'fridge' | 'receipt' | 'settings') => {
-    setActiveNavItem(navItem);
     if (navItem === 'home') {
       router.push('/main');
     } else if (navItem === 'fridge') {
       router.push('/fridge');
     } else if (navItem === 'settings') {
       router.push('/debug');
+    } else {
+      setActiveNavItem(navItem);
     }
   };
 
