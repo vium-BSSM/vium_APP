@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { StatusBadge, DetailInfoRow } from '@/shared/ui';
 import { BottomNavigation } from '@/widgets';
-import { getFridgeItemById } from '@/shared/mock/fridgeData';
+import { useIngredientDetail } from '@/features/ingredient';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const FridgeDetailPage = () => {
@@ -13,13 +13,23 @@ export const FridgeDetailPage = () => {
   const [activeNavItem, setActiveNavItem] = useState<'home' | 'fridge' | 'receipt' | 'settings'>('fridge');
 
   const itemId = parseInt(id || '1', 10);
-  const item = getFridgeItemById(itemId);
+  const { item, isLoading, error } = useIngredientDetail(itemId);
 
-  if (!item) {
+  if (isLoading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <Text className="text-text16 font-sans text-text-200">
-          아이템을 찾을 수 없습니다.
+        <ActivityIndicator size="large" color="#00D1A7" />
+        <Text className="mt-4 text-text14 text-text-200 font-sans">재료 정보를 불러오는 중...</Text>
+      </View>
+    );
+  }
+
+  if (error || !item) {
+    return (
+      <View className="flex-1 bg-white items-center justify-center">
+        <Text className="text-text16 font-sans text-text-100 font-semibold mb-2">오류 발생</Text>
+        <Text className="text-text14 font-sans text-text-200">
+          {error || '아이템을 찾을 수 없습니다.'}
         </Text>
       </View>
     );

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { FridgeItemStatus } from '@/shared/types/fridge';
+import { FridgeItemStatus } from '@/features/ingredient/types';
 
 interface StatusBadgeProps {
   status: FridgeItemStatus;

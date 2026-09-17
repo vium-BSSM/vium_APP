@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Alert, TextInput } from 'react-native';
+import { View, Text, ScrollView, Pressable, Alert, TextInput, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ImageUpload, LabelInput, Button } from '@/shared/ui';
+import { useIngredientRegister } from '@/features/ingredient';
 import * as ImagePicker from 'expo-image-picker';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const FridgeAddPage: React.FC = () => {
   const router = useRouter();
+  const { register, isLoading } = useIngredientRegister();
   const [imageUri, setImageUri] = useState<string | undefined>(undefined);
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
@@ -35,18 +37,24 @@ export const FridgeAddPage: React.FC = () => {
     }
   };
 
-  const handleRegister = () => {
-    // Validation
-    if (!name.trim()) {
-      Alert.alert('알림', '식재료 이름을 입력해주세요.');
-      return;
+  const handleRegister = async () => {
+    console.log('handleRegister 호출됨');
+    console.log('입력값:', { name, amount, price, registeredDate, expiryDate });
+
+    const success = await register({
+      name,
+      amount,
+      price,
+      registeredDate,
+      expiryDate,
+      imageUri,
+    });
+
+    console.log('등록 결과:', success);
+
+    if (success) {
+      router.back();
     }
-
-    // TODO: API call to register ingredient
-    console.log('등록:', { name, amount, price, registeredDate, expiryDate, imageUri });
-
-    // Navigate back
-    router.back();
   };
 
   return (
@@ -120,9 +128,23 @@ export const FridgeAddPage: React.FC = () => {
 
       {/* Register Button */}
       <View className="px-12 pb-[100px] items-center">
-        <Button onPress={handleRegister}>
-          등록하기
-        </Button>
+        {isLoading ? (
+          <View className="bg-neutral-500 h-[68px] w-[299px] rounded-3xl items-center justify-center">
+            <ActivityIndicator color="#fff" />
+          </View>
+        ) : (
+          <Pressable
+            className="bg-neutral-500 rounded-3xl items-center justify-center px-2.5 py-[15px] w-[299px]"
+            onPress={() => {
+              console.log('버튼 클릭됨!');
+              handleRegister();
+            }}
+          >
+            <Text className="text-text-400 text-subtitle text-center font-sans">
+              등록하기
+            </Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );
