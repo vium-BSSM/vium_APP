@@ -23,7 +23,6 @@ export const FridgePage = () => {
 
   const handleReceiptPress = () => {
     showIngredientUploadOptions((uri) => {
-      // TODO: 선택된 이미지 처리 로직 추가 (API 업로드, OCR 등)
       console.log('처리할 재료 이미지:', uri);
     });
   };

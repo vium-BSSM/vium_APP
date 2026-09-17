@@ -38,9 +38,6 @@ export const FridgeAddPage: React.FC = () => {
   };
 
   const handleRegister = async () => {
-    console.log('handleRegister 호출됨');
-    console.log('입력값:', { name, amount, price, registeredDate, expiryDate });
-
     const success = await register({
       name,
       amount,
@@ -49,8 +46,6 @@ export const FridgeAddPage: React.FC = () => {
       expiryDate,
       imageUri,
     });
-
-    console.log('등록 결과:', success);
 
     if (success) {
       router.back();
@@ -135,10 +130,7 @@ export const FridgeAddPage: React.FC = () => {
         ) : (
           <Pressable
             className="bg-neutral-500 rounded-3xl items-center justify-center px-2.5 py-[15px] w-[299px]"
-            onPress={() => {
-              console.log('버튼 클릭됨!');
-              handleRegister();
-            }}
+            onPress={handleRegister}
           >
             <Text className="text-text-400 text-subtitle text-center font-sans">
               등록하기

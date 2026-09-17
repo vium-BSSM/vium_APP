@@ -9,10 +9,7 @@ export const mapIngredientToFridgeItem = (ingredient: IngredientApiResponse): Fr
   const status = calculateStatus(ingredient.expiresOn);
   const subtitle = formatDday(ingredient.expiresOn);
 
-  // 수량 + 단위 결합
   const quantity = `${ingredient.remainingQuantity}${ingredient.unit}`;
-
-  // TODO: 가격 필드가 백엔드에 추가되면 수정 필요
   const price = '3,000원';
 
   return {
