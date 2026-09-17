@@ -17,12 +17,6 @@ export const getDaysDifference = (targetDate: string, baseDate?: Date): number =
   return diffDays;
 };
 
-/**
- * 소비기한 기반 상태 계산
- * - 30일 이상: 굿
- * - 14일 이하: 보통
- * - 5일 이하: 위험
- */
 export const calculateStatus = (expiresOn: string): FridgeItemStatus => {
   const daysLeft = getDaysDifference(expiresOn);
 
@@ -31,7 +25,7 @@ export const calculateStatus = (expiresOn: string): FridgeItemStatus => {
   } else if (daysLeft <= 14) {
     return '보통';
   } else {
-    return '굿';
+    return '양호';
   }
 };
 
