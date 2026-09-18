@@ -18,14 +18,13 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const [show, setShow] = useState(false);
   const [tempDate, setTempDate] = useState(value);
 
-  const handleChange = (event: any, selectedDate?: Date) => {
+  const handleChange = (_: any, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
       setShow(false);
       if (selectedDate) {
         onChange(selectedDate);
       }
     } else {
-      // iOS: 임시 저장
       if (selectedDate) {
         setTempDate(selectedDate);
       }
@@ -63,7 +62,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         </Text>
       </Pressable>
 
-      {/* Android */}
       {show && Platform.OS === 'android' && (
         <DateTimePicker
           value={value}
@@ -75,7 +73,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         />
       )}
 
-      {/* iOS */}
       {show && Platform.OS === 'ios' && (
         <Modal
           visible={show}
@@ -91,7 +88,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               className="bg-white rounded-t-3xl items-center"
               onPress={(e) => e.stopPropagation()}
             >
-              {/* Header */}
               <View className="flex-row justify-between items-center px-4 py-3 border-b border-neutral-100 w-full">
                 <Pressable onPress={handleCancel}>
                   <Text className="text-text16 text-neutral-400 font-sans">
@@ -108,7 +104,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                 </Pressable>
               </View>
 
-              {/* Date Picker */}
               <View className="py-4 items-center w-full">
                 <DateTimePicker
                   value={tempDate}

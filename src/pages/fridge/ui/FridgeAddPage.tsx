@@ -19,14 +19,12 @@ export const FridgeAddPage: React.FC = () => {
   const [expiryDate, setExpiryDate] = useState(new Date());
 
   const handleImagePick = async () => {
-    // Request permission
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('권한 필요', '사진 라이브러리 접근 권한이 필요합니다.');
       return;
     }
 
-    // Launch image picker
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: 'images' as any,
       allowsEditing: true,
@@ -70,9 +68,7 @@ export const FridgeAddPage: React.FC = () => {
   return (
     <View className="flex-1 bg-white">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Header */}
         <View className="pt-20 px-7 gap-3">
-          {/* Logo */}
           <View className="bg-neutral-50 h-[28px] w-[79px] items-center justify-center">
             <Text className="text-text14 text-neutral-300 font-medium font-sans">
               Logo
@@ -80,19 +76,14 @@ export const FridgeAddPage: React.FC = () => {
           </View>
         </View>
 
-        {/* Content */}
         <View className="px-7 gap-10 pt-10">
-          {/* Back Button */}
           <Pressable onPress={() => router.back()}>
             <BackIcon width={30} height={30} />
           </Pressable>
 
-          {/* Image Upload & Form */}
           <View className="gap-6 w-full max-w-[346px]">
-            {/* Image Upload */}
             <ImageUpload imageUri={imageUri} onPress={handleImagePick} />
 
-            {/* Name Input with Divider */}
             <View className="gap-[5px] flex-row items-center">
               <TextInput
                 className="text-title font-medium font-sans flex-1"
@@ -104,7 +95,6 @@ export const FridgeAddPage: React.FC = () => {
               />
             </View>
 
-            {/* Form Inputs */}
             <View className="gap-4">
               <LabelInputWithUnit
                 label="양"
@@ -136,7 +126,6 @@ export const FridgeAddPage: React.FC = () => {
         </View>
       </ScrollView>
 
-      {/* Register Button */}
       <View className="px-12 pb-[100px] items-center">
         {isLoading ? (
           <View className="bg-neutral-500 h-[68px] w-[299px] rounded-3xl items-center justify-center">
