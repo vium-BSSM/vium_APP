@@ -8,7 +8,7 @@ interface CardProps {
   title?: string;
   subtitle?: string;
   image?: any;
-  status?: '위험' | '보통' | '굿';
+  status?: '위험' | '보통' | '양호';
   visible?: boolean;
   onPress?: () => void;
   style?: any;
