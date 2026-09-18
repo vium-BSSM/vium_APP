@@ -6,6 +6,7 @@ import { IngredientRegisterRequest } from '../types';
 export interface IngredientFormData {
   name: string;
   amount: string;
+  unitId: number;
   price: string;
   registeredDate: string;
   expiryDate: string;
@@ -31,6 +32,11 @@ export const useIngredientRegister = () => {
         return false;
       }
 
+      if (!formData.unitId) {
+        Alert.alert('알림', '단위를 선택해주세요.');
+        return false;
+      }
+
       if (!formData.expiryDate.trim()) {
         Alert.alert('알림', '소비기한을 입력해주세요.');
         return false;
@@ -39,7 +45,7 @@ export const useIngredientRegister = () => {
       const request: IngredientRegisterRequest = {
         customName: formData.name,
         quantity: parseFloat(formData.amount) || 1,
-        unitId: 1,
+        unitId: formData.unitId,
         purchasedOn: formData.registeredDate ? formatDateToISO(formData.registeredDate) : undefined,
         expiresOn: formatDateToISO(formData.expiryDate),
         amount: formData.price ? parseInt(formData.price.replace(/,/g, ''), 10) : undefined,

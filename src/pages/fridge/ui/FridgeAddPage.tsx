@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Alert, TextInput, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ImageUpload, LabelInput, Button } from '@/shared/ui';
+import { ImageUpload, LabelInput, LabelInputWithUnit, Button } from '@/shared/ui';
 import { useIngredientRegister } from '@/features/ingredient';
 import * as ImagePicker from 'expo-image-picker';
 import BackIcon from '@/../assets/icons/back-icon.svg';
@@ -12,6 +12,8 @@ export const FridgeAddPage: React.FC = () => {
   const [imageUri, setImageUri] = useState<string | undefined>(undefined);
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
+  const [unitId, setUnitId] = useState(0);
+  const [unitLabel, setUnitLabel] = useState('');
   const [price, setPrice] = useState('');
   const [registeredDate, setRegisteredDate] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
@@ -37,10 +39,16 @@ export const FridgeAddPage: React.FC = () => {
     }
   };
 
+  const handleUnitChange = (id: number, label: string) => {
+    setUnitId(id);
+    setUnitLabel(label);
+  };
+
   const handleRegister = async () => {
     const success = await register({
       name,
       amount,
+      unitId,
       price,
       registeredDate,
       expiryDate,
@@ -91,10 +99,12 @@ export const FridgeAddPage: React.FC = () => {
 
             {/* Form Inputs */}
             <View className="gap-4">
-              <LabelInput
+              <LabelInputWithUnit
                 label="양"
                 value={amount}
                 onChangeText={setAmount}
+                unitId={unitId}
+                onUnitChange={handleUnitChange}
                 placeholder="입력하세요"
               />
               <LabelInput

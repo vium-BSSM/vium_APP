@@ -10,3 +10,4 @@ export { StatusBadge } from './StatusBadge';
 export { DetailInfoRow } from './DetailInfoRow';
 export { ImageUpload } from './ImageUpload';
 export { LabelInput } from './LabelInput';
+export { LabelInputWithUnit } from './LabelInputWithUnit';
