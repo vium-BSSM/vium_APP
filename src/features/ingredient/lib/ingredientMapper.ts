@@ -1,13 +1,23 @@
-import { FridgeItemDetail } from '../types';
+import { FridgeItemDetail, FridgeItemStatus } from '../types';
 import { IngredientApiResponse } from '../types';
-import { calculateStatus, formatDday, formatDate, formatDateWithSuffix } from './dateUtils';
+import { getDaysDifference, formatDate, formatDateWithSuffix } from './dateUtils';
 
 /**
  * 백엔드 API 응답을 프론트엔드 FridgeItemDetail 형태로 변환
  */
 export const mapIngredientToFridgeItem = (ingredient: IngredientApiResponse): FridgeItemDetail => {
-  const status = calculateStatus(ingredient.expiresOn);
-  const subtitle = formatDday(ingredient.expiresOn);
+  // 날짜 차이를 한 번만 계산
+  const daysLeft = getDaysDifference(ingredient.expiresOn);
+
+  // 상태 계산
+  const status: FridgeItemStatus = daysLeft <= 5 ? '위험' : daysLeft <= 14 ? '보통' : '양호';
+
+  // D-day 포맷
+  const subtitle = daysLeft < 0
+    ? `소비기한 D+${Math.abs(daysLeft)}`
+    : daysLeft === 0
+    ? '소비기한 D-Day'
+    : `소비기한 D-${daysLeft}`;
 
   const quantity = `${ingredient.remainingQuantity}${ingredient.unit}`;
   const price = '3,000원';

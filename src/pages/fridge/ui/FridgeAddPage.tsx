@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Alert, TextInput, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ImageUpload, LabelInput, LabelInputWithUnit, Button } from '@/shared/ui';
+import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, Button } from '@/shared/ui';
 import { useIngredientRegister } from '@/features/ingredient';
 import * as ImagePicker from 'expo-image-picker';
 import BackIcon from '@/../assets/icons/back-icon.svg';
@@ -15,8 +15,8 @@ export const FridgeAddPage: React.FC = () => {
   const [unitId, setUnitId] = useState(0);
   const [unitLabel, setUnitLabel] = useState('');
   const [price, setPrice] = useState('');
-  const [registeredDate, setRegisteredDate] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
+  const [registeredDate, setRegisteredDate] = useState(new Date());
+  const [expiryDate, setExpiryDate] = useState(new Date());
 
   const handleImagePick = async () => {
     // Request permission
@@ -44,14 +44,21 @@ export const FridgeAddPage: React.FC = () => {
     setUnitLabel(label);
   };
 
+  const formatDateToString = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleRegister = async () => {
     const success = await register({
       name,
       amount,
       unitId,
       price,
-      registeredDate,
-      expiryDate,
+      registeredDate: formatDateToString(registeredDate),
+      expiryDate: formatDateToString(expiryDate),
       imageUri,
     });
 
@@ -114,17 +121,15 @@ export const FridgeAddPage: React.FC = () => {
                 placeholder="입력하세요"
                 keyboardType="numeric"
               />
-              <LabelInput
+              <DatePicker
                 label="등록일자"
                 value={registeredDate}
-                onChangeText={setRegisteredDate}
-                placeholder="입력하세요"
+                onChange={setRegisteredDate}
               />
-              <LabelInput
+              <DatePicker
                 label="소비기한"
                 value={expiryDate}
-                onChangeText={setExpiryDate}
-                placeholder="입력하세요"
+                onChange={setExpiryDate}
               />
             </View>
           </View>

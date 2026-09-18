@@ -4,15 +4,24 @@ import { FridgeItemStatus } from '../types';
  * 두 날짜 사이의 일수 차이를 계산
  */
 export const getDaysDifference = (targetDate: string, baseDate?: Date): number => {
-  const target = new Date(targetDate);
+  // ISO 형식의 날짜 문자열을 로컬 날짜로 파싱
+  const targetParts = targetDate.split('T')[0].split('-');
+  const target = new Date(
+    parseInt(targetParts[0]),
+    parseInt(targetParts[1]) - 1,
+    parseInt(targetParts[2])
+  );
+
   const base = baseDate || new Date();
+  const baseParts = [
+    base.getFullYear(),
+    base.getMonth(),
+    base.getDate()
+  ];
+  const baseLocal = new Date(baseParts[0], baseParts[1], baseParts[2]);
 
-  // 시간 부분을 제거하고 날짜만 비교
-  target.setHours(0, 0, 0, 0);
-  base.setHours(0, 0, 0, 0);
-
-  const diffTime = target.getTime() - base.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffTime = target.getTime() - baseLocal.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
   return diffDays;
 };
@@ -49,10 +58,11 @@ export const formatDday = (expiresOn: string): string => {
  * 날짜를 "YYYY/MM/DD" 형태로 포맷
  */
 export const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  // ISO 형식의 날짜 문자열을 로컬 날짜로 파싱
+  const dateParts = dateString.split('T')[0].split('-');
+  const year = dateParts[0];
+  const month = dateParts[1];
+  const day = dateParts[2];
 
   return `${year}/${month}/${day}`;
 };

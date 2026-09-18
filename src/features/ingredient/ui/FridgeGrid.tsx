@@ -6,7 +6,7 @@ interface FridgeItem {
   id: number;
   title: string;
   subtitle: string;
-  status: '위험' | '보통' | '굿';
+  status: '위험' | '보통' | '양호';
   image?: any;
 }
 
