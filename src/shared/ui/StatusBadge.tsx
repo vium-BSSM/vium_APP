@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { FridgeItemStatus } from '@/shared/types/fridge';
+import { FridgeItemStatus } from '@/features/ingredient/types';
 
 interface StatusBadgeProps {
   status: FridgeItemStatus;
@@ -13,7 +13,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
         return 'bg-[#FFE5EF]';
       case '보통':
         return 'bg-[#FFF4E5]';
-      case '굿':
+      case '양호':
         return 'bg-[#E5F5FF]';
       default:
         return 'bg-neutral-100';
@@ -26,7 +26,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
         return 'text-[#FF3B8C]';
       case '보통':
         return 'text-[#FF9500]';
-      case '굿':
+      case '양호':
         return 'text-[#007AFF]';
       default:
         return 'text-text-200';

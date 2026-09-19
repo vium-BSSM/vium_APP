@@ -2,14 +2,14 @@ import React from 'react';
 import { View } from 'react-native';
 
 interface StateBallProps {
-  state?: '위험' | '보통' | '굿';
+  state?: '위험' | '보통' | '양호';
   style?: any;
 }
 
 export const StateBall: React.FC<StateBallProps> = ({ state = '위험', style }) => {
   const getBackgroundColor = () => {
     switch (state) {
-      case '굿':
+      case '양호':
         return 'bg-[#88e0c3]';
       case '보통':
         return 'bg-[#fdcf73]';
