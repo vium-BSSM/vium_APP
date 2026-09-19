@@ -90,7 +90,7 @@ export const LabelInputWithUnit: React.FC<LabelInputWithUnitProps> = ({
         >
           <Pressable className="bg-white rounded-2xl w-[280px] max-h-[400px]" onPress={(e) => e.stopPropagation()}>
             <View className="py-4 border-b border-neutral-100">
-              <Text className="text-text16 font-semibold text-center font-sans">
+              <Text className="text-subtitle font-normal text-center font-sans">
                 단위 선택
               </Text>
             </View>
