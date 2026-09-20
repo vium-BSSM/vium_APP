@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, TextInput } from 'react-native';
+import { View, Text, Pressable, TextInput, Image, Alert } from 'react-native';
 import { Button } from '@/shared/ui/Button';
 import { router } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
+import PhotoIcon from '@/../assets/icons/photo-icon.svg';
 
 export const ProfilePage = () => {
   const [nickname, setNickname] = useState('');
+  const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
 
   const handleNext = () => {
     // TODO: Save profile data
@@ -13,6 +16,25 @@ export const ProfilePage = () => {
 
   const handleClearNickname = () => {
     setNickname('');
+  };
+
+  const handleImagePick = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('권한 필요', '사진 라이브러리 접근 권한이 필요합니다.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: 'images' as any,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setProfileImageUri(result.assets[0].uri);
+    }
   };
 
   return (
@@ -25,7 +47,24 @@ export const ProfilePage = () => {
 
           <View className="items-center">
             <View className="items-center">
-              <View className="w-[117px] h-[117px] md:w-[140px] md:h-[140px] bg-neutral-100 rounded-full mb-[42px]" />
+              <View className="relative w-[117px] h-[117px] md:w-[140px] md:h-[140px] mb-[42px]">
+                <View className="w-full h-full bg-neutral-100 rounded-full overflow-hidden">
+                  {profileImageUri && (
+                    <Image
+                      source={{ uri: profileImageUri }}
+                      className="w-full h-full"
+                      resizeMode="cover"
+                    />
+                  )}
+                </View>
+
+                <Pressable
+                  onPress={handleImagePick}
+                  className="absolute bottom-0 right-0 w-[36px] h-[36px] md:w-[42px] md:h-[42px] bg-primary-100 rounded-full items-center justify-center"
+                >
+                  <PhotoIcon width={20} height={20} />
+                </Pressable>
+              </View>
 
               <View className="w-[232px] md:w-[280px]">
                 <View className="flex-row items-center justify-between mb-[6px]">
