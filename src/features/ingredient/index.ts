@@ -4,3 +4,4 @@ export { useIngredientRegister } from './lib/useIngredientRegister';
 export { useIngredientDetail } from './lib/useIngredientDetail';
 export { FridgeGrid } from './ui/FridgeGrid';
 export { FridgeHeader } from './ui/FridgeHeader';
+export type { FridgeItem, FridgeItemStatus, FridgeItemDetail } from './types';

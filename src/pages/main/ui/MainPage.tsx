@@ -137,7 +137,10 @@ export const MainPage = () => {
       <FridgeCleanupModal
         visible={isCleanupModalVisible}
         onClose={closeCleanupModal}
-        onConfirm={closeCleanupModal}
+        onConfirm={() => {
+          closeCleanupModal();
+          router.push('/fridge/cleanup/select' as any);
+        }}
       />
     </View>
   );
