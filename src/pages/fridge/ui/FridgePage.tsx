@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ActivityIndicator, Pressable, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useIngredientUpload, useIngredientsList, FridgeHeader, FridgeGrid } from '@/features/ingredient';
+import { useFridgeCleanup, FridgeCleanupModal } from '@/features/fridge-cleanup';
 import { BottomNavigation } from '@/widgets';
 import { AddButton, Card } from '@/shared/ui';
 import BackIcon from '@/../assets/icons/back-icon.svg';
@@ -14,6 +15,7 @@ export const FridgePage = () => {
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const { showIngredientUploadOptions } = useIngredientUpload();
   const { items: fridgeItems, isLoading, error } = useIngredientsList();
+  const { isCleanupModalVisible, openCleanupModal, closeCleanupModal } = useFridgeCleanup();
 
   const handleNavItemPress = (item: 'home' | 'fridge' | 'receipt' | 'settings') => {
     if (item === 'home') {
@@ -189,12 +191,18 @@ export const FridgePage = () => {
         </ScrollView>
       )}
 
-      {/* AddButton - 삭제 모드가 아닐 때만 표시 */}
-      {!isDeleteMode && (
+      {/* AddButton - 일반 모드: 사진/영수증 등록, 삭제 모드: 냉장고 대청소 */}
+      {!isDeleteMode ? (
         <AddButton
           icon="photo"
           onReceiptPress={handleReceiptPress}
           onCartPress={() => console.log('온라인 장바구니 등록')}
+          style={{ position: 'absolute', bottom: 120, right: 29 }}
+        />
+      ) : (
+        <AddButton
+          icon="plus"
+          onPress={openCleanupModal}
           style={{ position: 'absolute', bottom: 120, right: 29 }}
         />
       )}
@@ -202,6 +210,12 @@ export const FridgePage = () => {
       <BottomNavigation
         activeItem={activeNavItem}
         onItemPress={handleNavItemPress}
+      />
+
+      <FridgeCleanupModal
+        visible={isCleanupModalVisible}
+        onClose={closeCleanupModal}
+        onConfirm={closeCleanupModal}
       />
     </View>
   );
