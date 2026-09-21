@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { Banner } from '@/shared/ui';
 import { BottomNavigation } from '@/widgets';
+import { useFridgeCleanup, FridgeCleanupModal } from '@/features/fridge-cleanup';
 import ReportIcon from '@/../assets/icons/report-icon.svg';
 import CartIcon from '@/../assets/icons/cart-icon.svg';
 import BrushIcon from '@/../assets/icons/brush-icon.svg';
@@ -13,6 +14,7 @@ import ChefIcon from '@/../assets/icons/chef-icon.svg';
 export const MainPage = () => {
   const router = useRouter();
   const [activeNavItem, setActiveNavItem] = useState<'home' | 'fridge' | 'receipt' | 'settings'>('home');
+  const { isCleanupModalVisible, openCleanupModal, closeCleanupModal } = useFridgeCleanup();
 
   const handleNavItemPress = (item: 'home' | 'fridge' | 'receipt' | 'settings') => {
     if (item === 'home') {
@@ -30,7 +32,7 @@ export const MainPage = () => {
   const menuItems = [
     { icon: ReportIcon, label: '식재료 리포트', onPress: () => console.log('식재료 리포트') },
     { icon: CartIcon, label: '장보기 도우미', onPress: () => console.log('장보기 도우미') },
-    { icon: BrushIcon, label: '냉장고 대청소', onPress: () => console.log('냉장고 대청소') },
+    { icon: BrushIcon, label: '냉장고 대청소', onPress: openCleanupModal },
     { icon: RefrigeratorIcon, label: 'My 냉장고', onPress: () => router.push('/fridge') },
     { icon: ChefIcon, label: '레시피', onPress: () => console.log('레시피') },
   ];
@@ -131,6 +133,15 @@ export const MainPage = () => {
       </ScrollView>
 
       <BottomNavigation activeItem={activeNavItem} onItemPress={handleNavItemPress} />
+
+      <FridgeCleanupModal
+        visible={isCleanupModalVisible}
+        onClose={closeCleanupModal}
+        onConfirm={() => {
+          closeCleanupModal();
+          router.push('/fridge/cleanup/select' as any);
+        }}
+      />
     </View>
   );
 };

@@ -7,6 +7,7 @@ interface AddButtonProps {
   icon?: 'photo' | 'plus';
   onReceiptPress?: () => void;
   onCartPress?: () => void;
+  onPress?: () => void;
   style?: any;
 }
 
@@ -14,6 +15,7 @@ export const AddButton: React.FC<AddButtonProps> = ({
   icon = 'photo',
   onReceiptPress,
   onCartPress,
+  onPress,
   style,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
@@ -22,6 +24,8 @@ export const AddButton: React.FC<AddButtonProps> = ({
   const handlePress = () => {
     if (isPhoto) {
       setShowMenu(!showMenu);
+    } else {
+      onPress?.();
     }
   };
 
