@@ -22,6 +22,8 @@ export const MainPage = () => {
       setActiveNavItem(item);
     } else if (item === 'fridge') {
       router.push('/fridge');
+    } else if (item === 'receipt') {
+      router.push('/recipe');
     } else if (item === 'settings') {
       router.push('/debug');
     } else {
@@ -34,7 +36,7 @@ export const MainPage = () => {
     { icon: CartIcon, label: '장보기 도우미', onPress: () => console.log('장보기 도우미') },
     { icon: BrushIcon, label: '냉장고 대청소', onPress: openCleanupModal },
     { icon: RefrigeratorIcon, label: 'My 냉장고', onPress: () => router.push('/fridge') },
-    { icon: ChefIcon, label: '레시피', onPress: () => console.log('레시피') },
+    { icon: ChefIcon, label: '레시피', onPress: () => router.push('/recipe') },
   ];
 
   const recipes = [
@@ -86,12 +88,15 @@ export const MainPage = () => {
 
         {/* Recipe Section */}
         <View className="px-5 md:px-10 lg:px-20 max-w-[1200px] w-full mx-auto">
-          <View className="flex-row items-center justify-between mb-[12px]">
+          <Pressable
+            className="flex-row items-center justify-between mb-[12px]"
+            onPress={() => router.push('/recipe')}
+          >
             <Text className="text-text-100 text-[19px] font-medium font-sans">
               오늘의 냉털 레시피
             </Text>
             <Text className="text-text-100 text-[14px] font-sans">{'>'}</Text>
-          </View>
+          </Pressable>
 
           <ScrollView
             horizontal
@@ -103,7 +108,7 @@ export const MainPage = () => {
                 key={recipe.id}
                 className="bg-white rounded-2xl p-2.5 w-[212px] md:w-[280px] lg:w-[320px] h-[112px] md:h-[140px]"
                 style={{ borderWidth: 1, borderColor: '#E0E0E0' }}
-                onPress={() => console.log('Recipe pressed:', recipe.title)}
+                onPress={() => router.push(`/recipe/${recipe.id}` as any)}
               >
                 <View className="flex-row gap-[11px] mb-[5px] flex-wrap">
                   {recipe.ingredients.map((ingredient, idx) => (

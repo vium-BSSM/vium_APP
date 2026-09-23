@@ -25,7 +25,17 @@ export default function DebugPage() {
           </Text>
           <NavBar
             activeItem={activeNavItem}
-
+            onItemPress={(item) => {
+              if (item === 'receipt') {
+                router.push('/recipe');
+              } else if (item === 'fridge') {
+                router.push('/fridge');
+              } else if (item === 'home') {
+                router.push('/main');
+              } else {
+                setActiveNavItem(item);
+              }
+            }}
           />
         </View>
 
