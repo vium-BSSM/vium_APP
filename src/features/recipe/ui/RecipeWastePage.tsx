@@ -3,7 +3,6 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { useRouter } from 'expo-router';
 import { useRecipeCookStore } from '../lib/recipeCookStore';
-import { completeRecipeCooking } from '../api/recipeApi';
 
 interface RecipeWastePageProps {
   recipeId: number;
@@ -21,21 +20,11 @@ export const RecipeWastePage: React.FC<RecipeWastePageProps> = ({ recipeId }) =>
     }
   }, [items.length]);
 
-  const handleComplete = async () => {
+  // 레시피 API 연동 전까지는 서버에 저장하지 않습니다.
+  const handleComplete = () => {
     isFinishingRef.current = true;
-    try {
-      await completeRecipeCooking(recipeId, {
-        usedIngredients: items.map((item) => ({
-          ingredientId: item.id,
-          remainingPercent: item.remainingPercent,
-        })),
-      });
-    } catch (err) {
-      console.error('Failed to complete recipe cooking:', err);
-    } finally {
-      reset();
-      router.replace('/recipe' as any);
-    }
+    reset();
+    router.replace('/recipe' as any);
   };
 
   if (items.length === 0 && !isFinishingRef.current) {

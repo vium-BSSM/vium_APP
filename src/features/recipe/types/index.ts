@@ -24,30 +24,3 @@ export interface RecipeDetail extends RecipeListItem {
   ingredients: RecipeIngredient[];
   steps: RecipeStep[];
 }
-
-export interface RecipeListApiResponse {
-  success: boolean;
-  data: {
-    recipes: RecipeListItem[];
-  };
-  error: null | {
-    code: string;
-    message: string;
-  };
-}
-
-export interface RecipeDetailApiResponse {
-  success: boolean;
-  data: RecipeDetail;
-  error: null | {
-    code: string;
-    message: string;
-  };
-}
-
-export interface RecipeCookCompleteRequest {
-  usedIngredients: {
-    ingredientId: number;
-    remainingPercent: number;
-  }[];
-}

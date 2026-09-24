@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import PlusIcon from '@/../assets/icons/plus-icon.svg';
+import { Image } from 'expo-image';
+import PlusBadgeIcon from '@/../assets/icons/plus-badge-icon.svg';
 
 interface RecipeIngredientCircleProps {
   name: string;
@@ -16,8 +17,15 @@ export const RecipeIngredientCircle: React.FC<RecipeIngredientCircleProps> = ({
   const content = (
     <View className="items-center justify-center gap-3 w-[66px]">
       {isAddButton ? (
-        <View className="w-[38px] h-[38px] rounded-full border-2 border-dashed border-neutral-200 items-center justify-center">
-          <PlusIcon width={16} height={16} color="#767676" />
+        <View className="w-[38px] h-[38px]">
+          <Image
+            source={require('@/../assets/images/dashed-circle.png')}
+            contentFit="contain"
+            style={{ width: 38, height: 38 }}
+          />
+          <View className="absolute top-[2px] -right-[3px]">
+            <PlusBadgeIcon width={13} height={13} />
+          </View>
         </View>
       ) : (
         <View className="w-[38px] h-[38px] rounded-full bg-neutral-50" />

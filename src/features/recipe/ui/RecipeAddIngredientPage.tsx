@@ -9,13 +9,14 @@ interface RecipeAddIngredientPageProps {
 
 export const RecipeAddIngredientPage: React.FC<RecipeAddIngredientPageProps> = ({ recipeId }) => {
   const router = useRouter();
-  const { candidates, selectedIds, toggleSelect, submit, isSubmitting } =
-    useRecipeIngredientAdd(recipeId);
+  const { candidates, selectedIds, toggleSelect } = useRecipeIngredientAdd();
 
-  const handleAdd = async () => {
-    const ok = await submit();
-    if (ok) {
+  // 레시피 API 연동 전까지는 서버에 저장하지 않고 상세 화면으로 돌아갑니다.
+  const handleAdd = () => {
+    if (router.canGoBack()) {
       router.back();
+    } else {
+      router.replace(`/recipe/${recipeId}` as any);
     }
   };
 
@@ -41,14 +42,11 @@ export const RecipeAddIngredientPage: React.FC<RecipeAddIngredientPageProps> = (
                   <Pressable
                     key={ingredient.id}
                     onPress={() => toggleSelect(ingredient.id)}
-                    className="w-full bg-white border-2 border-neutral-100 rounded-lg px-5 py-2.5 flex-row items-center justify-between"
+                    className={`w-full border-2 rounded-lg px-5 py-2.5 flex-row items-center justify-between ${
+                      isSelected ? 'bg-primary-200 border-primary-600' : 'bg-white border-neutral-100'
+                    }`}
                   >
                     <Text className="text-[20px] font-sans text-black">{ingredient.name}</Text>
-                    <View
-                      className={`w-5 h-5 rounded border-2 border-neutral-300 ${
-                        isSelected ? 'bg-neutral-100' : 'bg-white'
-                      }`}
-                    />
                   </Pressable>
                 );
               })}
@@ -60,10 +58,10 @@ export const RecipeAddIngredientPage: React.FC<RecipeAddIngredientPageProps> = (
       <View className="px-12 pb-[60px] items-center">
         <Pressable
           className={`bg-neutral-500 rounded-3xl items-center justify-center px-2.5 py-[15px] w-[299px] ${
-            selectedIds.size === 0 || isSubmitting ? 'opacity-50' : ''
+            selectedIds.size === 0 ? 'opacity-50' : ''
           }`}
           onPress={handleAdd}
-          disabled={selectedIds.size === 0 || isSubmitting}
+          disabled={selectedIds.size === 0}
         >
           <Text className="text-text-400 text-subtitle text-center font-sans">추가</Text>
         </Pressable>
