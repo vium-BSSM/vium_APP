@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
@@ -13,23 +13,7 @@ import ChefIcon from '@/../assets/icons/chef-icon.svg';
 
 export const MainPage = () => {
   const router = useRouter();
-  const [activeNavItem, setActiveNavItem] = useState<'home' | 'fridge' | 'receipt' | 'settings'>('home');
   const { isCleanupModalVisible, openCleanupModal, closeCleanupModal } = useFridgeCleanup();
-
-  const handleNavItemPress = (item: 'home' | 'fridge' | 'receipt' | 'settings') => {
-    if (item === 'home') {
-      // Already on home page, just update state
-      setActiveNavItem(item);
-    } else if (item === 'fridge') {
-      router.push('/fridge');
-    } else if (item === 'receipt') {
-      router.push('/recipe');
-    } else if (item === 'settings') {
-      router.push('/debug');
-    } else {
-      setActiveNavItem(item);
-    }
-  };
 
   const menuItems = [
     { icon: ReportIcon, label: '식재료 리포트', onPress: () => console.log('식재료 리포트') },
@@ -137,7 +121,7 @@ export const MainPage = () => {
         </View>
       </ScrollView>
 
-      <BottomNavigation activeItem={activeNavItem} onItemPress={handleNavItemPress} />
+      <BottomNavigation />
 
       <FridgeCleanupModal
         visible={isCleanupModalVisible}

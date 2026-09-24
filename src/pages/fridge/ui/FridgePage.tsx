@@ -10,22 +10,11 @@ import TrashIcon from '@/../assets/icons/trash-icon.svg';
 
 export const FridgePage = () => {
   const router = useRouter();
-  const [activeNavItem, setActiveNavItem] = useState<'home' | 'fridge' | 'receipt' | 'settings'>('fridge');
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const { showIngredientUploadOptions } = useIngredientUpload();
   const { items: fridgeItems, isLoading, error } = useIngredientsList();
   const { isCleanupModalVisible, openCleanupModal, closeCleanupModal } = useFridgeCleanup();
-
-  const handleNavItemPress = (item: 'home' | 'fridge' | 'receipt' | 'settings') => {
-    if (item === 'home') {
-      router.push('/main');
-    } else if (item === 'settings') {
-      router.push('/debug');
-    } else {
-      setActiveNavItem(item);
-    }
-  };
 
   const handleReceiptPress = () => {
     showIngredientUploadOptions((uri) => {
@@ -89,10 +78,7 @@ export const FridgePage = () => {
           <ActivityIndicator size="large" color="#00D1A7" />
           <Text className="mt-4 text-text14 text-text-200 font-sans">재료를 불러오는 중...</Text>
         </View>
-        <BottomNavigation
-          activeItem={activeNavItem}
-          onItemPress={handleNavItemPress}
-        />
+        <BottomNavigation />
       </View>
     );
   }
@@ -109,10 +95,7 @@ export const FridgePage = () => {
           <Text className="text-text16 text-text-100 font-semibold font-sans mb-2">오류 발생</Text>
           <Text className="text-text14 text-text-200 font-sans text-center">{error}</Text>
         </View>
-        <BottomNavigation
-          activeItem={activeNavItem}
-          onItemPress={handleNavItemPress}
-        />
+        <BottomNavigation />
       </View>
     );
   }
@@ -207,10 +190,7 @@ export const FridgePage = () => {
         />
       )}
 
-      <BottomNavigation
-        activeItem={activeNavItem}
-        onItemPress={handleNavItemPress}
-      />
+      <BottomNavigation />
 
       <FridgeCleanupModal
         visible={isCleanupModalVisible}

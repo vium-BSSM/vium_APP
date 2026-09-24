@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Pressable, Text } from 'react-native';
+import { usePathname, useRouter } from 'expo-router';
 import HomeIcon from '@/../assets/icons/home-icon.svg';
 import FridgeIcon from '@/../assets/icons/fridge-icon.svg';
 import ReceiptIcon from '@/../assets/icons/receipt-icon.svg';
@@ -7,31 +8,35 @@ import SettingsIcon from '@/../assets/icons/settings-icon.svg';
 
 type NavItem = 'home' | 'fridge' | 'receipt' | 'settings';
 
-interface NavBarProps {
-  activeItem?: NavItem;
-  onItemPress?: (item: NavItem) => void;
-}
+const navItems: { key: NavItem; label: string; route: string; Icon: any }[] = [
+  { key: 'home', label: '홈', route: '/main', Icon: HomeIcon },
+  { key: 'fridge', label: '냉장고', route: '/fridge', Icon: FridgeIcon },
+  { key: 'receipt', label: '레시피', route: '/recipe', Icon: ReceiptIcon },
+  { key: 'settings', label: '설정', route: '/debug', Icon: SettingsIcon },
+];
 
-export const NavBar: React.FC<NavBarProps> = ({
-  activeItem = 'home',
-  onItemPress,
-}) => {
-  const navItems: { key: NavItem; label: string; Icon: any }[] = [
-    { key: 'home', label: '홈', Icon: HomeIcon },
-    { key: 'fridge', label: '냉장고', Icon: FridgeIcon },
-    { key: 'receipt', label: '레시피', Icon: ReceiptIcon },
-    { key: 'settings', label: '설정', Icon: SettingsIcon },
-  ];
+const isRouteActive = (pathname: string, route: string) =>
+  pathname === route || pathname.startsWith(`${route}/`);
+
+export const NavBar: React.FC = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handlePress = (route: string) => {
+    // 이미 해당 탭의 루트 화면이면 이동하지 않음
+    if (pathname === route) return;
+    router.push(route as any);
+  };
 
   return (
     <View className="bg-white rounded-[40px] px-6 py-4 flex-row justify-between items-center shadow-sm">
       {navItems.map((item) => {
-        const isActive = activeItem === item.key;
+        const isActive = isRouteActive(pathname, item.route);
         const { Icon } = item;
         return (
           <Pressable
             key={item.key}
-            onPress={() => onItemPress?.(item.key)}
+            onPress={() => handlePress(item.route)}
             className="items-center flex-1"
           >
             <View className={`w-8 h-8 items-center justify-center mb-1`}>

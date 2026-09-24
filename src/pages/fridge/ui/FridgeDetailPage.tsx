@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -10,7 +10,6 @@ import BackIcon from '@/../assets/icons/back-icon.svg';
 export const FridgeDetailPage = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [activeNavItem, setActiveNavItem] = useState<'home' | 'fridge' | 'receipt' | 'settings'>('fridge');
 
   const itemId = parseInt(id || '1', 10);
   const { item, isLoading, error } = useIngredientDetail(itemId);
@@ -34,18 +33,6 @@ export const FridgeDetailPage = () => {
       </View>
     );
   }
-
-  const handleNavItemPress = (navItem: 'home' | 'fridge' | 'receipt' | 'settings') => {
-    if (navItem === 'home') {
-      router.push('/main');
-    } else if (navItem === 'fridge') {
-      router.push('/fridge');
-    } else if (navItem === 'settings') {
-      router.push('/debug');
-    } else {
-      setActiveNavItem(navItem);
-    }
-  };
 
   // 목데이터용 이미지 (당근 이미지)
   const carrotImage = 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=800&q=80';
@@ -112,10 +99,7 @@ export const FridgeDetailPage = () => {
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <BottomNavigation
-        activeItem={activeNavItem}
-        onItemPress={handleNavItemPress}
-      />
+      <BottomNavigation />
     </View>
   );
 };
