@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Check, StateBall, Banner, InputBox, Button, AddButton, NavBar, Card } from '@/shared/ui';
 
 export default function DebugPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailWithCheck, setEmailWithCheck] = useState('25_57@bssm.hs.kr');
   const [passwordWithCheck, setPasswordWithCheck] = useState('password123');
-  const [activeNavItem, setActiveNavItem] = useState<'home' | 'fridge' | 'receipt' | 'settings'>('home');
 
   return (
     <View className="flex-1 bg-white">
@@ -23,10 +20,7 @@ export default function DebugPage() {
           <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
             NavBar Component
           </Text>
-          <NavBar
-            activeItem={activeNavItem}
-
-          />
+          <NavBar />
         </View>
 
         {/* Check Component */}
