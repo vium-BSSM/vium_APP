@@ -1,0 +1,10 @@
+import { MONTHLY_REPORT_FIXTURE } from './reportFixtures';
+
+// 리포트 API 연동 전까지는 임시 데이터로 화면을 보여줍니다.
+export const useMonthlyReport = () => {
+  return {
+    report: MONTHLY_REPORT_FIXTURE,
+    isLoading: false,
+    error: null as string | null,
+  };
+};
