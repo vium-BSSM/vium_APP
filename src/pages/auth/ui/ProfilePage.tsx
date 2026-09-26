@@ -60,9 +60,9 @@ export const ProfilePage = () => {
 
                 <Pressable
                   onPress={handleImagePick}
-                  className="absolute bottom-0 right-0 w-[36px] h-[36px] md:w-[42px] md:h-[42px] bg-primary-100 rounded-full items-center justify-center"
+                  className="absolute bottom-0 right-0 w-[36px] h-[36px] md:w-[42px] md:h-[42px]"
                 >
-                  <PhotoIcon width={20} height={20} />
+                  <PhotoIcon width="100%" height="100%" />
                 </Pressable>
               </View>
 

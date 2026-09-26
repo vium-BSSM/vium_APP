@@ -55,8 +55,8 @@ export default function DebugPage() {
               <Text className="text-text14 mt-2 text-text-100 font-sans">보통</Text>
             </View>
             <View className="items-center">
-              <StateBall state="굿" />
-              <Text className="text-text14 mt-2 text-text-100 font-sans">굿</Text>
+              <StateBall state="양호" />
+              <Text className="text-text14 mt-2 text-text-100 font-sans">양호</Text>
             </View>
           </View>
         </View>
@@ -88,14 +88,14 @@ export default function DebugPage() {
             <Card
               title="양파"
               subtitle="소비기한 D-10"
-              status="굿"
+              status="양호"
               visible={true}
               onPress={() => console.log('Card pressed')}
             />
             <Card
               title="상추"
               subtitle="소비기한 D-15"
-              status="굿"
+              status="양호"
               visible={false}
               onPress={() => console.log('Card pressed')}
             />
@@ -107,11 +107,7 @@ export default function DebugPage() {
           <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
             Banner Component
           </Text>
-          <View style={{ gap: 16 }}>
-            <Banner variant="tomato" onPress={() => console.log('Tomato banner pressed')} />
-            <Banner variant="potato" onPress={() => console.log('Potato banner pressed')} />
-            <Banner variant="onion" onPress={() => console.log('Onion banner pressed')} />
-          </View>
+          <Banner onPress={(variant) => console.log(`${variant} banner pressed`)} />
         </View>
 
         {/* InputBox Component */}

@@ -12,7 +12,7 @@ const navItems: { key: NavItem; label: string; route: string; Icon: any }[] = [
   { key: 'home', label: '홈', route: '/main', Icon: HomeIcon },
   { key: 'fridge', label: '냉장고', route: '/fridge', Icon: FridgeIcon },
   { key: 'receipt', label: '레시피', route: '/recipe', Icon: ReceiptIcon },
-  { key: 'settings', label: '설정', route: '/debug', Icon: SettingsIcon },
+  { key: 'settings', label: '계정', route: '/mypage', Icon: SettingsIcon },
 ];
 
 const isRouteActive = (pathname: string, route: string) =>
