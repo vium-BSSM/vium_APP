@@ -15,6 +15,12 @@ export const MainPage = () => {
   const router = useRouter();
   const { isCleanupModalVisible, openCleanupModal, closeCleanupModal } = useFridgeCleanup();
 
+  const handleBannerPress = (variant: 'tomato' | 'potato' | 'onion') => {
+    if (variant === 'tomato') router.push('/recipe' as any);
+    if (variant === 'potato') router.push('/report' as any);
+    // TODO: 장보기 페이지가 생기면 onion 배너 연결
+  };
+
   const menuItems = [
     { icon: ReportIcon, label: '식재료 리포트', onPress: () => router.push('/report' as any) },
     { icon: CartIcon, label: '장보기 도우미', onPress: () => console.log('장보기 도우미') },
@@ -43,7 +49,7 @@ export const MainPage = () => {
 
         {/* Banner */}
         <View className="px-5 md:px-10 lg:px-20 mb-8 max-w-[1200px] w-full mx-auto">
-          <Banner variant="tomato" onPress={() => console.log('Banner pressed')} />
+          <Banner onPress={handleBannerPress} />
         </View>
 
         {/* Menu Grid */}
