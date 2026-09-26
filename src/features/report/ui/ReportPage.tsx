@@ -1,17 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import ChevronLeftIcon from '@/../assets/icons/chevron-left-icon.svg';
 import ShareIcon from '@/../assets/icons/share-icon.svg';
 import { useMonthlyReport } from '../lib/useMonthlyReport';
 import { formatCount, formatWon, formatYearMonth } from '../lib/formatters';
+import { YearMonth, getCurrentYearMonth } from '../lib/reportMonths';
+import { ReportMonthPicker } from './ReportMonthPicker';
 
 const BAR_MAX_HEIGHT = 153;
 const BAR_MIN_HEIGHT = 11;
 
 export const ReportPage: React.FC = () => {
   const router = useRouter();
-  const { report } = useMonthlyReport();
+  const [selectedMonth, setSelectedMonth] = useState<YearMonth>(getCurrentYearMonth);
+  const { report } = useMonthlyReport(selectedMonth.year, selectedMonth.month);
 
   const maxWasted = Math.max(...report.wasteCategories.map((c) => c.wastedAmount), 1);
   const mostWasted = report.wasteCategories.find((c) => c.wastedAmount === maxWasted);
@@ -37,14 +39,7 @@ export const ReportPage: React.FC = () => {
       <View className="px-5 md:px-10 lg:px-20 pt-[75px] items-center">
         <View className="w-full max-w-[480px] items-center gap-[50px]">
           {/* 월 선택 */}
-          <Pressable className="flex-row items-center gap-[7px]">
-            <Text className="text-subtitle font-medium font-sans text-text-100">
-              {formatYearMonth(report.year, report.month)}
-            </Text>
-            <View style={{ transform: [{ rotate: '-90deg' }] }}>
-              <ChevronLeftIcon width={18} height={18} color="#242529" />
-            </View>
-          </Pressable>
+          <ReportMonthPicker value={selectedMonth} onChange={setSelectedMonth} />
 
           <View className="w-full gap-16">
             <View className="w-full gap-[54px]">
