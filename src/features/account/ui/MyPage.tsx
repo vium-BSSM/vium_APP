@@ -18,7 +18,7 @@ export const MyPage: React.FC = () => {
   const { profile } = useMyProfile();
 
   const handleEditProfile = () => {
-    // TODO: 프로필 수정 화면 연결
+    router.push('/mypage/edit' as any);
   };
 
   const handleMenuPress = (key: MyPageMenuKey) => {
