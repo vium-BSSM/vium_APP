@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import ShareIcon from '@/../assets/icons/share-icon.svg';
 import { useMonthlyReport } from '../lib/useMonthlyReport';
 import { formatCount, formatWon, formatYearMonth } from '../lib/formatters';
 import { YearMonth, getCurrentYearMonth } from '../lib/reportMonths';
 import { ReportMonthPicker } from './ReportMonthPicker';
+import { WasteBar } from './WasteBar';
 
 const BAR_MAX_HEIGHT = 153;
 const BAR_MIN_HEIGHT = 11;
@@ -14,6 +16,8 @@ export const ReportPage: React.FC = () => {
   const router = useRouter();
   const [selectedMonth, setSelectedMonth] = useState<YearMonth>(getCurrentYearMonth);
   const { report } = useMonthlyReport(selectedMonth.year, selectedMonth.month);
+
+  const animationKey = `${report.year}-${report.month}`;
 
   const maxWasted = Math.max(...report.wasteCategories.map((c) => c.wastedAmount), 1);
   const mostWasted = report.wasteCategories.find((c) => c.wastedAmount === maxWasted);
@@ -81,32 +85,30 @@ export const ReportPage: React.FC = () => {
                     를{'\n'}가장 많이 버렸어요!
                   </Text>
                   <View className="flex-row items-end justify-center gap-6 p-5">
-                    {report.wasteCategories.map((category) => {
-                      const isMost = category === mostWasted;
-                      const height = Math.max(
-                        BAR_MIN_HEIGHT,
-                        Math.round((category.wastedAmount / maxWasted) * BAR_MAX_HEIGHT)
-                      );
-                      return (
-                        <View key={category.category} className="items-center gap-[15px]">
-                          <View
-                            className={`w-[49px] rounded-lg ${isMost ? 'bg-primary-600' : 'bg-neutral-50'}`}
-                            style={{ height }}
-                          />
-                          <Text className="text-text14 font-sans text-text-100">
-                            {category.category}
-                          </Text>
-                        </View>
-                      );
-                    })}
+                    {report.wasteCategories.map((category, index) => (
+                      <WasteBar
+                        key={category.category}
+                        label={category.category}
+                        height={Math.max(
+                          BAR_MIN_HEIGHT,
+                          Math.round((category.wastedAmount / maxWasted) * BAR_MAX_HEIGHT)
+                        )}
+                        isHighlighted={category === mostWasted}
+                        index={index}
+                        animationKey={animationKey}
+                      />
+                    ))}
                   </View>
                 </View>
 
                 {/* 폐기 순위 */}
-                <View className="px-[7px] gap-[6px]">
+                <View key={animationKey} className="px-[7px] gap-[6px]">
                   {report.topWastedItems.map((item, index) => (
-                    <React.Fragment key={item.rank}>
-                      {index > 0 && <View className="h-px bg-neutral-100" />}
+                    <Animated.View
+                      key={item.rank}
+                      entering={FadeInDown.delay(400 + index * 100).duration(400)}
+                    >
+                      {index > 0 && <View className="h-px bg-neutral-100 mb-[6px]" />}
                       <View className="flex-row items-end justify-between p-2.5 rounded-lg bg-white">
                         <View className="flex-row items-center gap-4">
                           <Text className="text-[20px] font-bold font-sans text-text-100">
@@ -120,15 +122,15 @@ export const ReportPage: React.FC = () => {
                           </View>
                         </View>
                         <View className="items-end gap-1">
-                          <Text className="text-[10px] font-sans text-text-300">
+                          <Text className="text-[12px] font-sans text-text-200">
                             구매 : {formatWon(item.purchaseAmount)}
                           </Text>
-                          <Text className="text-[10px] font-sans text-text-300">
+                          <Text className="text-[12px] font-sans text-text-200">
                             폐기 : {item.wastePercent}%
                           </Text>
                         </View>
                       </View>
-                    </React.Fragment>
+                    </Animated.View>
                   ))}
                 </View>
               </View>
