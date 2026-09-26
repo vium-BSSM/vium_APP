@@ -52,9 +52,9 @@ export const ProfileEditPage: React.FC = () => {
               </View>
               <Pressable
                 onPress={pickImage}
-                className="absolute bottom-0 right-0 w-9 h-9 bg-primary-100 rounded-full items-center justify-center"
+                className="absolute bottom-0 right-0 w-9 h-9"
               >
-                <PhotoIcon width={20} height={20} />
+                <PhotoIcon width={36} height={36} />
               </Pressable>
             </View>
 

@@ -31,10 +31,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       {/* Camera Icon Button */}
       <Pressable
         onPress={onPress}
-        className="absolute right-3 bottom-3 w-[34px] h-[34px] bg-white rounded-full items-center justify-center"
-        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 }}
+        className="absolute right-3 bottom-3 w-[34px] h-[34px]"
       >
-        <PhotoIcon width={20} height={20} />
+        <PhotoIcon width={34} height={34} />
       </Pressable>
     </View>
   );
