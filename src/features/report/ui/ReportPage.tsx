@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { useCountUp } from '@/shared/lib/hooks/useCountUp';
 import ShareIcon from '@/../assets/icons/share-icon.svg';
 import { useMonthlyReport } from '../lib/useMonthlyReport';
 import { formatCount, formatWon, formatYearMonth } from '../lib/formatters';
@@ -18,6 +19,8 @@ export const ReportPage: React.FC = () => {
   const { report } = useMonthlyReport(selectedMonth.year, selectedMonth.month);
 
   const animationKey = `${report.year}-${report.month}`;
+  const displayedSpent = useCountUp(report.totalSpent, 900, animationKey);
+  const displayedWasted = useCountUp(report.totalWasted, 900, animationKey);
 
   const maxWasted = Math.max(...report.wasteCategories.map((c) => c.wastedAmount), 1);
   const mostWasted = report.wasteCategories.find((c) => c.wastedAmount === maxWasted);
@@ -51,11 +54,11 @@ export const ReportPage: React.FC = () => {
               <View className="gap-4">
                 <Text className="text-text16 font-medium font-sans text-text-100">이번달 식비</Text>
                 <View className="bg-primary-300 rounded-lg p-5 gap-2">
-                  <Text className="text-[20px] font-medium font-sans text-text-100">
-                    총 {formatWon(report.totalSpent)}원
+                  <Text className="text-[20px] font-medium font-sans text-text-100 tabular-nums">
+                    총 {formatWon(displayedSpent)}원
                   </Text>
-                  <Text className="text-[12px] font-sans text-text-50">
-                    그중에 총 {formatWon(report.totalWasted)}원치를 폐기했어요.
+                  <Text className="text-[12px] font-sans text-text-50 tabular-nums">
+                    그중에 총 {formatWon(displayedWasted)}원치를 폐기했어요.
                   </Text>
                 </View>
               </View>
