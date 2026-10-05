@@ -134,7 +134,7 @@ export const FridgePage = () => {
               </Text>
             </View>
 
-            <View className="flex-row pl-[10px] gap-[190px]">
+            <View className="flex-row items-center justify-between pl-[10px]">
               <Text className="text-neutral-700 text-text14 font-sans">
                 {selectedItems.size}개의 식재료가 선택됨
               </Text>
@@ -142,7 +142,7 @@ export const FridgePage = () => {
                 onPress={handleDelete}
                 disabled={isDisposing}
                 hitSlop={8}
-                className={`ml-3 ${isDisposing ? 'opacity-50' : ''}`}
+                className={isDisposing ? 'opacity-50' : ''}
               >
                 <TrashIcon width={24} height={24} />
               </Pressable>
