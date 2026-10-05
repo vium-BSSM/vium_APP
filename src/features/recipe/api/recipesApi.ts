@@ -1,4 +1,7 @@
 import { apiClient } from '@/shared/api/client';
+
+// AI 생성으로 수 초 걸리지만, 응답이 끝내 오지 않으면 진행 중 요청이 영원히 남아 다시 요청하지 못하므로 제한
+const RECOMMEND_TIMEOUT_MS = 60 * 1000;
 import {
   RecipeCategoryCode,
   RecipeCompleteRequest,
@@ -11,6 +14,7 @@ export const getRecommendedRecipes = async (
 ): Promise<RecommendedRecipesApiResponse> => {
   const response = await apiClient.get<RecommendedRecipesApiResponse>('/api/me/recipes/recommended', {
     params: { category },
+    timeout: RECOMMEND_TIMEOUT_MS,
   });
   return response.data;
 };

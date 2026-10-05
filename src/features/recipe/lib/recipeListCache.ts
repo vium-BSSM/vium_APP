@@ -1,4 +1,5 @@
 import { isAxiosError } from 'axios';
+import { sessionUserStore } from '@/shared/lib/sessionUser';
 import { getRecommendedRecipes } from '../api/recipesApi';
 import { mapRecipeCard, toCategoryCode } from './recipeMapper';
 import { RecipeCategory, RecipeListItem } from '../types';
@@ -8,8 +9,8 @@ import { RecipeCategory, RecipeListItem } from '../types';
  * 추천은 AI 생성(비용·수 초 소요)이 걸려 있어, 화면에 들어올 때마다 요청하지 않도록 함
  */
 const SUCCESS_TTL_MS = 10 * 60 * 1000;
-// 실패 직후에는 자동 재요청하지 않음 (다시 시도 버튼은 force로 우회)
-const FAILURE_COOLDOWN_MS = 60 * 1000;
+// 실패·재료 등록 안내·빈 결과는 재료를 등록하면 바로 달라질 수 있어 짧게만 유지 (다시 시도 버튼은 force로 우회)
+const SHORT_TTL_MS = 60 * 1000;
 
 export type RecipeListResult =
   | { status: 'success'; recipes: RecipeListItem[] }
@@ -23,6 +24,8 @@ interface CacheEntry {
 
 const cache = new Map<RecipeCategory, CacheEntry>();
 const inFlight = new Map<RecipeCategory, Promise<RecipeListResult>>();
+// 캐시를 비울 때마다 증가. 비우기 전에 보낸 요청의 응답은 저장하지 않음 (예: 로그아웃 전 계정의 응답)
+let generation = 0;
 
 const toErrorMessage = (err: unknown) => {
   if (!isAxiosError(err) || !err.response) return '서버와 연결할 수 없습니다.';
@@ -49,7 +52,8 @@ const request = async (category: RecipeCategory): Promise<RecipeListResult> => {
 };
 
 const isFresh = (entry: CacheEntry) => {
-  const ttl = entry.result.status === 'error' ? FAILURE_COOLDOWN_MS : SUCCESS_TTL_MS;
+  const hasRecipes = entry.result.status === 'success' && entry.result.recipes.length > 0;
+  const ttl = hasRecipes ? SUCCESS_TTL_MS : SHORT_TTL_MS;
   return Date.now() - entry.fetchedAt < ttl;
 };
 
@@ -68,9 +72,12 @@ export const recipeListCache = {
     const pending = inFlight.get(category);
     if (pending) return pending;
 
+    const requestGeneration = generation;
     const promise = request(category)
       .then((result) => {
-        cache.set(category, { result, fetchedAt: Date.now() });
+        if (requestGeneration === generation) {
+          cache.set(category, { result, fetchedAt: Date.now() });
+        }
         return result;
       })
       .finally(() => inFlight.delete(category));
@@ -79,5 +86,18 @@ export const recipeListCache = {
   },
 
   // 냉장고 재료가 바뀌어 추천이 달라질 때 호출
-  invalidate: () => cache.clear(),
+  invalidate: () => {
+    generation += 1;
+    cache.clear();
+    inFlight.clear();
+  },
 };
+
+// 추천 결과는 계정별 데이터 — 로그아웃(토큰 만료로 인한 자동 로그아웃 포함)·계정 전환 시 비움
+let lastUserId = sessionUserStore.getState()?.id ?? null;
+sessionUserStore.subscribe(() => {
+  const userId = sessionUserStore.getState()?.id ?? null;
+  if (userId === lastUserId) return;
+  lastUserId = userId;
+  recipeListCache.invalidate();
+});
