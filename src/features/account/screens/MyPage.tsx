@@ -1,5 +1,6 @@
 import React from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import ChevronIcon from '@/../assets/icons/chevron-left-icon.svg';

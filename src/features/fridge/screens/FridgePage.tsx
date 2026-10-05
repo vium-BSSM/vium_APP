@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, ActivityIndicator, Pressable, ScrollView, Alert } from 'react-native';
+import { View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
 import { useIngredientUpload } from '../lib/useIngredientUpload';
 import { useIngredientsList } from '../lib/useIngredientsList';

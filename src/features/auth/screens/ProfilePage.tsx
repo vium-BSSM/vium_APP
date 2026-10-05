@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, TextInput, Alert } from 'react-native';
+import { View, Text, Pressable, TextInput } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { Image } from 'expo-image';
 import { useRegister } from '../lib/useRegister';
 import { Button } from '@/shared/ui/Button';

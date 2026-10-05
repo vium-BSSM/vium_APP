@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Alert, TextInput, ActivityIndicator, Keyboard } from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput, ActivityIndicator, Keyboard } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
 import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, Button, AppHeader } from '@/shared/ui';
 import { useIngredientRegister } from '../lib/useIngredientRegister';
