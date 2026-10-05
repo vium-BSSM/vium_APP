@@ -24,7 +24,7 @@ export const RecipeAddIngredientPage: React.FC = () => {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 60 }}>
         <AppHeader />
 
-        <View className="px-screen md:px-10 lg:px-20 pt-[66px] items-center">
+        <View className="px-screen pt-[66px] items-center">
           <View className="w-full max-w-[480px] gap-12">
             <Text className="text-title font-medium font-sans text-black">
               요리에 추가할 재료를{'\n'}선택하세요

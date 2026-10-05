@@ -42,7 +42,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ right, style }) => {
 
   return (
     <View
-      className="px-screen md:px-10 lg:px-20 h-[35px] flex-row items-center justify-between"
+      className="px-screen h-[35px] flex-row items-center justify-between"
       style={[{ marginTop: insets.top + GAP_BELOW_STATUS_BAR }, style]}
     >
       {__DEV__ ? (

@@ -1,5 +1,5 @@
 // 배포할 때마다 버전을 올리면 이전 캐시가 정리됨
-const CACHE_NAME = 'vium-v1';
+const CACHE_NAME = 'vium-v2';
 
 self.addEventListener('install', () => {
   self.skipWaiting();
@@ -35,7 +35,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // JS·폰트·이미지: 파일명에 해시가 붙어 바뀌지 않으므로 캐시 우선
+  // JS·폰트·이미지: 빌드 결과물은 파일명에 해시가 붙어 바뀌지 않으므로 캐시 우선
+  // 해시가 없는 파일(sw.js, manifest 등)은 캐시하지 않고 항상 네트워크에서 받음
+  const isHashedAsset = url.pathname.startsWith('/_expo/static/') || url.pathname.startsWith('/assets/');
+  if (!isHashedAsset) return;
+
   event.respondWith(
     caches.match(request).then(
       (cached) =>

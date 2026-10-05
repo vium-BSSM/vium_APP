@@ -31,7 +31,7 @@ export const Card: React.FC<CardProps> = ({
           className="w-full aspect-[111/140] bg-white rounded-lg border-2 border-dashed border-neutral-100 items-center justify-center"
           style={style}
         >
-          <Text className="text-neutral-300 text-[40px] md:text-[48px] font-sans">+</Text>
+          <Text className="text-neutral-300 text-[40px] font-sans">+</Text>
         </View>
       </Pressable>
     );
@@ -51,7 +51,7 @@ export const Card: React.FC<CardProps> = ({
 
           <View className="flex-row items-start justify-between gap-1 mt-1">
             <Text
-              className="text-text-100 text-text14 md:text-text15 font-medium font-sans flex-1"
+              className="text-text-100 text-text14 font-medium font-sans flex-1"
               numberOfLines={1}
               ellipsizeMode="tail"
             >
@@ -69,7 +69,7 @@ export const Card: React.FC<CardProps> = ({
 
         <View className="px-2 pb-2">
           <Text
-            className="text-text-200 text-[12px] md:text-[13px] font-sans"
+            className="text-text-200 text-[12px] font-sans"
             numberOfLines={1}
             ellipsizeMode="tail"
           >

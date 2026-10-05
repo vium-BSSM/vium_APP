@@ -38,7 +38,7 @@ export const RecipeWastePage: React.FC = () => {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 140 }}>
         <AppHeader />
 
-        <View className="px-screen md:px-10 lg:px-20 pt-[49px] items-center">
+        <View className="px-screen pt-[49px] items-center">
           <View className="w-full max-w-[480px] gap-[72px]">
             <View className="gap-12">
               <Text className="text-title font-medium font-sans text-neutral-600">

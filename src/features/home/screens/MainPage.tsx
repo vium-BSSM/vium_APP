@@ -45,7 +45,7 @@ export const MainPage = () => {
           }
         />
 
-        <View className="px-screen md:px-10 lg:px-20 max-w-[1200px] w-full mx-auto gap-[50px]">
+        <View className="px-screen max-w-[1200px] w-full mx-auto gap-[50px]">
           <View className="items-center gap-[53px]">
             <Banner onPress={handleBannerPress} />
 

@@ -17,7 +17,7 @@ export const RecipePage: React.FC = () => {
     <ScrollView className="flex-1 bg-white" contentContainerStyle={{ paddingBottom: 140 }}>
       <AppHeader />
 
-      <View className="px-screen md:px-10 lg:px-20 pt-[26px] gap-[26px]">
+      <View className="px-screen pt-[26px] gap-[26px]">
         <Pressable
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/main'))}
           className="flex-row items-center gap-4 self-start"
@@ -29,7 +29,7 @@ export const RecipePage: React.FC = () => {
         <RecipeCategoryFilter selected={category} onSelect={setCategory} />
       </View>
 
-      <View className="px-screen md:px-10 lg:px-20 pt-[52px]">
+      <View className="px-screen pt-[52px]">
         {isLoading ? (
           <View className="items-center py-10 gap-4">
             <ActivityIndicator size="large" color="#A2CD87" />

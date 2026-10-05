@@ -19,7 +19,7 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({ title, icon }) => {
     <View className="flex-1 bg-white">
       <AppHeader />
 
-      <View className="px-screen md:px-10 lg:px-20 pt-10">
+      <View className="px-screen pt-10">
         <Pressable onPress={handleBack} className="flex-row items-center gap-4 self-start" hitSlop={8}>
           <BackIcon width={30} height={30} color="#242529" />
           <Text className="text-title font-medium font-sans text-text-100">{title}</Text>

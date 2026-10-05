@@ -124,12 +124,12 @@ export const FridgePage = () => {
       ) : (
         <View>
           <AppHeader />
-          <View className="px-screen md:px-8 lg:px-16 pt-4 pb-4 max-w-[1200px] mx-auto w-full">
+          <View className="px-screen pt-4 pb-4 max-w-[1200px] mx-auto w-full">
             <View className="flex-row items-center mb-[27px]">
-              <Pressable onPress={handleCancelDelete} className="mr-4 md:mr-6">
+              <Pressable onPress={handleCancelDelete} className="mr-4">
                 <BackIcon width={24} height={24} color="#333333" />
               </Pressable>
-              <Text className="text-text-100 text-title md:text-[28px] lg:text-[32px] font-medium font-sans">
+              <Text className="text-text-100 text-title font-medium font-sans">
                 식재료 관리하기
               </Text>
             </View>
@@ -159,7 +159,7 @@ export const FridgePage = () => {
         />
       ) : (
         <ScrollView
-          className="flex-1 px-screen md:px-8 lg:px-16"
+          className="flex-1 px-screen"
           contentContainerStyle={{ paddingBottom: 100 }}
         >
           <View className="flex-row flex-wrap -mx-2 max-w-[1200px] mx-auto w-full">
@@ -167,7 +167,7 @@ export const FridgePage = () => {
               const isSelected = selectedItems.has(item.id);
 
               return (
-                <View key={item.id} className="mb-4 px-2 w-1/3 md:w-1/4 lg:w-1/5">
+                <View key={item.id} className="mb-4 px-2 w-1/3">
                   <Pressable onPress={() => handleToggleSelect(item.id)}>
                     <View className="relative">
                       <Card

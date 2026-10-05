@@ -35,7 +35,7 @@ export const ProfileEditPage: React.FC = () => {
         keyboardShouldPersistTaps="handled"
       >
         <AppHeader />
-        <View className="px-screen md:px-10 lg:px-20 pt-10">
+        <View className="px-screen pt-10">
           <Pressable onPress={() => router.back()} className="flex-row items-center gap-4 self-start">
             <BackIcon width={30} height={30} color="#000000" />
             <Text className="text-title font-medium font-sans text-black">프로필 수정</Text>

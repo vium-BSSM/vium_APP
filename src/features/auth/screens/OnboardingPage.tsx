@@ -21,16 +21,16 @@ export const OnboardingPage = () => {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="flex-1 px-screen md:px-10 lg:px-20 pt-[166px] items-center">
+      <View className="flex-1 px-screen pt-[166px] items-center">
         <View className="absolute top-0 left-0 right-0">
           <AppHeader />
         </View>
         <View className="w-full max-w-[480px]">
           <View>
-            <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 mb-[9px] font-sans">
+            <Text className="text-title font-medium text-text-100 mb-[9px] font-sans">
               마지막으로{'\n'}얼마나 자주 장을 보시나요?
             </Text>
-            <Text className="text-text14 md:text-text15 text-text-200 mb-[49px] font-sans">
+            <Text className="text-text14 text-text-200 mb-[49px] font-sans">
               냉장고 정리 알림에 참고해요!
             </Text>
 
@@ -39,13 +39,13 @@ export const OnboardingPage = () => {
                 <Pressable
                   key={index}
                   onPress={() => setSelectedOption(index)}
-                  className={`h-[42px] md:h-[48px] rounded-lg border-2 px-2.5 md:px-4 justify-center ${
+                  className={`h-[42px] rounded-lg border-2 px-2.5 justify-center ${
                     selectedOption === index
                       ? 'bg-primary-200 border-primary-600'
                       : 'bg-white border-neutral-100'
                   }`}
                 >
-                  <Text className="text-text15 md:text-text16 font-sans text-text-100">
+                  <Text className="text-text15 font-sans text-text-100">
                     {option}
                   </Text>
                 </Pressable>

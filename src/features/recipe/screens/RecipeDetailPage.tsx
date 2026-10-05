@@ -49,7 +49,7 @@ export const RecipeDetailPage: React.FC = () => {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 60 }}>
         <AppHeader />
 
-        <View className="px-screen md:px-10 lg:px-20 pt-[47px] items-center">
+        <View className="px-screen pt-[47px] items-center">
           <View className="w-full max-w-[480px] gap-[69px]">
             <View className="gap-[25px]">
               <View className="gap-8">

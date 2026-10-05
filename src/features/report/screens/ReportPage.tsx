@@ -40,7 +40,7 @@ export const ReportPage: React.FC = () => {
       <View
         ref={captureTargetRef}
         collapsable={false}
-        className="bg-white px-screen md:px-10 lg:px-20 pt-8 pb-8 mt-[43px] items-center"
+        className="bg-white px-screen pt-8 pb-8 mt-[43px] items-center"
       >
         <View className="w-full max-w-[480px] items-center gap-[50px]">
           <ReportMonthPicker value={selectedMonth} onChange={setSelectedMonth} />
@@ -133,7 +133,7 @@ export const ReportPage: React.FC = () => {
         </View>
       </View>
 
-      <View className="px-screen md:px-10 lg:px-20 pt-8 items-center">
+      <View className="px-screen pt-8 items-center">
         <View className="w-full max-w-[480px] gap-16 items-center">
           <Text className="text-[12px] font-sans text-text-50 text-center">
             이제 해당 내용을 바탕으로 장보기 리스트를 추천 받을 수 있어요!

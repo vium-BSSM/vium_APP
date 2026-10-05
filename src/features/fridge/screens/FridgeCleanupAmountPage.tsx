@@ -38,9 +38,9 @@ export const FridgeCleanupAmountPage: React.FC = () => {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <AppHeader />
 
-        <View className="flex-1 px-screen md:px-10 lg:px-20 pt-[64px] items-center">
+        <View className="flex-1 px-screen pt-[64px] items-center">
           <View className="w-full max-w-[480px] gap-12">
-            <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 font-sans">
+            <Text className="text-title font-medium text-text-100 font-sans">
               마지막 단계예요!{'\n'}얼마나 남겼는지 말해주세요
             </Text>
 

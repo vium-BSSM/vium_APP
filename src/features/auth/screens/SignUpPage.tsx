@@ -26,18 +26,18 @@ export const SignUpPage = () => {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="flex-1 px-screen md:px-10 lg:px-20 pt-[161px] items-center">
+      <View className="flex-1 px-screen pt-[161px] items-center">
         <View className="absolute top-0 left-0 right-0">
           <AppHeader />
         </View>
         <View className="w-full max-w-[480px]">
           <View className="mb-[35px]">
-            <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 mb-[67px] font-sans">
+            <Text className="text-title font-medium text-text-100 mb-[67px] font-sans">
               어서오세요,{'\n'}비움이 처음이신가요?
             </Text>
 
             <View>
-              <Text className="text-text16 md:text-[18px] font-medium text-text-100 mb-[14px] font-sans">
+              <Text className="text-text16 font-medium text-text-100 mb-[14px] font-sans">
                 회원가입
               </Text>
               <View className="gap-4">
@@ -93,6 +93,18 @@ export const SignUpPage = () => {
       </View>
 
       <View className="w-full items-center pb-[100px]">
+        <View className="flex-row items-center mb-2">
+          <Text className="text-text14 text-text-300 font-sans">
+            이미 계정이 있나요?{' '}
+          </Text>
+          {/* 로그인 → 회원가입으로 들어온 경우 새 화면을 쌓지 않고 기존 로그인 화면으로 돌아감 */}
+          <Pressable onPress={() => router.dismissTo('/login')} hitSlop={8}>
+            <Text className="text-text14 text-text-100 font-medium font-sans">
+              로그인하기
+            </Text>
+          </Pressable>
+        </View>
+
         <Button onPress={handleSignUp}>
           회원가입
         </Button>
