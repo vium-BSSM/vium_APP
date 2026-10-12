@@ -1,4 +1,5 @@
 import { isAxiosError } from 'axios';
+import { onInventoryChanged } from '@/features/fridge';
 import { getRecommendedRecipes } from '../api/recipesApi';
 import { mapRecipeCard, toCategoryCode } from './recipeMapper';
 import { RecipeCategory, RecipeListItem } from '../types';
@@ -23,6 +24,8 @@ interface CacheEntry {
 
 const cache = new Map<RecipeCategory, CacheEntry>();
 const inFlight = new Map<RecipeCategory, Promise<RecipeListResult>>();
+// 무효화될 때마다 증가 — 무효화 전에 시작된 요청의 결과(이전 재고 기준)는 캐시에 저장하지 않음
+let generation = 0;
 
 const toErrorMessage = (err: unknown) => {
   if (!isAxiosError(err) || !err.response) return '서버와 연결할 수 없습니다.';
@@ -68,16 +71,28 @@ export const recipeListCache = {
     const pending = inFlight.get(category);
     if (pending) return pending;
 
+    const requestGeneration = generation;
     const promise = request(category)
       .then((result) => {
-        cache.set(category, { result, fetchedAt: Date.now() });
+        if (requestGeneration === generation) {
+          cache.set(category, { result, fetchedAt: Date.now() });
+        }
         return result;
       })
-      .finally(() => inFlight.delete(category));
+      .finally(() => {
+        if (inFlight.get(category) === promise) inFlight.delete(category);
+      });
     inFlight.set(category, promise);
     return promise;
   },
 
   // 냉장고 재료가 바뀌어 추천이 달라질 때 호출
-  invalidate: () => cache.clear(),
+  invalidate: () => {
+    generation += 1;
+    cache.clear();
+    inFlight.clear();
+  },
 };
+
+// 냉장고에서 재료를 등록·수정·소진·폐기하면 추천 결과가 달라지므로 무효화
+onInventoryChanged(recipeListCache.invalidate);
