@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TextInputProps, Modal, Pressable, ScrollView } from 'react-native';
 
-interface UnitOption {
+export interface UnitOption {
   id: number;
   label: string;
 }
@@ -15,7 +15,7 @@ interface LabelInputWithUnitProps extends Omit<TextInputProps, 'onChangeText'> {
   style?: any;
 }
 
-const UNIT_OPTIONS: UnitOption[] = [
+export const UNIT_OPTIONS: UnitOption[] = [
   { id: 1, label: '개' },
   { id: 2, label: 'g' },
   { id: 3, label: 'kg' },
