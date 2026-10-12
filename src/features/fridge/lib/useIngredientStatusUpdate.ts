@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { updateIngredientStatus } from '../api/ingredientsApi';
+import { notifyInventoryChanged } from './inventoryEvents';
 import { IngredientStatusUpdateRequest } from '../types';
 
 export const useIngredientStatusUpdate = () => {
@@ -16,6 +17,7 @@ export const useIngredientStatusUpdate = () => {
       const response = await updateIngredientStatus(ingredientId, request);
 
       if (response.success) {
+        notifyInventoryChanged();
         return true;
       }
       setError(response.error?.message || '재료 상태를 변경하지 못했습니다.');

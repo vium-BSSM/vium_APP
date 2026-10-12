@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 import { isAxiosError } from 'axios';
 import { updateIngredient } from '../api/ingredientsApi';
 import { toDateString } from './dateUtils';
+import { notifyInventoryChanged } from './inventoryEvents';
 
 export interface IngredientEditFormData {
   name: string;
@@ -57,7 +58,10 @@ export const useIngredientEdit = (ingredientId: number, isCatalogItem: boolean) 
         expiresOn,
       });
 
-      if (response.success) return true;
+      if (response.success) {
+        notifyInventoryChanged();
+        return true;
+      }
 
       Alert.alert('오류', response.error?.message || '재료 수정에 실패했습니다.');
       return false;

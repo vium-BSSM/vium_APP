@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { recipeListCache, RecipeListResult } from './recipeListCache';
 import { RecipeCategory } from '../types';
 
@@ -20,14 +21,17 @@ export const useRecipesList = (category: RecipeCategory = '전체') => {
     setIsLoading(false);
   };
 
+  // 탭 화면은 마운트된 채 유지되므로 포커스될 때마다 캐시를 확인 (재고 변경으로 무효화됐으면 새로 요청)
   // 카테고리를 빠르게 바꿀 때 이전 요청 결과가 늦게 도착해 덮어쓰지 않도록 무시
-  useEffect(() => {
-    let active = true;
-    loadRecipes(category, false, () => active);
-    return () => {
-      active = false;
-    };
-  }, [category]);
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      loadRecipes(category, false, () => active);
+      return () => {
+        active = false;
+      };
+    }, [category])
+  );
 
   return {
     recipes: result?.status === 'success' ? result.recipes : [],

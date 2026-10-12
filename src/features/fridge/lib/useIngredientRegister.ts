@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { registerIngredient } from '../api/ingredientsApi';
+import { notifyInventoryChanged } from './inventoryEvents';
 import { IngredientRegisterRequest } from '../types';
 
 export interface IngredientFormData {
@@ -59,6 +60,7 @@ export const useIngredientRegister = () => {
       const response = await registerIngredient(request);
 
       if (response.success) {
+        notifyInventoryChanged();
         Alert.alert('성공', '재료가 등록되었습니다.');
         return true;
       } else {

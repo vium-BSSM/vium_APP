@@ -8,3 +8,4 @@ export { FridgeCleanupAmountPage } from './screens/FridgeCleanupAmountPage';
 export { useFridgeCleanup } from './lib/useFridgeCleanup';
 export { FridgeCleanupModal } from './ui/FridgeCleanupModal';
 export { getIngredientImage } from './lib/ingredientImageFixtures';
+export { onInventoryChanged } from './lib/inventoryEvents';
