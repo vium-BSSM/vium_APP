@@ -1,6 +1,24 @@
 import React from 'react';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
-import { UNIT_OPTIONS, UnitOption } from '@/shared/ui';
+
+export interface UnitOption {
+  id: number;
+  label: string;
+}
+
+// 백엔드 units 테이블 ID와 일치
+export const UNIT_OPTIONS: UnitOption[] = [
+  { id: 1, label: '개' },
+  { id: 2, label: 'g' },
+  { id: 3, label: 'kg' },
+  { id: 4, label: 'ml' },
+  { id: 5, label: 'L' },
+  { id: 6, label: '팩' },
+  { id: 7, label: '봉' },
+  { id: 8, label: '병' },
+  { id: 9, label: '캔' },
+  { id: 10, label: '통' },
+];
 
 interface UnitPickerModalProps {
   visible: boolean;

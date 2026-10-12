@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
-import { UnitOption } from '@/shared/ui';
+import { UnitOption, UnitPickerModal } from '@/shared/ui';
 import { ManualShoppingItemInput } from '../types';
-import { UnitPickerModal } from './UnitPickerModal';
 
 
 const LABEL_CLASS = 'w-[76px] text-text16 font-medium font-sans text-neutral-300';

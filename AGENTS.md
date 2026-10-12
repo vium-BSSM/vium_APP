@@ -152,6 +152,7 @@ const [fontsLoaded] = useFonts({
 - **Banner**: Banner component
 - **AddButton**: Floating action button with icons
 - **NavBar**: Navigation bar
+- **UnitPickerModal**: Unit selection modal (`UNIT_OPTIONS` matches backend unit IDs)
 
 ### Component Props Pattern
 ```tsx
