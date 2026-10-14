@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-nati
 import { useRouter } from 'expo-router';
 import { useIngredientsList } from '../lib/useIngredientsList';
 import { fridgeCleanupStore } from '../lib/fridgeCleanupStore';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, Button } from '@/shared/ui';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const FridgeCleanupSelectPage: React.FC = () => {
@@ -87,18 +87,10 @@ export const FridgeCleanupSelectPage: React.FC = () => {
         </View>
       </ScrollView>
 
-      <View className="px-12 pb-[100px] items-center">
-        <Pressable
-          className={`bg-neutral-500 rounded-3xl items-center justify-center px-2.5 py-[15px] w-[299px] ${
-            selectedIds.size === 0 ? 'opacity-50' : ''
-          }`}
-          onPress={handleNext}
-          disabled={selectedIds.size === 0}
-        >
-          <Text className="text-text-400 text-subtitle text-center font-sans">
-            다음
-          </Text>
-        </Pressable>
+      <View className="w-full items-center pb-[100px]">
+        <Button onPress={handleNext} disabled={selectedIds.size === 0}>
+          다음
+        </Button>
       </View>
     </View>
   );

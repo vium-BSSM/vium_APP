@@ -10,7 +10,6 @@ const VISIBLE_PATTERNS = [
   /^\/fridge$/,
   /^\/fridge\/\d+$/,
   /^\/recipe$/,
-  /^\/recipe\/[^/]+\/waste$/,
   /^\/mypage$/,
 ];
 

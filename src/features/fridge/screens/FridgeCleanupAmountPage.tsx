@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { useRouter } from 'expo-router';
 import { useFridgeCleanupStore } from '../lib/fridgeCleanupStore';
 import { useFridgeCleanupFinish } from '../lib/useFridgeCleanupFinish';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, Button } from '@/shared/ui';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const FridgeCleanupAmountPage: React.FC = () => {
@@ -84,22 +84,10 @@ export const FridgeCleanupAmountPage: React.FC = () => {
         </View>
       </ScrollView>
 
-      <View className="px-12 pb-[100px] items-center">
-        <Pressable
-          className={`bg-neutral-500 rounded-3xl items-center justify-center px-2.5 py-[15px] w-[299px] ${
-            isSubmitting ? 'opacity-50' : ''
-          }`}
-          onPress={handleFinish}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text className="text-text-400 text-subtitle text-center font-sans">
-              냉장고 정리 종료
-            </Text>
-          )}
-        </Pressable>
+      <View className="w-full items-center pb-[100px]">
+        <Button onPress={handleFinish} loading={isSubmitting}>
+          냉장고 정리 종료
+        </Button>
       </View>
     </View>
   );

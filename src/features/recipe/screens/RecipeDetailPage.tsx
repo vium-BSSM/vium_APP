@@ -1,12 +1,12 @@
 import React from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRecipeDetail } from '../lib/useRecipeDetail';
 import { recipeCookStore } from '../lib/recipeCookStore';
 import { RecipeIngredientCircle } from '../ui/RecipeIngredientCircle';
 import { RecipeStepCard } from '../ui/RecipeStepCard';
-import { AppHeader, BackTitle } from '@/shared/ui';
+import { AppHeader, BackTitle, Button } from '@/shared/ui';
 
 export const RecipeDetailPage: React.FC = () => {
   const router = useRouter();
@@ -101,13 +101,10 @@ export const RecipeDetailPage: React.FC = () => {
         </View>
       </ScrollView>
 
-      <View className="px-12 pb-[60px] items-center">
-        <Pressable
-          className="bg-neutral-500 rounded-3xl items-center justify-center px-2.5 py-[15px] w-[299px]"
-          onPress={handleFinishCooking}
-        >
-          <Text className="text-text-400 text-subtitle text-center font-sans">다 만들었어요!</Text>
-        </Pressable>
+      <View className="w-full items-center pb-[100px]">
+        <Button onPress={handleFinishCooking}>
+          다 만들었어요!
+        </Button>
       </View>
     </View>
   );

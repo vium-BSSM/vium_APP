@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRecipeIngredientAdd } from '../lib/useRecipeIngredientAdd';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, Button } from '@/shared/ui';
 
 export const RecipeAddIngredientPage: React.FC = () => {
   const router = useRouter();
@@ -50,16 +50,10 @@ export const RecipeAddIngredientPage: React.FC = () => {
         </View>
       </ScrollView>
 
-      <View className="px-12 pb-[60px] items-center">
-        <Pressable
-          className={`bg-neutral-500 rounded-3xl items-center justify-center px-2.5 py-[15px] w-[299px] ${
-            selectedIds.size === 0 ? 'opacity-50' : ''
-          }`}
-          onPress={handleAdd}
-          disabled={selectedIds.size === 0}
-        >
-          <Text className="text-text-400 text-subtitle text-center font-sans">추가</Text>
-        </Pressable>
+      <View className="w-full items-center pb-[100px]">
+        <Button onPress={handleAdd} disabled={selectedIds.size === 0}>
+          추가
+        </Button>
       </View>
     </View>
   );

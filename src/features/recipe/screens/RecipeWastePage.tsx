@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRecipeCookStore } from '../lib/recipeCookStore';
 import { useRecipeComplete } from '../lib/useRecipeComplete';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, Button } from '@/shared/ui';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const RecipeWastePage: React.FC = () => {
@@ -36,7 +36,7 @@ export const RecipeWastePage: React.FC = () => {
 
   return (
     <View className="flex-1">
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 140 }}>
+      <ScrollView className="flex-1">
         <AppHeader />
 
         <View className="px-screen md:px-10 lg:px-20 pt-6 items-center">
@@ -83,18 +83,10 @@ export const RecipeWastePage: React.FC = () => {
         </View>
       </ScrollView>
 
-      <View className="px-12 pb-[100px] items-center">
-        <Pressable
-          className={`bg-neutral-500 rounded-3xl items-center justify-center px-2.5 h-[54px] w-[299px] ${isSubmitting ? 'opacity-70' : ''}`}
-          onPress={handleComplete}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text className="text-text-400 text-subtitle text-center font-sans">완료</Text>
-          )}
-        </Pressable>
+      <View className="w-full items-center pb-[100px]">
+        <Button onPress={handleComplete} loading={isSubmitting}>
+          완료
+        </Button>
       </View>
     </View>
   );

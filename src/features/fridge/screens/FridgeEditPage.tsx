@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Alert, TextInput, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, AppHeader } from '@/shared/ui';
+import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, AppHeader, Button } from '@/shared/ui';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 import { useIngredientDetail } from '../lib/useIngredientDetail';
 import { useIngredientEdit } from '../lib/useIngredientEdit';
@@ -146,19 +146,10 @@ const FridgeEditForm: React.FC<{ ingredient: IngredientApiResponse }> = ({ ingre
         </View>
       </ScrollView>
 
-      <View className="px-12 pt-4 pb-[100px] items-center">
-        {/* 저장 중에도 버튼 크기가 바뀌지 않도록 높이 고정, 내용만 교체 */}
-        <Pressable
-          className={`bg-neutral-500 rounded-3xl items-center justify-center px-2.5 h-[54px] w-[299px] ${isSaving ? 'opacity-70' : ''}`}
-          onPress={handleSave}
-          disabled={isSaving}
-        >
-          {isSaving ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text className="text-text-400 text-subtitle text-center font-sans">수정 완료</Text>
-          )}
-        </Pressable>
+      <View className="w-full items-center pb-[100px]">
+        <Button onPress={handleSave} loading={isSaving}>
+          수정 완료
+        </Button>
       </View>
     </View>
   );
