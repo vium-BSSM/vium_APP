@@ -93,6 +93,21 @@ export const SignUpPage = () => {
       </View>
 
       <View className="w-full items-center pb-[100px]">
+        <View className="flex-row items-center mb-2">
+          <Text className="text-text14 md:text-text15 text-text-300 font-sans">
+            이미 계정이 있나요?{' '}
+          </Text>
+          {/* 로그인 화면에서 push로 들어오므로 back으로 돌아가 스택이 쌓이지 않게 함 */}
+          <Pressable
+            onPress={() => (router.canGoBack() ? router.back() : router.replace('/login'))}
+            hitSlop={8}
+          >
+            <Text className="text-text14 md:text-text15 text-text-100 font-medium font-sans">
+              로그인하기
+            </Text>
+          </Pressable>
+        </View>
+
         <Button onPress={handleSignUp}>
           회원가입
         </Button>
