@@ -4,7 +4,6 @@ import { useSignUpCredentials } from '../lib/useSignUpCredentials';
 import { Button } from '@/shared/ui/Button';
 import { InputBox } from '@/shared/ui/InputBox';
 import { router } from 'expo-router';
-import { SocialLoginButtons } from '../ui/SocialLoginButtons';
 import { AppHeader } from '@/shared/ui';
 
 export const SignUpPage = () => {
@@ -31,7 +30,7 @@ export const SignUpPage = () => {
           <AppHeader />
         </View>
         <View className="w-full max-w-[480px]">
-          <View className="mb-[35px]">
+          <View>
             <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 mb-[67px] font-sans">
               어서오세요,{'\n'}비움이 처음이신가요?
             </Text>
@@ -83,11 +82,6 @@ export const SignUpPage = () => {
                 />
               </View>
             </View>
-          </View>
-
-          <View className="items-center">
-            {/* TODO: 소셜 회원가입 연동 */}
-            <SocialLoginButtons label="SNS 계정으로 빠른 회원가입" />
           </View>
         </View>
       </View>

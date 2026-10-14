@@ -35,7 +35,7 @@ export const RecipeIngredientCircle: React.FC<RecipeIngredientCircleProps> = ({
         </View>
       )}
       <Text
-        className="text-[12px] font-sans text-black text-center"
+        className="text-[12px] font-sans text-text-100 text-center"
         numberOfLines={1}
         ellipsizeMode="tail"
       >

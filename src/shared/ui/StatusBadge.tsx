@@ -8,11 +8,11 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
   const getBadgeColor = () => {
     switch (status) {
       case '위험':
-        return 'bg-[#FFE5EF]';
+        return 'bg-status-danger-bg';
       case '보통':
-        return 'bg-[#FFF4E5]';
+        return 'bg-status-normal-bg';
       case '양호':
-        return 'bg-[#E5F5FF]';
+        return 'bg-status-good-bg';
       default:
         return 'bg-neutral-100';
     }
@@ -21,11 +21,11 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
   const getTextColor = () => {
     switch (status) {
       case '위험':
-        return 'text-[#FF3B8C]';
+        return 'text-status-danger-text';
       case '보통':
-        return 'text-[#FF9500]';
+        return 'text-status-normal-text';
       case '양호':
-        return 'text-[#007AFF]';
+        return 'text-status-good-text';
       default:
         return 'text-text-200';
     }

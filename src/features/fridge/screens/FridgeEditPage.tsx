@@ -19,7 +19,7 @@ export const FridgeEditPage: React.FC = () => {
   if (isLoading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator size="large" color="#00D1A7" />
+        <ActivityIndicator size="large" color="#A2CD87" />
       </View>
     );
   }
@@ -108,7 +108,7 @@ const FridgeEditForm: React.FC<{ ingredient: IngredientApiResponse }> = ({ ingre
                 editable={!isCatalogItem}
                 maxLength={120}
                 placeholder="입력해주세요"
-                placeholderTextColor="#878787"
+                placeholderTextColor="#767676"
               />
               {isCatalogItem && (
                 <Text className="text-text14 font-sans text-text-300">기본 식재료는 이름을 수정할 수 없어요</Text>

@@ -65,7 +65,7 @@ export const RecipeDetailPage: React.FC = () => {
                 <View className="gap-4">
                   <View className="flex-row items-center justify-between">
                     <Text className="text-text16 font-medium font-sans text-neutral-200">조리시간</Text>
-                    <Text className="text-text15 font-sans text-black">{recipe.cookTimeMinutes}분</Text>
+                    <Text className="text-text15 font-sans text-text-100">{recipe.cookTimeMinutes}분</Text>
                   </View>
 
                   <View className="gap-[25px]">

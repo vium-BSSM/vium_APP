@@ -58,7 +58,7 @@ export const FridgeCleanupAmountPage: React.FC = () => {
             <View className="gap-7">
               {items.map((item) => (
                 <View key={item.id} className="gap-[19px] p-2.5">
-                  <Text className="text-[20px] font-medium font-sans text-black">
+                  <Text className="text-[20px] font-medium font-sans text-text-100">
                     {item.title}
                   </Text>
                   <View className="gap-2">

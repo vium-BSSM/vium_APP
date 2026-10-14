@@ -76,7 +76,7 @@ export const MainPage = () => {
               <Text className="text-[18px] font-medium font-sans text-neutral-800">
                 오늘의 냉털 레시피
               </Text>
-              <ChevronRightIcon width={9.3} height={14.8} color="#000000" />
+              <ChevronRightIcon width={9.3} height={14.8} color="#242529" />
             </Pressable>
 
             <ScrollView

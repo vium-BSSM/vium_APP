@@ -89,7 +89,7 @@ export const FridgePage = () => {
           onManagePress={() => setIsDeleteMode(true)}
         />
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#00D1A7" />
+          <ActivityIndicator size="large" color="#A2CD87" />
           <Text className="mt-4 text-text14 text-text-200 font-sans">재료를 불러오는 중...</Text>
         </View>
       </View>

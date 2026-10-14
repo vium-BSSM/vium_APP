@@ -24,7 +24,7 @@ export const FridgeCleanupModal: React.FC<FridgeCleanupModalProps> = ({
           className="bg-white rounded-2xl items-center justify-center gap-[31px] w-[342px] p-5"
           onPress={(e) => e.stopPropagation()}
         >
-          <Text className="text-[24px] font-medium font-sans text-black text-center mt-4">
+          <Text className="text-[24px] font-medium font-sans text-text-100 text-center mt-4">
             지금부터 냉장고 정리를 {'\n'}시작해볼까요?
           </Text>
 
@@ -37,7 +37,7 @@ export const FridgeCleanupModal: React.FC<FridgeCleanupModalProps> = ({
               className="bg-primary-400 rounded-2xl items-center justify-center p-2.5 w-[256px] mb-4"
               onPress={onConfirm}
             >
-              <Text className="text-text14 font-medium font-sans text-black text-center">
+              <Text className="text-text14 font-medium font-sans text-text-100 text-center">
                 계속진행
               </Text>
             </Pressable>

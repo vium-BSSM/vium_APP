@@ -113,7 +113,7 @@ export const FridgeAddPage: React.FC = () => {
                 value={name}
                 onChangeText={handleNameChange}
                 placeholder="입력해주세요"
-                placeholderTextColor="#878787"
+                placeholderTextColor="#767676"
               />
               {catalogItem ? (
                 <Text className="text-text14 font-sans text-primary-800">기본 식재료로 등록돼요 · 레시피 추천에 쓰여요</Text>

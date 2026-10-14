@@ -26,7 +26,7 @@ export const RecipeAddIngredientPage: React.FC = () => {
 
         <View className="px-screen md:px-10 lg:px-20 pt-[66px] items-center">
           <View className="w-full max-w-[480px] gap-12">
-            <Text className="text-title font-medium font-sans text-black">
+            <Text className="text-title font-medium font-sans text-text-100">
               요리에 추가할 재료를{'\n'}선택하세요
             </Text>
 
@@ -41,7 +41,7 @@ export const RecipeAddIngredientPage: React.FC = () => {
                       isSelected ? 'bg-primary-200 border-primary-600' : 'bg-white border-neutral-100'
                     }`}
                   >
-                    <Text className="text-[20px] font-sans text-black">{ingredient.name}</Text>
+                    <Text className="text-[20px] font-sans text-text-100">{ingredient.name}</Text>
                   </Pressable>
                 );
               })}
