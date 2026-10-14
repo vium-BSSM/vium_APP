@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useIngredientsList } from '../lib/useIngredientsList';
 import { fridgeCleanupStore } from '../lib/fridgeCleanupStore';
 import { AppHeader } from '@/shared/ui';
+import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const FridgeCleanupSelectPage: React.FC = () => {
   const router = useRouter();
@@ -33,11 +34,20 @@ export const FridgeCleanupSelectPage: React.FC = () => {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <AppHeader />
 
-        <View className="flex-1 px-screen md:px-10 lg:px-20 pt-[64px] items-center">
+        <View className="flex-1 px-screen md:px-10 lg:px-20 pt-6 items-center">
           <View className="w-full max-w-[480px] gap-12">
-            <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 font-sans">
-              다 먹었거나 폐기할{'\n'}재료를 선택해 주세요
-            </Text>
+            <View className="gap-6">
+              <Pressable
+                onPress={() => (router.canGoBack() ? router.back() : router.replace('/fridge' as any))}
+                hitSlop={8}
+                className="self-start"
+              >
+                <BackIcon width={30} height={30} />
+              </Pressable>
+              <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 font-sans">
+                다 먹었거나 폐기할{'\n'}재료를 선택해 주세요
+              </Text>
+            </View>
 
             {isLoading ? (
               <View className="items-center py-10">

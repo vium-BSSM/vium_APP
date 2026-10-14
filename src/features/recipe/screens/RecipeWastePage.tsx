@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRecipeCookStore } from '../lib/recipeCookStore';
 import { useRecipeComplete } from '../lib/useRecipeComplete';
 import { AppHeader } from '@/shared/ui';
+import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const RecipeWastePage: React.FC = () => {
   const router = useRouter();
@@ -38,12 +39,21 @@ export const RecipeWastePage: React.FC = () => {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 140 }}>
         <AppHeader />
 
-        <View className="px-screen md:px-10 lg:px-20 pt-[49px] items-center">
+        <View className="px-screen md:px-10 lg:px-20 pt-6 items-center">
           <View className="w-full max-w-[480px] gap-[72px]">
             <View className="gap-12">
-              <Text className="text-title font-medium font-sans text-neutral-600">
-                맛있게 드셨나요?{'\n'}재료 사용량 조사를 시작할게요!
-              </Text>
+              <View className="gap-6">
+                <Pressable
+                  onPress={() => (router.canGoBack() ? router.back() : router.replace(`/recipe/${recipeId}` as any))}
+                  hitSlop={8}
+                  className="self-start"
+                >
+                  <BackIcon width={30} height={30} />
+                </Pressable>
+                <Text className="text-title font-medium font-sans text-neutral-600">
+                  맛있게 드셨나요?{'\n'}재료 사용량 조사를 시작할게요!
+                </Text>
+              </View>
 
               <View className="gap-7">
                 {items.map((item) => (
