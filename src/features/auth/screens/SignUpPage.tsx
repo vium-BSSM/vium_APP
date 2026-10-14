@@ -4,7 +4,7 @@ import { useSignUpCredentials } from '../lib/useSignUpCredentials';
 import { Button } from '@/shared/ui/Button';
 import { InputBox } from '@/shared/ui/InputBox';
 import { router } from 'expo-router';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, PageTitle } from '@/shared/ui';
 
 export const SignUpPage = () => {
   const [email, setEmail] = useState('');
@@ -31,12 +31,12 @@ export const SignUpPage = () => {
         </View>
         <View className="w-full max-w-[480px]">
           <View>
-            <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 mb-[67px] font-sans">
+            <PageTitle className="mb-[67px]">
               어서오세요,{'\n'}비움이 처음이신가요?
-            </Text>
+            </PageTitle>
 
             <View>
-              <Text className="text-text16 md:text-[18px] font-medium text-text-100 mb-[14px] font-sans">
+              <Text className="text-text16 md:text-text18 font-medium text-text-100 mb-[14px] font-sans">
                 회원가입
               </Text>
               <View className="gap-4">

@@ -22,12 +22,12 @@ export const RecipeListCard: React.FC<RecipeListCardProps> = ({ recipe, onPress 
       </View>
 
       <View className="gap-[7px]">
-        <Text className="text-[13px] font-sans text-neutral-300">
-          조리시간 <Text className="text-[14px] font-medium font-sans text-neutral-500">{recipe.cookTimeMinutes}분</Text>
+        <Text className="text-text12 font-sans text-neutral-300">
+          조리시간 <Text className="text-text14 font-medium font-sans text-neutral-500">{recipe.cookTimeMinutes}분</Text>
         </Text>
         <View className="flex-row items-center gap-1">
           {recipe.tags.map((tag) => (
-            <Text key={tag} className="text-[11px] font-sans text-neutral-400">
+            <Text key={tag} className="text-text12 font-sans text-neutral-400">
               {tag}
             </Text>
           ))}

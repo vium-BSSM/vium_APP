@@ -58,11 +58,11 @@ export const RecipeWastePage: React.FC = () => {
               <View className="gap-7">
                 {items.map((item) => (
                   <View key={item.id} className="gap-[19px] p-2.5">
-                    <Text className="text-[20px] font-medium font-sans text-text-100">{item.name}</Text>
+                    <Text className="text-subtitle font-medium font-sans text-text-100">{item.name}</Text>
                     <View className="gap-2">
                       <View className="flex-row items-center justify-between">
-                        <Text className="text-[12px] font-sans text-neutral-400">0%</Text>
-                        <Text className="text-[12px] font-sans text-neutral-400">100%</Text>
+                        <Text className="text-text12 font-sans text-neutral-400">0%</Text>
+                        <Text className="text-text12 font-sans text-neutral-400">100%</Text>
                       </View>
                       <Slider
                         minimumValue={0}

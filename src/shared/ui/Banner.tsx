@@ -151,7 +151,7 @@ export const Banner: React.FC<BannerProps> = ({ variant = 'tomato', onPress, sty
             >
               <View className="flex-1 justify-between h-full py-2">
                 <View>
-                  <Text className="text-text-50 text-[14px] mb-1 font-sans">
+                  <Text className="text-text-50 text-text14 mb-1 font-sans">
                     {slide.subtitle}
                   </Text>
                   <Text className="text-text-100 text-subtitle font-medium font-sans">
@@ -161,7 +161,7 @@ export const Banner: React.FC<BannerProps> = ({ variant = 'tomato', onPress, sty
                     {slide.title2}
                   </Text>
                 </View>
-                <Text className="text-text-50 text-[12px] font-sans">
+                <Text className="text-text-50 text-text12 font-sans">
                   {slide.action}
                 </Text>
               </View>

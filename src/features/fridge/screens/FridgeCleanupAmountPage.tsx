@@ -4,7 +4,7 @@ import Slider from '@react-native-community/slider';
 import { useRouter } from 'expo-router';
 import { useFridgeCleanupStore } from '../lib/fridgeCleanupStore';
 import { useFridgeCleanupFinish } from '../lib/useFridgeCleanupFinish';
-import { AppHeader, Button } from '@/shared/ui';
+import { AppHeader, Button, PageTitle } from '@/shared/ui';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const FridgeCleanupAmountPage: React.FC = () => {
@@ -50,15 +50,15 @@ export const FridgeCleanupAmountPage: React.FC = () => {
               >
                 <BackIcon width={30} height={30} />
               </Pressable>
-              <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 font-sans">
+              <PageTitle>
                 마지막 단계예요!{'\n'}얼마나 남겼는지 말해주세요
-              </Text>
+              </PageTitle>
             </View>
 
             <View className="gap-7">
               {items.map((item) => (
                 <View key={item.id} className="gap-[19px] p-2.5">
-                  <Text className="text-[20px] font-medium font-sans text-text-100">
+                  <Text className="text-subtitle font-medium font-sans text-text-100">
                     {item.title}
                   </Text>
                   <View className="gap-2">

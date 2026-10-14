@@ -24,7 +24,7 @@ export const FridgeCleanupModal: React.FC<FridgeCleanupModalProps> = ({
           className="bg-white rounded-2xl items-center justify-center gap-[31px] w-[342px] p-5"
           onPress={(e) => e.stopPropagation()}
         >
-          <Text className="text-[24px] font-medium font-sans text-text-100 text-center mt-4">
+          <Text className="text-title font-medium font-sans text-text-100 text-center mt-4">
             지금부터 냉장고 정리를 {'\n'}시작해볼까요?
           </Text>
 

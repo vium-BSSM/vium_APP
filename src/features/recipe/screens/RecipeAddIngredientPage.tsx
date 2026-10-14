@@ -41,7 +41,7 @@ export const RecipeAddIngredientPage: React.FC = () => {
                       isSelected ? 'bg-primary-200 border-primary-600' : 'bg-white border-neutral-100'
                     }`}
                   >
-                    <Text className="text-[20px] font-sans text-text-100">{ingredient.name}</Text>
+                    <Text className="text-subtitle font-sans text-text-100">{ingredient.name}</Text>
                   </Pressable>
                 );
               })}

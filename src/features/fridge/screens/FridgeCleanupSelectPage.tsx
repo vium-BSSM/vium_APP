@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-nati
 import { useRouter } from 'expo-router';
 import { useIngredientsList } from '../lib/useIngredientsList';
 import { fridgeCleanupStore } from '../lib/fridgeCleanupStore';
-import { AppHeader, Button } from '@/shared/ui';
+import { AppHeader, Button, PageTitle } from '@/shared/ui';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const FridgeCleanupSelectPage: React.FC = () => {
@@ -44,9 +44,9 @@ export const FridgeCleanupSelectPage: React.FC = () => {
               >
                 <BackIcon width={30} height={30} />
               </Pressable>
-              <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 font-sans">
+              <PageTitle>
                 다 먹었거나 폐기할{'\n'}재료를 선택해 주세요
-              </Text>
+              </PageTitle>
             </View>
 
             {isLoading ? (
@@ -75,7 +75,7 @@ export const FridgeCleanupSelectPage: React.FC = () => {
                           : 'bg-white border-neutral-100'
                       }`}
                     >
-                      <Text className="text-[20px] font-sans text-text-100">
+                      <Text className="text-subtitle font-sans text-text-100">
                         {item.title}
                       </Text>
                     </Pressable>

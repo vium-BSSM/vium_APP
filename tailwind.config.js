@@ -67,9 +67,11 @@ module.exports = {
       fontSize: {
         title: ['24px', { lineHeight: 'normal' }],
         subtitle: ['20px', { lineHeight: '24px' }],
+        text18: ['18px', { lineHeight: 'normal' }],
         text16: ['16px', { lineHeight: 'normal' }],
         text15: ['15px', { lineHeight: 'normal' }],
         text14: ['14px', { lineHeight: 'normal' }],
+        text12: ['13px', { lineHeight: 'normal' }],
       },
     },
   },

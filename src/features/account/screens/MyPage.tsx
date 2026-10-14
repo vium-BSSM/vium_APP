@@ -72,7 +72,7 @@ export const MyPage: React.FC = () => {
                 )}
               </View>
               <View className="items-center gap-2">
-                <Text className="text-[17px] font-medium font-sans text-text-100 text-center">
+                <Text className="text-text16 font-medium font-sans text-text-100 text-center">
                   {profile.nickname}
                 </Text>
                 <Text className="text-text15 font-light font-sans text-neutral-300 text-center">

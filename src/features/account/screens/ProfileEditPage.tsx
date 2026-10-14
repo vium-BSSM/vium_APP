@@ -68,7 +68,7 @@ export const ProfileEditPage: React.FC = () => {
                 />
                 {nickname.length > 0 && (
                   <Pressable onPress={clearNickname} className="w-6 h-6 items-center justify-center">
-                    <Text className="text-[18px] font-sans text-text-100">✕</Text>
+                    <Text className="text-text18 font-sans text-text-100">✕</Text>
                   </Pressable>
                 )}
               </View>
