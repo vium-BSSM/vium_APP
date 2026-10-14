@@ -2,7 +2,8 @@ import { useSyncExternalStore } from 'react';
 import { FridgeItem } from '../types';
 
 export interface CleanupItem extends FridgeItem {
-  remainingPercent: number;
+  // 남긴(버릴) 수량 — 0 ~ remainingQuantity
+  remainingAmount: number;
 }
 
 interface CleanupState {
@@ -23,15 +24,15 @@ const getSnapshot = () => state;
 
 const setSelectedItems = (items: FridgeItem[]) => {
   state = {
-    items: items.map((item) => ({ ...item, remainingPercent: 100 })),
+    items: items.map((item) => ({ ...item, remainingAmount: item.remainingQuantity })),
   };
   emit();
 };
 
-const setRemainingPercent = (id: number, percent: number) => {
+const setRemainingAmount = (id: number, amount: number) => {
   state = {
     items: state.items.map((item) =>
-      item.id === id ? { ...item, remainingPercent: percent } : item
+      item.id === id ? { ...item, remainingAmount: amount } : item
     ),
   };
   emit();
@@ -51,7 +52,7 @@ const reset = () => {
 
 export const fridgeCleanupStore = {
   setSelectedItems,
-  setRemainingPercent,
+  setRemainingAmount,
   removeItems,
   reset,
   getItems: () => state.items,
@@ -63,7 +64,7 @@ export const useFridgeCleanupStore = () => {
   return {
     items: snapshot.items,
     setSelectedItems,
-    setRemainingPercent,
+    setRemainingAmount,
     removeItems,
     reset,
   };

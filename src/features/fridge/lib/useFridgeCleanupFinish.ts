@@ -5,17 +5,16 @@ import { useIngredientStatusUpdate } from './useIngredientStatusUpdate';
 import { CleanupItem, fridgeCleanupStore } from './fridgeCleanupStore';
 
 /**
- * 슬라이더의 남긴 비율(remainingPercent)을 소진/폐기 요청으로 변환
- * - 0%: 전부 먹음 → consumed
- * - 그 외: 남긴 만큼 버림 → disposed (wasteQuantity = 남은 수량 × 비율)
+ * 슬라이더의 남긴 수량(remainingAmount)을 소진/폐기 요청으로 변환
+ * - 0: 전부 먹음 → consumed
+ * - 그 외: 남긴 만큼 버림 → disposed (wasteQuantity = 남긴 수량)
  */
 const toStatusRequest = (item: CleanupItem): IngredientStatusUpdateRequest => {
-  if (item.remainingPercent === 0) {
+  if (item.remainingAmount === 0) {
     return { status: 'consumed', quantity: item.remainingQuantity };
   }
 
-  const wasteQuantity = Math.round(item.remainingQuantity * item.remainingPercent) / 100;
-  return { status: 'disposed', quantity: item.remainingQuantity, wasteQuantity };
+  return { status: 'disposed', quantity: item.remainingQuantity, wasteQuantity: item.remainingAmount };
 };
 
 export const useFridgeCleanupFinish = () => {

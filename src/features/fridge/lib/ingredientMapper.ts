@@ -23,6 +23,7 @@ export const mapIngredientToFridgeItem = (ingredient: IngredientApiResponse): Fr
     subtitle,
     status,
     remainingQuantity: ingredient.remainingQuantity,
+    unit: ingredient.unit,
     image: getIngredientImage(ingredient.name),
     quantity,
     price,

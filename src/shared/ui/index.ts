@@ -18,3 +18,4 @@ export { AppHeader } from './AppHeader';
 export { BackTitle } from './BackTitle';
 export { ComingSoon } from './ComingSoon';
 export { PageTitle } from './PageTitle';
+export { QuantitySlider } from './QuantitySlider';

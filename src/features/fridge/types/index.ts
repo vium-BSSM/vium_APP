@@ -6,6 +6,7 @@ export interface FridgeItem {
   subtitle: string;
   status: FridgeItemStatus;
   remainingQuantity: number;
+  unit: string;
   image?: string;
 }
 
