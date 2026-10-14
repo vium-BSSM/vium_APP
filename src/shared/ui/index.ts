@@ -15,4 +15,6 @@ export { LabelInputWithUnit } from './LabelInputWithUnit';
 export { DatePicker } from './DatePicker';
 export { Logo } from './Logo';
 export { AppHeader } from './AppHeader';
+export { BackTitle } from './BackTitle';
 export { ComingSoon } from './ComingSoon';
+export { PageTitle } from './PageTitle';

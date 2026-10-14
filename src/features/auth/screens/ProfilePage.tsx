@@ -7,7 +7,7 @@ import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import CameraIcon from '@/../assets/icons/camera-icon.svg';
 import ClearIcon from '@/../assets/icons/clear-icon.svg';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, PageTitle } from '@/shared/ui';
 
 export const ProfilePage = () => {
   const [nickname, setNickname] = useState('');
@@ -52,9 +52,9 @@ export const ProfilePage = () => {
           <AppHeader />
         </View>
         <View className="w-full max-w-[480px]">
-          <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 mb-[54px] font-sans text-left">
+          <PageTitle className="mb-[54px] text-left">
             환영합니다,{'\n'}어떤 이름으로 불러드릴까요?
-          </Text>
+          </PageTitle>
 
           <View className="items-center">
             <View className="items-center">
@@ -80,7 +80,7 @@ export const ProfilePage = () => {
               <View className="w-[232px] md:w-[280px]">
                 <View className="flex-row items-center justify-between mb-[6px]">
                   <TextInput
-                    className="text-subtitle md:text-[24px] text-text-100 font-sans flex-1"
+                    className="text-subtitle md:text-title text-text-100 font-sans flex-1"
                     style={{ fontFamily: 'Paperlogy' }}
                     value={nickname}
                     onChangeText={setNickname}

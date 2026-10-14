@@ -126,11 +126,11 @@ export const useIngredientUpload = () => {
 
         const captureButton = document.createElement('button');
         captureButton.textContent = '📷 촬영';
-        captureButton.style.cssText = 'padding: 15px 30px; font-size: 18px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 5px;';
+        captureButton.style.cssText = 'padding: 15px 30px; font-size: 18px; cursor: pointer; background: #333333; color: #FAFAFA; border: none; border-radius: 5px;';
 
         const cancelButton = document.createElement('button');
         cancelButton.textContent = '❌ 취소';
-        cancelButton.style.cssText = 'padding: 15px 30px; font-size: 18px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 5px;';
+        cancelButton.style.cssText = 'padding: 15px 30px; font-size: 18px; cursor: pointer; background: #FF7171; color: #FAFAFA; border: none; border-radius: 5px;';
 
         buttonContainer.appendChild(captureButton);
         buttonContainer.appendChild(cancelButton);

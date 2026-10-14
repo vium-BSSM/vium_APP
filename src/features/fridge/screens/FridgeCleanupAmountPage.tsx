@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { useRouter } from 'expo-router';
 import { useFridgeCleanupStore } from '../lib/fridgeCleanupStore';
 import { useFridgeCleanupFinish } from '../lib/useFridgeCleanupFinish';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, Button, PageTitle } from '@/shared/ui';
+import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const FridgeCleanupAmountPage: React.FC = () => {
   const router = useRouter();
@@ -38,16 +39,26 @@ export const FridgeCleanupAmountPage: React.FC = () => {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <AppHeader />
 
-        <View className="flex-1 px-screen md:px-10 lg:px-20 pt-[64px] items-center">
+        <View className="flex-1 px-screen md:px-10 lg:px-20 pt-6 items-center">
           <View className="w-full max-w-[480px] gap-12">
-            <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 font-sans">
-              마지막 단계예요!{'\n'}얼마나 남겼는지 말해주세요
-            </Text>
+            <View className="gap-6">
+              {/* 뒤로 가도 선택 화면이 스택에 남아 있어 고른 재료가 유지됨 */}
+              <Pressable
+                onPress={() => (router.canGoBack() ? router.back() : router.replace('/fridge/cleanup/select' as any))}
+                hitSlop={8}
+                className="self-start"
+              >
+                <BackIcon width={30} height={30} />
+              </Pressable>
+              <PageTitle>
+                마지막 단계예요!{'\n'}얼마나 남겼는지 말해주세요
+              </PageTitle>
+            </View>
 
             <View className="gap-7">
               {items.map((item) => (
                 <View key={item.id} className="gap-[19px] p-2.5">
-                  <Text className="text-[20px] font-medium font-sans text-black">
+                  <Text className="text-subtitle font-medium font-sans text-text-100">
                     {item.title}
                   </Text>
                   <View className="gap-2">
@@ -73,22 +84,10 @@ export const FridgeCleanupAmountPage: React.FC = () => {
         </View>
       </ScrollView>
 
-      <View className="px-12 pb-[100px] items-center">
-        <Pressable
-          className={`bg-neutral-500 rounded-3xl items-center justify-center px-2.5 py-[15px] w-[299px] ${
-            isSubmitting ? 'opacity-50' : ''
-          }`}
-          onPress={handleFinish}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text className="text-text-400 text-subtitle text-center font-sans">
-              냉장고 정리 종료
-            </Text>
-          )}
-        </Pressable>
+      <View className="w-full items-center pb-[100px]">
+        <Button onPress={handleFinish} loading={isSubmitting}>
+          냉장고 정리 종료
+        </Button>
       </View>
     </View>
   );

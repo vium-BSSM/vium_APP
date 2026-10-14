@@ -73,10 +73,10 @@ export const MainPage = () => {
               className="flex-row items-center justify-between"
               onPress={() => router.push('/recipe')}
             >
-              <Text className="text-[18px] font-medium font-sans text-neutral-800">
+              <Text className="text-text18 font-medium font-sans text-neutral-800">
                 오늘의 냉털 레시피
               </Text>
-              <ChevronRightIcon width={9.3} height={14.8} color="#000000" />
+              <ChevronRightIcon width={9.3} height={14.8} color="#242529" />
             </Pressable>
 
             <ScrollView
@@ -90,7 +90,7 @@ export const MainPage = () => {
                   className="bg-white rounded-lg border border-neutral-100 p-4 w-[240px] h-[140px] justify-between"
                   onPress={() => router.push(`/recipe/${recipe.id}` as any)}
                 >
-                  <Text numberOfLines={1} className="text-[18px] font-semibold font-sans text-primary-800">
+                  <Text numberOfLines={1} className="text-text18 font-semibold font-sans text-primary-800">
                     {recipe.title}
                   </Text>
                   <View className="gap-[7px]">
@@ -100,7 +100,7 @@ export const MainPage = () => {
                         {recipe.cookTimeMinutes}분
                       </Text>
                     </Text>
-                    <Text numberOfLines={1} className="text-[13px] font-sans text-neutral-400">
+                    <Text numberOfLines={1} className="text-text12 font-sans text-neutral-400">
                       {recipe.tags.join(' ')}
                     </Text>
                   </View>

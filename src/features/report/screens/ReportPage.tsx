@@ -47,12 +47,12 @@ export const ReportPage: React.FC = () => {
 
           <View className="w-full gap-[54px]">
             <View className="gap-4">
-              <Text className="text-[18px] font-medium font-sans text-text-100">이번달 식비</Text>
+              <Text className="text-text18 font-medium font-sans text-text-100">이번달 식비</Text>
               <View className="bg-primary-300 rounded-lg p-5 gap-2">
                 <Text className="text-title font-medium font-sans text-text-100 tabular-nums">
                   총 {formatWon(displayedSpent)}원
                 </Text>
-                <Text className="text-[12px] font-sans text-text-50 tabular-nums">
+                <Text className="text-text12 font-sans text-text-50 tabular-nums">
                   그중에 총 {formatWon(displayedWasted)}원치를 폐기했어요.
                 </Text>
               </View>
@@ -76,7 +76,7 @@ export const ReportPage: React.FC = () => {
 
             <View className="px-[7px] gap-[15px]">
               <View className="gap-4">
-                <Text className="text-[18px] font-medium font-sans text-text-100">
+                <Text className="text-text18 font-medium font-sans text-text-100">
                   <Text className="text-primary-700">{mostWasted?.category}</Text>
                   를{'\n'}가장 많이 버렸어요!
                 </Text>
@@ -106,7 +106,7 @@ export const ReportPage: React.FC = () => {
                     {index > 0 && <View className="h-px bg-neutral-100 mb-[6px]" />}
                     <View className="flex-row items-end justify-between p-2.5 rounded-lg bg-white">
                       <View className="flex-row items-center gap-4">
-                        <Text className="text-[20px] font-bold font-sans text-text-300">
+                        <Text className="text-subtitle font-bold font-sans text-text-300">
                           {item.rank}
                         </Text>
                         <View className="gap-1">
@@ -117,10 +117,10 @@ export const ReportPage: React.FC = () => {
                         </View>
                       </View>
                       <View className="items-end gap-1">
-                        <Text className="text-[12px] font-sans text-text-200">
+                        <Text className="text-text12 font-sans text-text-200">
                           구매 : {formatWon(item.purchaseAmount)}
                         </Text>
-                        <Text className="text-[12px] font-sans text-text-200">
+                        <Text className="text-text12 font-sans text-text-200">
                           폐기 : {item.wastePercent}%
                         </Text>
                       </View>
@@ -135,7 +135,7 @@ export const ReportPage: React.FC = () => {
 
       <View className="px-screen md:px-10 lg:px-20 pt-8 items-center">
         <View className="w-full max-w-[480px] gap-16 items-center">
-          <Text className="text-[12px] font-sans text-text-50 text-center">
+          <Text className="text-text12 font-sans text-text-50 text-center">
             이제 해당 내용을 바탕으로 장보기 리스트를 추천 받을 수 있어요!
           </Text>
           <View className="w-full flex-row items-center gap-4">

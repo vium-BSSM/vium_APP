@@ -4,8 +4,7 @@ import { InputBox } from "@/shared/ui/InputBox";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { SocialLoginButtons } from "../ui/SocialLoginButtons";
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, PageTitle } from '@/shared/ui';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -26,13 +25,13 @@ export const LoginPage = () => {
           <AppHeader />
         </View>
         <View className="w-full max-w-[480px]">
-          <View className="mb-[89px]">
-            <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 mb-[74px] font-sans">
+          <View>
+            <PageTitle className="mb-[74px]">
               비움에 오신걸 환영해요!{"\n"}함께 시작해요
-            </Text>
+            </PageTitle>
 
             <View>
-              <Text className="text-text16 md:text-[18px] font-medium text-text-100 mb-[14px] font-sans">
+              <Text className="text-text16 md:text-text18 font-medium text-text-100 mb-[14px] font-sans">
                 메일 로그인
               </Text>
               <View className="gap-4">
@@ -59,11 +58,6 @@ export const LoginPage = () => {
                 />
               </View>
             </View>
-          </View>
-
-          <View className="items-center">
-            {/* TODO: 소셜 로그인 연동 */}
-            <SocialLoginButtons label="SNS 계정으로 로그인" />
           </View>
         </View>
       </View>

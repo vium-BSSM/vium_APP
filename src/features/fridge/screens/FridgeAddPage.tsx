@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Alert, TextInput, ActivityIndicator, Keyboard } from 'react-native';
+import { View, Text, ScrollView, Pressable, Alert, TextInput, Keyboard } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, Button, AppHeader } from '@/shared/ui';
 import { useIngredientRegister } from '../lib/useIngredientRegister';
@@ -113,7 +113,7 @@ export const FridgeAddPage: React.FC = () => {
                 value={name}
                 onChangeText={handleNameChange}
                 placeholder="입력해주세요"
-                placeholderTextColor="#878787"
+                placeholderTextColor="#767676"
               />
               {catalogItem ? (
                 <Text className="text-text14 font-sans text-primary-800">기본 식재료로 등록돼요 · 레시피 추천에 쓰여요</Text>
@@ -158,21 +158,10 @@ export const FridgeAddPage: React.FC = () => {
         </View>
       </ScrollView>
 
-      <View className="px-12 pt-4 pb-[100px] items-center">
-        {/* 등록 중에도 버튼 크기가 바뀌지 않도록 높이 고정, 내용만 교체 */}
-        <Pressable
-          className={`bg-neutral-500 rounded-3xl items-center justify-center px-2.5 h-[54px] w-[299px] ${isLoading ? 'opacity-70' : ''}`}
-          onPress={handleRegister}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text className="text-text-400 text-subtitle text-center font-sans">
-              등록하기
-            </Text>
-          )}
-        </Pressable>
+      <View className="w-full items-center pb-[100px]">
+        <Button onPress={handleRegister} loading={isLoading}>
+          등록하기
+        </Button>
       </View>
     </View>
   );

@@ -2,8 +2,7 @@ import React from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { Button, AppHeader } from '@/shared/ui';
-import BackIcon from '@/../assets/icons/back-icon.svg';
+import { Button, AppHeader, BackTitle } from '@/shared/ui';
 import PhotoIcon from '@/../assets/icons/photo-icon.svg';
 import { NICKNAME_MAX_LENGTH, useProfileEdit } from '../lib/useProfileEdit';
 
@@ -36,10 +35,7 @@ export const ProfileEditPage: React.FC = () => {
       >
         <AppHeader />
         <View className="px-screen md:px-10 lg:px-20 pt-10">
-          <Pressable onPress={() => router.back()} className="flex-row items-center gap-4 self-start">
-            <BackIcon width={30} height={30} color="#000000" />
-            <Text className="text-title font-medium font-sans text-black">프로필 수정</Text>
-          </Pressable>
+          <BackTitle title="프로필 수정" />
         </View>
 
         <View className="flex-1 items-center px-screen pt-[55px]">
@@ -72,7 +68,7 @@ export const ProfileEditPage: React.FC = () => {
                 />
                 {nickname.length > 0 && (
                   <Pressable onPress={clearNickname} className="w-6 h-6 items-center justify-center">
-                    <Text className="text-[18px] font-sans text-text-100">✕</Text>
+                    <Text className="text-text18 font-sans text-text-100">✕</Text>
                   </Pressable>
                 )}
               </View>

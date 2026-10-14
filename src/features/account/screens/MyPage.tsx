@@ -72,7 +72,7 @@ export const MyPage: React.FC = () => {
                 )}
               </View>
               <View className="items-center gap-2">
-                <Text className="text-[17px] font-medium font-sans text-black text-center">
+                <Text className="text-text16 font-medium font-sans text-text-100 text-center">
                   {profile.nickname}
                 </Text>
                 <Text className="text-text15 font-light font-sans text-neutral-300 text-center">
@@ -85,7 +85,7 @@ export const MyPage: React.FC = () => {
               onPress={handleEditProfile}
               className="w-full bg-neutral-50 rounded-2xl p-[10px] items-center justify-center"
             >
-              <Text className="text-text15 font-normal font-sans text-black">프로필 수정</Text>
+              <Text className="text-text15 font-normal font-sans text-text-100">프로필 수정</Text>
             </Pressable>
           </View>
 
@@ -96,9 +96,9 @@ export const MyPage: React.FC = () => {
                 onPress={() => handleMenuPress(item.key)}
                 className="flex-row items-center justify-between"
               >
-                <Text className="text-text15 font-normal font-sans text-black">{item.label}</Text>
+                <Text className="text-text15 font-normal font-sans text-text-100">{item.label}</Text>
                 <View className="rotate-180">
-                  <ChevronIcon width={16} height={16} color="#000000" />
+                  <ChevronIcon width={16} height={16} color="#242529" />
                 </View>
               </Pressable>
             ))}

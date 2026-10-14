@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRecipeIngredientAdd } from '../lib/useRecipeIngredientAdd';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, Button } from '@/shared/ui';
 
 export const RecipeAddIngredientPage: React.FC = () => {
   const router = useRouter();
@@ -26,7 +26,7 @@ export const RecipeAddIngredientPage: React.FC = () => {
 
         <View className="px-screen md:px-10 lg:px-20 pt-[66px] items-center">
           <View className="w-full max-w-[480px] gap-12">
-            <Text className="text-title font-medium font-sans text-black">
+            <Text className="text-title font-medium font-sans text-text-100">
               요리에 추가할 재료를{'\n'}선택하세요
             </Text>
 
@@ -41,7 +41,7 @@ export const RecipeAddIngredientPage: React.FC = () => {
                       isSelected ? 'bg-primary-200 border-primary-600' : 'bg-white border-neutral-100'
                     }`}
                   >
-                    <Text className="text-[20px] font-sans text-black">{ingredient.name}</Text>
+                    <Text className="text-subtitle font-sans text-text-100">{ingredient.name}</Text>
                   </Pressable>
                 );
               })}
@@ -50,16 +50,10 @@ export const RecipeAddIngredientPage: React.FC = () => {
         </View>
       </ScrollView>
 
-      <View className="px-12 pb-[60px] items-center">
-        <Pressable
-          className={`bg-neutral-500 rounded-3xl items-center justify-center px-2.5 py-[15px] w-[299px] ${
-            selectedIds.size === 0 ? 'opacity-50' : ''
-          }`}
-          onPress={handleAdd}
-          disabled={selectedIds.size === 0}
-        >
-          <Text className="text-text-400 text-subtitle text-center font-sans">추가</Text>
-        </Pressable>
+      <View className="w-full items-center pb-[100px]">
+        <Button onPress={handleAdd} disabled={selectedIds.size === 0}>
+          추가
+        </Button>
       </View>
     </View>
   );

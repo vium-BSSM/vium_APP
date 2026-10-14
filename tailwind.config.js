@@ -10,7 +10,7 @@ module.exports = {
     extend: {
       spacing: {
         // 화면 좌우 그리드 마진 — 전 화면 공통 (px-screen)
-        screen: '24px',
+        screen: '30px',
       },
       fontFamily: {
         sans: ['Paperlogy', 'system-ui', 'sans-serif'],
@@ -52,13 +52,26 @@ module.exports = {
           300: '#A7A9B5',
           400: '#FAFAFA',
         },
+        status: {
+          danger: '#FF7171',
+          'danger-bg': '#FFE5EF',
+          'danger-text': '#FF3B8C',
+          normal: '#FDCF73',
+          'normal-bg': '#FFF4E5',
+          'normal-text': '#FF9500',
+          good: '#88E0C3',
+          'good-bg': '#E5F5FF',
+          'good-text': '#007AFF',
+        },
       },
       fontSize: {
         title: ['24px', { lineHeight: 'normal' }],
         subtitle: ['20px', { lineHeight: '24px' }],
+        text18: ['18px', { lineHeight: 'normal' }],
         text16: ['16px', { lineHeight: 'normal' }],
         text15: ['15px', { lineHeight: 'normal' }],
         text14: ['14px', { lineHeight: 'normal' }],
+        text12: ['13px', { lineHeight: 'normal' }],
       },
     },
   },

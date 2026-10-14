@@ -1,13 +1,12 @@
 import React from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import BackIcon from '@/../assets/icons/back-icon.svg';
 import { useRecipeDetail } from '../lib/useRecipeDetail';
 import { recipeCookStore } from '../lib/recipeCookStore';
 import { RecipeIngredientCircle } from '../ui/RecipeIngredientCircle';
 import { RecipeStepCard } from '../ui/RecipeStepCard';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, BackTitle, Button } from '@/shared/ui';
 
 export const RecipeDetailPage: React.FC = () => {
   const router = useRouter();
@@ -49,17 +48,11 @@ export const RecipeDetailPage: React.FC = () => {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 60 }}>
         <AppHeader />
 
-        <View className="px-screen md:px-10 lg:px-20 pt-[47px] items-center">
+        <View className="px-screen md:px-10 lg:px-20 pt-10 items-center">
           <View className="w-full max-w-[480px] gap-[69px]">
             <View className="gap-[25px]">
               <View className="gap-8">
-                <Pressable
-                  onPress={() => router.back()}
-                  className="flex-row items-center gap-4"
-                >
-                  <BackIcon width={30} height={30} color="#000000" />
-                  <Text className="text-title font-medium font-sans text-black">{recipe.title}</Text>
-                </Pressable>
+                <BackTitle title={recipe.title} />
 
                 <View className="w-full h-[241px] rounded-lg bg-neutral-50 overflow-hidden">
                   {recipe.image && (
@@ -72,7 +65,7 @@ export const RecipeDetailPage: React.FC = () => {
                 <View className="gap-4">
                   <View className="flex-row items-center justify-between">
                     <Text className="text-text16 font-medium font-sans text-neutral-200">조리시간</Text>
-                    <Text className="text-text15 font-sans text-black">{recipe.cookTimeMinutes}분</Text>
+                    <Text className="text-text15 font-sans text-text-100">{recipe.cookTimeMinutes}분</Text>
                   </View>
 
                   <View className="gap-[25px]">
@@ -108,13 +101,10 @@ export const RecipeDetailPage: React.FC = () => {
         </View>
       </ScrollView>
 
-      <View className="px-12 pb-[60px] items-center">
-        <Pressable
-          className="bg-neutral-500 rounded-3xl items-center justify-center px-2.5 py-[15px] w-[299px]"
-          onPress={handleFinishCooking}
-        >
-          <Text className="text-text-400 text-subtitle text-center font-sans">다 만들었어요!</Text>
-        </Pressable>
+      <View className="w-full items-center pb-[100px]">
+        <Button onPress={handleFinishCooking}>
+          다 만들었어요!
+        </Button>
       </View>
     </View>
   );

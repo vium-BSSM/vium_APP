@@ -69,7 +69,7 @@ export const Card: React.FC<CardProps> = ({
 
         <View className="px-2 pb-2">
           <Text
-            className="text-text-200 text-[12px] md:text-[13px] font-sans"
+            className="text-text-200 text-text12 font-sans"
             numberOfLines={1}
             ellipsizeMode="tail"
           >

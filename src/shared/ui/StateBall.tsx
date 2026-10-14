@@ -10,12 +10,12 @@ export const StateBall: React.FC<StateBallProps> = ({ state = '위험', style })
   const getBackgroundColor = () => {
     switch (state) {
       case '양호':
-        return 'bg-[#88e0c3]';
+        return 'bg-status-good';
       case '보통':
-        return 'bg-[#fdcf73]';
+        return 'bg-status-normal';
       case '위험':
       default:
-        return 'bg-[#ff7171]';
+        return 'bg-status-danger';
     }
   };
 

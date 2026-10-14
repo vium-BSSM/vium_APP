@@ -1,8 +1,8 @@
 import React, { ReactNode } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import BackIcon from '@/../assets/icons/back-icon.svg';
 import { AppHeader } from './AppHeader';
+import { BackTitle } from './BackTitle';
 
 interface ComingSoonProps {
   title: string;
@@ -20,10 +20,7 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({ title, icon }) => {
       <AppHeader />
 
       <View className="px-screen md:px-10 lg:px-20 pt-10">
-        <Pressable onPress={handleBack} className="flex-row items-center gap-4 self-start" hitSlop={8}>
-          <BackIcon width={30} height={30} color="#242529" />
-          <Text className="text-title font-medium font-sans text-text-100">{title}</Text>
-        </Pressable>
+        <BackTitle title={title} onPress={handleBack} />
       </View>
 
       <View className="flex-1 items-center justify-center px-screen pb-[140px] gap-5">

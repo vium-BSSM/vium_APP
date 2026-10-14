@@ -18,7 +18,7 @@ export const FridgeDetailPage = () => {
   if (isLoading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator size="large" color="#00D1A7" />
+        <ActivityIndicator size="large" color="#A2CD87" />
         <Text className="mt-4 text-text14 text-text-200 font-sans">재료 정보를 불러오는 중...</Text>
       </View>
     );
