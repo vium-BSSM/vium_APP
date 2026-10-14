@@ -9,8 +9,7 @@ import { FridgeHeader } from '../ui/FridgeHeader';
 import { FridgeGrid } from '../ui/FridgeGrid';
 import { FridgeCleanupModal } from '../ui/FridgeCleanupModal';
 import { useMyProfile } from '@/features/account';
-import { AddButton, Card, AppHeader } from '@/shared/ui';
-import BackIcon from '@/../assets/icons/back-icon.svg';
+import { AddButton, Card, AppHeader, BackTitle } from '@/shared/ui';
 import TrashIcon from '@/../assets/icons/trash-icon.svg';
 
 export const FridgePage = () => {
@@ -124,17 +123,10 @@ export const FridgePage = () => {
       ) : (
         <View>
           <AppHeader />
-          <View className="px-screen md:px-8 lg:px-16 pt-4 pb-4 max-w-[1200px] mx-auto w-full">
-            <View className="flex-row items-center mb-[27px]">
-              <Pressable onPress={handleCancelDelete} className="mr-4 md:mr-6">
-                <BackIcon width={24} height={24} color="#333333" />
-              </Pressable>
-              <Text className="text-text-100 text-title md:text-[28px] lg:text-[32px] font-medium font-sans">
-                식재료 관리하기
-              </Text>
-            </View>
+          <View className="px-screen md:px-8 lg:px-16 pt-10 pb-4 max-w-[1200px] mx-auto w-full">
+            <BackTitle title="식재료 관리하기" onPress={handleCancelDelete} className="mb-[27px]" />
 
-            <View className="flex-row pl-[10px] gap-[190px]">
+            <View className="flex-row pl-[10px] justify-between">
               <Text className="text-neutral-700 text-text14 font-sans">
                 {selectedItems.size}개의 식재료가 선택됨
               </Text>

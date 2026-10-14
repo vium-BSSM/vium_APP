@@ -2,12 +2,11 @@ import React from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import BackIcon from '@/../assets/icons/back-icon.svg';
 import { useRecipeDetail } from '../lib/useRecipeDetail';
 import { recipeCookStore } from '../lib/recipeCookStore';
 import { RecipeIngredientCircle } from '../ui/RecipeIngredientCircle';
 import { RecipeStepCard } from '../ui/RecipeStepCard';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, BackTitle } from '@/shared/ui';
 
 export const RecipeDetailPage: React.FC = () => {
   const router = useRouter();
@@ -49,17 +48,11 @@ export const RecipeDetailPage: React.FC = () => {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 60 }}>
         <AppHeader />
 
-        <View className="px-screen md:px-10 lg:px-20 pt-[47px] items-center">
+        <View className="px-screen md:px-10 lg:px-20 pt-10 items-center">
           <View className="w-full max-w-[480px] gap-[69px]">
             <View className="gap-[25px]">
               <View className="gap-8">
-                <Pressable
-                  onPress={() => router.back()}
-                  className="flex-row items-center gap-4"
-                >
-                  <BackIcon width={30} height={30} color="#000000" />
-                  <Text className="text-title font-medium font-sans text-black">{recipe.title}</Text>
-                </Pressable>
+                <BackTitle title={recipe.title} />
 
                 <View className="w-full h-[241px] rounded-lg bg-neutral-50 overflow-hidden">
                   {recipe.image && (
