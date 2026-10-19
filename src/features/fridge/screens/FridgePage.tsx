@@ -17,7 +17,7 @@ export const FridgePage = () => {
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const { showIngredientUploadOptions } = useIngredientUpload();
-  const { items: fridgeItems, isLoading, error, refresh } = useIngredientsList();
+  const { items: fridgeItems, isLoading, error, refresh, sortType, setSortType } = useIngredientsList();
   const { disposeItems, isDisposing } = useIngredientDispose();
   const { isCleanupModalVisible, openCleanupModal, closeCleanupModal } = useFridgeCleanup();
   const { profile } = useMyProfile();
@@ -87,6 +87,8 @@ export const FridgePage = () => {
           title={fridgeTitle}
           onBackPress={() => router.back()}
           onManagePress={() => setIsDeleteMode(true)}
+          sortType={sortType}
+          onSortChange={setSortType}
         />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#A2CD87" />
@@ -103,6 +105,8 @@ export const FridgePage = () => {
           title={fridgeTitle}
           onBackPress={() => router.back()}
           onManagePress={() => setIsDeleteMode(true)}
+          sortType={sortType}
+          onSortChange={setSortType}
         />
         <View className="flex-1 items-center justify-center px-screen">
           <Text className="text-text16 text-text-100 font-semibold font-sans mb-2">오류 발생</Text>
@@ -119,6 +123,8 @@ export const FridgePage = () => {
           title={fridgeTitle}
           onBackPress={() => router.back()}
           onManagePress={() => setIsDeleteMode(true)}
+          sortType={sortType}
+          onSortChange={setSortType}
         />
       ) : (
         <View>
@@ -126,7 +132,7 @@ export const FridgePage = () => {
           <View className="px-screen md:px-8 lg:px-16 pt-10 pb-4 max-w-[1200px] mx-auto w-full">
             <BackTitle title="식재료 관리하기" onPress={handleCancelDelete} className="mb-[27px]" />
 
-            <View className="flex-row pl-[10px] justify-between">
+            <View className="flex-row items-center pl-[10px] justify-between h-10">
               <Text className="text-neutral-700 text-text14 font-sans">
                 {selectedItems.size}개의 식재료가 선택됨
               </Text>

@@ -1,13 +1,15 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { getIngredients } from '../api/ingredientsApi';
 import { mapIngredientsToFridgeItems } from './ingredientMapper';
-import { FridgeItem } from '../types';
+import { sortFridgeItems } from './sortFridgeItems';
+import { FridgeItem, FridgeSortType } from '../types';
 
 export const useIngredientsList = () => {
   const [items, setItems] = useState<FridgeItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortType, setSortType] = useState<FridgeSortType>('expiry');
   const hasLoaded = useRef(false);
 
   const loadIngredients = useCallback(async (expiringSoon: boolean = false) => {
@@ -18,16 +20,7 @@ export const useIngredientsList = () => {
       const response = await getIngredients(expiringSoon);
 
       if (response.success && response.data) {
-        const mappedItems = mapIngredientsToFridgeItems(response.data.ingredients);
-        const fridgeItems = mappedItems.map(item => ({
-          id: item.id,
-          title: item.title,
-          subtitle: item.subtitle,
-          status: item.status,
-          remainingQuantity: item.remainingQuantity,
-          image: item.image,
-        }));
-        setItems(fridgeItems);
+        setItems(mapIngredientsToFridgeItems(response.data.ingredients));
       } else {
         setError(response.error?.message || '재료를 불러오는데 실패했습니다.');
       }
@@ -46,8 +39,13 @@ export const useIngredientsList = () => {
     }, [loadIngredients])
   );
 
+  // 조회 결과나 정렬 기준이 바뀔 때만 재정렬
+  const sortedItems = useMemo(() => sortFridgeItems(items, sortType), [items, sortType]);
+
   return {
-    items,
+    items: sortedItems,
+    sortType,
+    setSortType,
     isLoading,
     error,
     refresh: loadIngredients,
