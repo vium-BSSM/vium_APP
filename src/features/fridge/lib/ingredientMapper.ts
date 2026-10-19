@@ -1,10 +1,11 @@
-import { FridgeItemDetail, FridgeItemStatus } from '../types';
+import { FridgeItem, FridgeItemDetail, FridgeItemStatus } from '../types';
 import { IngredientApiResponse } from '../types';
 import { getDaysDifference, formatDate, formatDateWithSuffix } from './dateUtils';
 import { getIngredientImage } from './ingredientImageFixtures';
 
-export const mapIngredientToFridgeItem = (ingredient: IngredientApiResponse): FridgeItemDetail => {
-  const daysLeft = getDaysDifference(ingredient.expiresOn);
+// 목록 카드에 필요한 필드만 매핑 (상세 전용 포맷팅은 하지 않음)
+const mapIngredientToListItem = (ingredient: IngredientApiResponse, baseDate: Date): FridgeItem => {
+  const daysLeft = getDaysDifference(ingredient.expiresOn, baseDate);
 
   const status: FridgeItemStatus = daysLeft <= 5 ? '위험' : daysLeft <= 14 ? '보통' : '양호';
 
@@ -14,9 +15,6 @@ export const mapIngredientToFridgeItem = (ingredient: IngredientApiResponse): Fr
     ? '소비기한 D-Day'
     : `소비기한 D-${daysLeft}`;
 
-  const quantity = `${ingredient.remainingQuantity}${ingredient.unit}`;
-  const price = ingredient.amount != null ? `${ingredient.amount.toLocaleString('ko-KR')}원` : '-';
-
   return {
     id: ingredient.inventoryItemId,
     title: ingredient.name,
@@ -24,6 +22,18 @@ export const mapIngredientToFridgeItem = (ingredient: IngredientApiResponse): Fr
     status,
     remainingQuantity: ingredient.remainingQuantity,
     image: getIngredientImage(ingredient.name),
+  };
+};
+
+export const mapIngredientToFridgeItem = (
+  ingredient: IngredientApiResponse,
+  baseDate: Date = new Date()
+): FridgeItemDetail => {
+  const quantity = `${ingredient.remainingQuantity}${ingredient.unit}`;
+  const price = ingredient.amount != null ? `${ingredient.amount.toLocaleString('ko-KR')}원` : '-';
+
+  return {
+    ...mapIngredientToListItem(ingredient, baseDate),
     quantity,
     price,
     registeredDate: formatDate(ingredient.purchasedOn),
@@ -31,8 +41,8 @@ export const mapIngredientToFridgeItem = (ingredient: IngredientApiResponse): Fr
   };
 };
 
-export const mapIngredientsToFridgeItems = (
-  ingredients: IngredientApiResponse[]
-): FridgeItemDetail[] => {
-  return ingredients.map(mapIngredientToFridgeItem);
+export const mapIngredientsToFridgeItems = (ingredients: IngredientApiResponse[]): FridgeItem[] => {
+  // 기준일을 한 번만 구해 모든 재료에 동일하게 적용 (자정 경계에서 항목별 기준일이 달라지는 것 방지)
+  const today = new Date();
+  return ingredients.map((ingredient) => mapIngredientToListItem(ingredient, today));
 };

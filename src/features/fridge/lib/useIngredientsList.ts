@@ -18,16 +18,7 @@ export const useIngredientsList = () => {
       const response = await getIngredients(expiringSoon);
 
       if (response.success && response.data) {
-        const mappedItems = mapIngredientsToFridgeItems(response.data.ingredients);
-        const fridgeItems = mappedItems.map(item => ({
-          id: item.id,
-          title: item.title,
-          subtitle: item.subtitle,
-          status: item.status,
-          remainingQuantity: item.remainingQuantity,
-          image: item.image,
-        }));
-        setItems(fridgeItems);
+        setItems(mapIngredientsToFridgeItems(response.data.ingredients));
       } else {
         setError(response.error?.message || '재료를 불러오는데 실패했습니다.');
       }
