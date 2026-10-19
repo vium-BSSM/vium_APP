@@ -6,7 +6,7 @@ import { CookUsageItem } from './recipeCookStore';
 import { recipeListCache } from './recipeListCache';
 
 /**
- * 요리 완료 — 슬라이더의 남긴 비율(remainingPercent)을 사용 비율(usageRate)로 바꿔 재고에서 차감
+ * 요리 완료 — 슬라이더의 남긴 수량(remainingAmount)을 사용 비율(usageRate)로 바꿔 재고에서 차감
  * 냉장고에 없는 재료(inventoryId 없음)는 차감할 재고가 없어 제외
  */
 export const useRecipeComplete = () => {
@@ -14,8 +14,14 @@ export const useRecipeComplete = () => {
 
   const complete = async (recipeId: number, items: CookUsageItem[]): Promise<boolean> => {
     const usages = items
-      .filter((item): item is CookUsageItem & { inventoryId: number } => item.inventoryId != null)
-      .map((item) => ({ inventoryId: item.inventoryId, usageRate: 100 - Math.round(item.remainingPercent) }));
+      .filter(
+        (item): item is CookUsageItem & { inventoryId: number; maxQuantity: number } =>
+          item.inventoryId != null && item.maxQuantity != null && item.maxQuantity > 0
+      )
+      .map((item) => ({
+        inventoryId: item.inventoryId,
+        usageRate: Math.round((1 - item.remainingAmount / item.maxQuantity) * 100),
+      }));
 
     if (usages.length === 0) return true;
 
