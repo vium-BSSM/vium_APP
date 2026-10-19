@@ -53,6 +53,8 @@ const getReadySnapshot = () => isReady;
 
 export const sessionUserStore = {
   getState: () => state,
+  // 로그인·로그아웃 등 사용자 변경 감지 (React 밖에서 사용자별 데이터를 정리할 때)
+  subscribe,
   set: async (user: SessionUser) => {
     version += 1;
     hasLoaded = true;

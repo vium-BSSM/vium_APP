@@ -1,4 +1,5 @@
-import { Alert, ActionSheetIOS, Platform } from 'react-native';
+import { ActionSheetIOS, Platform } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import * as ImagePicker from 'expo-image-picker';
 import * as Device from 'expo-device';
 

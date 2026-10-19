@@ -1,5 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRecipeDetail } from '../lib/useRecipeDetail';

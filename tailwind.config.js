@@ -1,3 +1,16 @@
+// NativeWind가 플랫폼별로 Tailwind를 컴파일할 때 설정하는 값 ('ios' | 'android' | 'web')
+const isWeb = process.env.NATIVEWIND_OS === 'web';
+
+// 웹(PWA)은 app/+html.tsx에서 화면을 아이폰 크기(402px)로 고정하지만, 미디어쿼리는 브라우저 창 너비 기준이라
+// 데스크톱에서 md:/lg: 태블릿 스타일이 적용되어 버림 → 웹에서는 breakpoint를 꺼서 항상 폰 레이아웃 사용
+const webScreens = {
+  sm: '99999px',
+  md: '99999px',
+  lg: '99999px',
+  xl: '99999px',
+  '2xl': '99999px',
+};
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -7,6 +20,7 @@ module.exports = {
   ],
   presets: [require("nativewind/preset")],
   theme: {
+    ...(isWeb && { screens: webScreens }),
     extend: {
       spacing: {
         // 화면 좌우 그리드 마진 — 전 화면 공통 (px-screen)

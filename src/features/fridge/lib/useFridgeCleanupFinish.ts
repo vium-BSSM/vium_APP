@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { IngredientStatusUpdateRequest } from '../types';
 import { useIngredientStatusUpdate } from './useIngredientStatusUpdate';
 import { CleanupItem, fridgeCleanupStore } from './fridgeCleanupStore';

@@ -1,5 +1,6 @@
 import { RefObject, useEffect, useRef, useState } from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 
