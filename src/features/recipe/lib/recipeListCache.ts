@@ -1,5 +1,6 @@
 import { isAxiosError } from 'axios';
 import { onInventoryChanged } from '@/features/fridge';
+import { sessionUserStore } from '@/shared/lib/sessionUser';
 import { getRecommendedRecipes } from '../api/recipesApi';
 import { mapRecipeCard, toCategoryCode } from './recipeMapper';
 import { RecipeCategory, RecipeListItem } from '../types';
@@ -9,8 +10,8 @@ import { RecipeCategory, RecipeListItem } from '../types';
  * 추천은 AI 생성(비용·수 초 소요)이 걸려 있어, 화면에 들어올 때마다 요청하지 않도록 함
  */
 const SUCCESS_TTL_MS = 10 * 60 * 1000;
-// 실패 직후에는 자동 재요청하지 않음 (다시 시도 버튼은 force로 우회)
-const FAILURE_COOLDOWN_MS = 60 * 1000;
+// 실패·재료 등록 안내·빈 결과는 재료를 등록하면 바로 달라질 수 있어 짧게만 유지 (다시 시도 버튼은 force로 우회)
+const SHORT_TTL_MS = 60 * 1000;
 
 export type RecipeListResult =
   | { status: 'success'; recipes: RecipeListItem[] }
@@ -24,7 +25,7 @@ interface CacheEntry {
 
 const cache = new Map<RecipeCategory, CacheEntry>();
 const inFlight = new Map<RecipeCategory, Promise<RecipeListResult>>();
-// 무효화될 때마다 증가 — 무효화 전에 시작된 요청의 결과(이전 재고 기준)는 캐시에 저장하지 않음
+// 무효화될 때마다 증가 — 무효화 전에 시작된 요청의 결과(이전 재고·이전 계정 기준)는 캐시에 저장하지 않음
 let generation = 0;
 
 const toErrorMessage = (err: unknown) => {
@@ -52,7 +53,8 @@ const request = async (category: RecipeCategory): Promise<RecipeListResult> => {
 };
 
 const isFresh = (entry: CacheEntry) => {
-  const ttl = entry.result.status === 'error' ? FAILURE_COOLDOWN_MS : SUCCESS_TTL_MS;
+  const hasRecipes = entry.result.status === 'success' && entry.result.recipes.length > 0;
+  const ttl = hasRecipes ? SUCCESS_TTL_MS : SHORT_TTL_MS;
   return Date.now() - entry.fetchedAt < ttl;
 };
 
@@ -86,7 +88,7 @@ export const recipeListCache = {
     return promise;
   },
 
-  // 냉장고 재료가 바뀌어 추천이 달라질 때 호출
+  // 냉장고 재료가 바뀌거나 계정이 바뀌어 추천이 달라질 때 호출
   invalidate: () => {
     generation += 1;
     cache.clear();
@@ -96,3 +98,12 @@ export const recipeListCache = {
 
 // 냉장고에서 재료를 등록·수정·소진·폐기하면 추천 결과가 달라지므로 무효화
 onInventoryChanged(recipeListCache.invalidate);
+
+// 추천 결과는 계정별 데이터 — 로그아웃(토큰 만료로 인한 자동 로그아웃 포함)·계정 전환 시 비움
+let lastUserId = sessionUserStore.getState()?.id ?? null;
+sessionUserStore.subscribe(() => {
+  const userId = sessionUserStore.getState()?.id ?? null;
+  if (userId === lastUserId) return;
+  lastUserId = userId;
+  recipeListCache.invalidate();
+});

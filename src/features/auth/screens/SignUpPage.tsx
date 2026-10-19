@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, Alert } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { useSignUpCredentials } from '../lib/useSignUpCredentials';
 import { Button } from '@/shared/ui/Button';
 import { InputBox } from '@/shared/ui/InputBox';

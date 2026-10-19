@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, ActivityIndicator, Pressable, ScrollView, Alert } from 'react-native';
+import { View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
 import { useIngredientUpload } from '../lib/useIngredientUpload';
 import { useIngredientsList } from '../lib/useIngredientsList';
@@ -134,7 +135,7 @@ export const FridgePage = () => {
                 onPress={handleDelete}
                 disabled={isDisposing}
                 hitSlop={8}
-                className={`ml-3 ${isDisposing ? 'opacity-50' : ''}`}
+                className={isDisposing ? 'opacity-50' : ''}
               >
                 <TrashIcon width={24} height={24} />
               </Pressable>
