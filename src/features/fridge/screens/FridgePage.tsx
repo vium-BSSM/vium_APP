@@ -132,7 +132,7 @@ export const FridgePage = () => {
           <View className="px-screen md:px-8 lg:px-16 pt-10 pb-4 max-w-[1200px] mx-auto w-full">
             <BackTitle title="식재료 관리하기" onPress={handleCancelDelete} className="mb-[27px]" />
 
-            <View className="flex-row pl-[10px] justify-between">
+            <View className="flex-row items-center pl-[10px] justify-between h-10">
               <Text className="text-neutral-700 text-text14 font-sans">
                 {selectedItems.size}개의 식재료가 선택됨
               </Text>
