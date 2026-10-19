@@ -22,6 +22,7 @@ const mapIngredientToListItem = (ingredient: IngredientApiResponse, baseDate: Da
     status,
     remainingQuantity: ingredient.remainingQuantity,
     image: getIngredientImage(ingredient.name),
+    expiresOn: ingredient.expiresOn,
   };
 };
 
