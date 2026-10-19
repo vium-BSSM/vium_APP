@@ -1,5 +1,7 @@
 export type FridgeItemStatus = '위험' | '보통' | '양호';
 
+export type FridgeSortType = 'expiry' | 'recent';
+
 export interface FridgeItem {
   id: number;
   title: string;
@@ -7,6 +9,7 @@ export interface FridgeItem {
   status: FridgeItemStatus;
   remainingQuantity: number;
   image?: string;
+  expiresOn: string; // 원본 'YYYY-MM-DD', 소비기한 순 정렬 키
 }
 
 export interface FridgeItemDetail extends FridgeItem {
