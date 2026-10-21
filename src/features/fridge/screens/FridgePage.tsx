@@ -81,41 +81,75 @@ export const FridgePage = () => {
     setIsDeleteMode(false);
   };
 
-  if (isLoading) {
-    return (
-      <View className="flex-1 bg-white">
-        <FridgeHeader
-          title={fridgeTitle}
-          onBackPress={() => router.back()}
-          onManagePress={() => setIsDeleteMode(true)}
-          sortType={sortType}
-          onSortChange={setSortType}
-        />
+  const isReady = !isLoading && !error;
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#A2CD87" />
           <Text className="mt-4 text-text14 text-text-200 font-sans">재료를 불러오는 중...</Text>
         </View>
-      </View>
-    );
-  }
+      );
+    }
 
-  if (error) {
-    return (
-      <View className="flex-1 bg-white">
-        <FridgeHeader
-          title={fridgeTitle}
-          onBackPress={() => router.back()}
-          onManagePress={() => setIsDeleteMode(true)}
-          sortType={sortType}
-          onSortChange={setSortType}
-        />
+    if (error) {
+      return (
         <View className="flex-1 items-center justify-center px-screen">
           <Text className="text-text16 text-text-100 font-semibold font-sans mb-2">오류 발생</Text>
           <Text className="text-text14 text-text-200 font-sans text-center">{error}</Text>
+          <Pressable onPress={() => refresh()} hitSlop={8} className="mt-4">
+            <Text className="text-text14 font-medium font-sans text-text-100">다시 시도</Text>
+          </Pressable>
         </View>
-      </View>
+      );
+    }
+
+    if (!isDeleteMode) {
+      return (
+        <FridgeGrid
+          items={fridgeItems}
+          onAddPress={() => router.push('/fridge/add' as any)}
+          onItemPress={(item) => router.push(`/fridge/${item.id}` as any)}
+        />
+      );
+    }
+
+    return (
+      <ScrollView
+        className="flex-1 px-screen md:px-8 lg:px-16"
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
+        <View className="flex-row flex-wrap -mx-2 max-w-[1200px] mx-auto w-full">
+          {fridgeItems.map((item) => {
+            const isSelected = selectedItems.has(item.id);
+
+            return (
+              <View key={item.id} className="mb-4 px-2 w-1/3 md:w-1/4 lg:w-1/5">
+                <Pressable onPress={() => handleToggleSelect(item.id)}>
+                  <View className="relative">
+                    <Card
+                      title={item.title}
+                      subtitle={item.subtitle}
+                      status={item.status}
+                      image={item.image}
+                      visible={true}
+                    />
+
+                    <View className="absolute top-2 right-2 z-20">
+                      <View className={`w-[17px] h-[17px] rounded-full border-2 border-neutral-400 ${
+                        isSelected ? 'bg-neutral-300' : 'bg-white'
+                      }`} />
+                    </View>
+                  </View>
+                </Pressable>
+              </View>
+            );
+          })}
+        </View>
+      </ScrollView>
     );
-  }
+  };
 
   return (
     <View className="flex-1 bg-white">
@@ -150,49 +184,10 @@ export const FridgePage = () => {
         </View>
       )}
 
-      {!isDeleteMode ? (
-        <FridgeGrid
-          items={fridgeItems}
-          onAddPress={() => router.push('/fridge/add' as any)}
-          onItemPress={(item) => router.push(`/fridge/${item.id}` as any)}
-        />
-      ) : (
-        <ScrollView
-          className="flex-1 px-screen md:px-8 lg:px-16"
-          contentContainerStyle={{ paddingBottom: 100 }}
-        >
-          <View className="flex-row flex-wrap -mx-2 max-w-[1200px] mx-auto w-full">
-            {fridgeItems.map((item) => {
-              const isSelected = selectedItems.has(item.id);
+      {renderContent()}
 
-              return (
-                <View key={item.id} className="mb-4 px-2 w-1/3 md:w-1/4 lg:w-1/5">
-                  <Pressable onPress={() => handleToggleSelect(item.id)}>
-                    <View className="relative">
-                      <Card
-                        title={item.title}
-                        subtitle={item.subtitle}
-                        status={item.status}
-                        image={item.image}
-                        visible={true}
-                      />
-
-                      <View className="absolute top-2 right-2 z-20">
-                        <View className={`w-[17px] h-[17px] rounded-full border-2 border-neutral-400 ${
-                          isSelected ? 'bg-neutral-300' : 'bg-white'
-                        }`} />
-                      </View>
-                    </View>
-                  </Pressable>
-                </View>
-              );
-            })}
-          </View>
-        </ScrollView>
-      )}
-
-      {/* AddButton - 일반 모드: 사진/영수증 등록, 삭제 모드: 냉장고 대청소 */}
-      {!isDeleteMode ? (
+      {/* AddButton - 일반 모드: 사진/영수증 등록, 삭제 모드: 냉장고 대청소 (목록을 불러온 뒤에만 표시) */}
+      {isReady && (!isDeleteMode ? (
         <AddButton
           icon="photo"
           onReceiptPress={handleReceiptPress}
@@ -205,7 +200,7 @@ export const FridgePage = () => {
           onPress={openCleanupModal}
           style={{ position: 'absolute', bottom: 120, right: 29 }}
         />
-      )}
+      ))}
 
 
       <FridgeCleanupModal
