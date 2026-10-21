@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Alert } from '@/shared/lib/alert';
-import * as ImagePicker from 'expo-image-picker';
+import { pickImageFromLibrary } from '@/shared/lib/pickImage';
 import { profileStore } from './profileStore';
 import { useMyProfile } from './useMyProfile';
 
@@ -18,22 +17,8 @@ export const useProfileEdit = () => {
   const canSave = trimmedNickname.length > 0 && isChanged;
 
   const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('권한 필요', '사진 라이브러리 접근 권한이 필요합니다.');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'images' as any,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setProfileImageUrl(result.assets[0].uri);
-    }
+    const uri = await pickImageFromLibrary({ aspect: [1, 1] });
+    if (uri) setProfileImageUrl(uri);
   };
 
   // TODO: 프로필 수정 API 연동 (현재는 앱 메모리에만 저장)

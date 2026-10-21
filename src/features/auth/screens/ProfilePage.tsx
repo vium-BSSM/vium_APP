@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
-import { Alert } from '@/shared/lib/alert';
 import { Image } from 'expo-image';
 import { useRegister } from '../lib/useRegister';
 import { Button } from '@/shared/ui/Button';
 import { router } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
+import { pickImageFromLibrary } from '@/shared/lib/pickImage';
 import CameraIcon from '@/../assets/icons/camera-icon.svg';
 import ClearIcon from '@/../assets/icons/clear-icon.svg';
 import { AppHeader, PageTitle } from '@/shared/ui';
@@ -28,22 +27,8 @@ export const ProfilePage = () => {
   };
 
   const handleImagePick = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('권한 필요', '사진 라이브러리 접근 권한이 필요합니다.');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'images' as any,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setProfileImageUri(result.assets[0].uri);
-    }
+    const uri = await pickImageFromLibrary({ aspect: [1, 1] });
+    if (uri) setProfileImageUri(uri);
   };
 
   return (
