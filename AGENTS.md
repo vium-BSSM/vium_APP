@@ -413,6 +413,19 @@ import { useState } from 'react';
 const [value, setValue] = useState('');
 ```
 
+Shared state across screens (multi-step flows, session) uses **zustand**.
+Keep the store in the feature's `lib/` and expose a hook + plain functions; subscribe with selectors.
+```tsx
+// features/fridge/lib/fridgeCleanupStore.ts
+const useCleanupStore = create<CleanupState>()((set) => ({
+  items: [],
+  reset: () => set({ items: [] }),
+}));
+
+const items = useCleanupStore((state) => state.items); // inside components
+useCleanupStore.getState().reset();                     // outside React
+```
+
 ### Form Inputs
 ```tsx
 // Email/Password Input
