@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput, Keyboard } from 'react-native';
-import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
+import { pickImageFromLibrary } from '@/shared/lib/pickImage';
 import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, Button, AppHeader } from '@/shared/ui';
 import { useIngredientRegister } from '../lib/useIngredientRegister';
+import { toDateString } from '../lib/dateUtils';
 import { StorageMethodSelect, STORAGE_METHOD_OPTIONS } from '../ui/StorageMethodSelect';
 import { useIngredientCatalogSearch } from '../lib/useIngredientCatalogSearch';
 import { CatalogSuggestions } from '../ui/CatalogSuggestions';
 import { IngredientCatalogItem } from '../types';
-import * as ImagePicker from 'expo-image-picker';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const FridgeAddPage: React.FC = () => {
@@ -26,22 +26,8 @@ export const FridgeAddPage: React.FC = () => {
   const [expiryDate, setExpiryDate] = useState(new Date());
 
   const handleImagePick = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('권한 필요', '사진 라이브러리 접근 권한이 필요합니다.');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'images' as any,
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setImageUri(result.assets[0].uri);
-    }
+    const uri = await pickImageFromLibrary({ aspect: [16, 9] });
+    if (uri) setImageUri(uri);
   };
 
   const { items: catalogItems, isLoading: isSearchingCatalog } = useIngredientCatalogSearch(name, catalogItem === null);
@@ -64,13 +50,6 @@ export const FridgeAddPage: React.FC = () => {
     setUnitLabel(label);
   };
 
-  const formatDateToString = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
   const handleRegister = async () => {
     const success = await register({
       name,
@@ -79,8 +58,8 @@ export const FridgeAddPage: React.FC = () => {
       unitId,
       storageMethodId,
       price,
-      registeredDate: formatDateToString(registeredDate),
-      expiryDate: formatDateToString(expiryDate),
+      registeredDate: toDateString(registeredDate),
+      expiryDate: toDateString(expiryDate),
       imageUri,
     });
 

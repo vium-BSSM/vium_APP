@@ -1,25 +1,16 @@
-import { FridgeItem, FridgeItemDetail, FridgeItemStatus } from '../types';
-import { IngredientApiResponse } from '../types';
-import { getDaysDifference, formatDate, formatDateWithSuffix } from './dateUtils';
+import { FridgeItem, FridgeItemDetail, IngredientApiResponse } from '../types';
+import { calculateStatus, formatDate, formatDateWithSuffix, formatDday, getDaysDifference } from './dateUtils';
 import { getIngredientImage } from './ingredientImageFixtures';
 
 // 목록 카드에 필요한 필드만 매핑 (상세 전용 포맷팅은 하지 않음)
 const mapIngredientToListItem = (ingredient: IngredientApiResponse, baseDate: Date): FridgeItem => {
   const daysLeft = getDaysDifference(ingredient.expiresOn, baseDate);
 
-  const status: FridgeItemStatus = daysLeft <= 5 ? '위험' : daysLeft <= 14 ? '보통' : '양호';
-
-  const subtitle = daysLeft < 0
-    ? `소비기한 D+${Math.abs(daysLeft)}`
-    : daysLeft === 0
-    ? '소비기한 D-Day'
-    : `소비기한 D-${daysLeft}`;
-
   return {
     id: ingredient.inventoryItemId,
     title: ingredient.name,
-    subtitle,
-    status,
+    subtitle: formatDday(daysLeft),
+    status: calculateStatus(daysLeft),
     remainingQuantity: ingredient.remainingQuantity,
     image: getIngredientImage(ingredient.name),
     expiresOn: ingredient.expiresOn,
