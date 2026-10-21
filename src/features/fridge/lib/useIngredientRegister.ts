@@ -12,6 +12,7 @@ export interface IngredientFormData {
   unitId: number;
   storageMethodId: number;
   price: string;
+  // 'YYYY-MM-DD' (dateUtils.toDateString)
   registeredDate: string;
   expiryDate: string;
   imageUri?: string;
@@ -52,8 +53,8 @@ export const useIngredientRegister = () => {
         quantity: parseFloat(formData.amount) || 1,
         unitId: formData.unitId,
         storageMethodId: formData.storageMethodId,
-        purchasedOn: formData.registeredDate ? formatDateToISO(formData.registeredDate) : undefined,
-        expiresOn: formatDateToISO(formData.expiryDate),
+        purchasedOn: formData.registeredDate || undefined,
+        expiresOn: formData.expiryDate,
         amount: formData.price ? parseInt(formData.price.replace(/,/g, ''), 10) : undefined,
       };
 
@@ -85,8 +86,4 @@ export const useIngredientRegister = () => {
     isLoading,
     error,
   };
-};
-
-const formatDateToISO = (dateString: string): string => {
-  return dateString.replace(/\//g, '-');
 };

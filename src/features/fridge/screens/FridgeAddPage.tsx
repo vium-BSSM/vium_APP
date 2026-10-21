@@ -4,6 +4,7 @@ import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
 import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, Button, AppHeader } from '@/shared/ui';
 import { useIngredientRegister } from '../lib/useIngredientRegister';
+import { toDateString } from '../lib/dateUtils';
 import { StorageMethodSelect, STORAGE_METHOD_OPTIONS } from '../ui/StorageMethodSelect';
 import { useIngredientCatalogSearch } from '../lib/useIngredientCatalogSearch';
 import { CatalogSuggestions } from '../ui/CatalogSuggestions';
@@ -64,13 +65,6 @@ export const FridgeAddPage: React.FC = () => {
     setUnitLabel(label);
   };
 
-  const formatDateToString = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
   const handleRegister = async () => {
     const success = await register({
       name,
@@ -79,8 +73,8 @@ export const FridgeAddPage: React.FC = () => {
       unitId,
       storageMethodId,
       price,
-      registeredDate: formatDateToString(registeredDate),
-      expiryDate: formatDateToString(expiryDate),
+      registeredDate: toDateString(registeredDate),
+      expiryDate: toDateString(expiryDate),
       imageUri,
     });
 
