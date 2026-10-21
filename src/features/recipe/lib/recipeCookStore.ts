@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { createStore } from '@/shared/lib/createStore';
 import { RecipeIngredient } from '../types';
 
 export interface CookUsageItem extends RecipeIngredient {
@@ -10,52 +10,40 @@ interface CookState {
   items: CookUsageItem[];
 }
 
-let state: CookState = { recipeId: null, items: [] };
-const listeners = new Set<() => void>();
-
-const emit = () => listeners.forEach((listener) => listener());
-
-const subscribe = (listener: () => void) => {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-};
-
-const getSnapshot = () => state;
+const store = createStore<CookState>({ recipeId: null, items: [] });
 
 const startCookCompletion = (recipeId: number, ingredients: RecipeIngredient[]) => {
-  state = {
+  store.setState({
     recipeId,
     items: ingredients.map((ingredient) => ({ ...ingredient, remainingPercent: 0 })),
-  };
-  emit();
+  });
 };
 
 const setRemainingPercent = (id: number, percent: number) => {
-  state = {
+  const state = store.getState();
+  store.setState({
     ...state,
     items: state.items.map((item) => (item.id === id ? { ...item, remainingPercent: percent } : item)),
-  };
-  emit();
+  });
 };
 
 const reset = () => {
-  state = { recipeId: null, items: [] };
-  emit();
+  store.setState({ recipeId: null, items: [] });
 };
 
 export const recipeCookStore = {
   startCookCompletion,
   setRemainingPercent,
   reset,
-  getState: () => state,
+  getState: store.getState,
 };
 
 export const useRecipeCookStore = () => {
-  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  const { recipeId, items } = store.useStore();
 
   return {
-    recipeId: snapshot.recipeId,
-    items: snapshot.items,
+    recipeId,
+    items,
     startCookCompletion,
     setRemainingPercent,
     reset,

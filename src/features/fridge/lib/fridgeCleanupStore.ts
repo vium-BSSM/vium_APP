@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { createStore } from '@/shared/lib/createStore';
 import { FridgeItem } from '../types';
 
 export interface CleanupItem extends FridgeItem {
@@ -9,44 +9,31 @@ interface CleanupState {
   items: CleanupItem[];
 }
 
-let state: CleanupState = { items: [] };
-const listeners = new Set<() => void>();
-
-const emit = () => listeners.forEach((listener) => listener());
-
-const subscribe = (listener: () => void) => {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-};
-
-const getSnapshot = () => state;
+const store = createStore<CleanupState>({ items: [] });
 
 const setSelectedItems = (items: FridgeItem[]) => {
-  state = {
+  store.setState({
     items: items.map((item) => ({ ...item, remainingPercent: 100 })),
-  };
-  emit();
+  });
 };
 
 const setRemainingPercent = (id: number, percent: number) => {
-  state = {
-    items: state.items.map((item) =>
+  store.setState({
+    items: store.getState().items.map((item) =>
       item.id === id ? { ...item, remainingPercent: percent } : item
     ),
-  };
-  emit();
+  });
 };
 
 const removeItems = (ids: number[]) => {
-  state = {
-    items: state.items.filter((item) => !ids.includes(item.id)),
-  };
-  emit();
+  const removedIds = new Set(ids);
+  store.setState({
+    items: store.getState().items.filter((item) => !removedIds.has(item.id)),
+  });
 };
 
 const reset = () => {
-  state = { items: [] };
-  emit();
+  store.setState({ items: [] });
 };
 
 export const fridgeCleanupStore = {
@@ -54,14 +41,14 @@ export const fridgeCleanupStore = {
   setRemainingPercent,
   removeItems,
   reset,
-  getItems: () => state.items,
+  getItems: () => store.getState().items,
 };
 
 export const useFridgeCleanupStore = () => {
-  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  const { items } = store.useStore();
 
   return {
-    items: snapshot.items,
+    items,
     setSelectedItems,
     setRemainingPercent,
     removeItems,

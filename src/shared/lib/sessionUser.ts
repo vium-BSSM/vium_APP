@@ -1,78 +1,71 @@
 import { useSyncExternalStore } from 'react';
+import { createStore } from './createStore';
 import { getItem, removeItem, setItem } from './secureStorage';
 
-/**
- * 로그인한 사용자 정보.
- * 로그인 응답으로 저장하고, 화면 진입 시 GET /api/me 응답으로 갱신합니다.
- */
+
 export interface SessionUser {
   id: number;
   email: string;
   displayName: string;
 }
 
+interface SessionState {
+  user: SessionUser | null;
+  isReady: boolean;
+}
+
 const SESSION_USER_KEY = 'sessionUser';
 
-let state: SessionUser | null = null;
+const store = createStore<SessionState>({ user: null, isReady: false });
 let hasLoaded = false;
-// 저장소에서 읽기를 마쳤는지 (읽는 중에는 로그아웃 상태로 오판하지 않도록 구분)
-let isReady = false;
-// 저장소 로딩 중에 set/clear가 먼저 일어나면 로딩 결과로 덮어쓰지 않도록 구분
 let version = 0;
-const listeners = new Set<() => void>();
-
-const emit = () => listeners.forEach((listener) => listener());
 
 const load = async () => {
   const loadVersion = version;
+  let user: SessionUser | null = null;
   try {
     const raw = await getItem(SESSION_USER_KEY);
-    if (loadVersion !== version) return;
-    state = raw ? (JSON.parse(raw) as SessionUser) : null;
+    user = raw ? (JSON.parse(raw) as SessionUser) : null;
   } catch (err) {
     console.error('Failed to load session user:', err);
   } finally {
     if (loadVersion === version) {
-      isReady = true;
-      emit();
+      store.setState({ user, isReady: true });
     }
   }
 };
 
 const subscribe = (listener: () => void) => {
-  listeners.add(listener);
+  const unsubscribe = store.subscribe(listener);
   if (!hasLoaded) {
     hasLoaded = true;
     load();
   }
-  return () => listeners.delete(listener);
+  return unsubscribe;
 };
 
-const getSnapshot = () => state;
-const getReadySnapshot = () => isReady;
+const replaceUser = (user: SessionUser | null) => {
+  version += 1;
+  hasLoaded = true;
+  store.setState({ user, isReady: true });
+};
+
+const getUser = () => store.getState().user;
+const getIsReady = () => store.getState().isReady;
 
 export const sessionUserStore = {
-  getState: () => state,
-  // 로그인·로그아웃 등 사용자 변경 감지 (React 밖에서 사용자별 데이터를 정리할 때)
+  getState: getUser,
   subscribe,
   set: async (user: SessionUser) => {
-    version += 1;
-    hasLoaded = true;
-    isReady = true;
-    state = user;
-    emit();
+    replaceUser(user);
     await setItem(SESSION_USER_KEY, JSON.stringify(user));
   },
   clear: async () => {
-    version += 1;
-    hasLoaded = true;
-    isReady = true;
-    state = null;
-    emit();
+    replaceUser(null);
     await removeItem(SESSION_USER_KEY);
   },
 };
 
-export const useSessionUser = () => useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+export const useSessionUser = () => useSyncExternalStore(subscribe, getUser, getUser);
 
-export const useIsSessionReady = () => useSyncExternalStore(subscribe, getReadySnapshot, getReadySnapshot);
+export const useIsSessionReady = () => useSyncExternalStore(subscribe, getIsReady, getIsReady);
