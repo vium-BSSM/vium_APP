@@ -26,12 +26,7 @@
       "backgroundColor": "#ffffff"
     },
     "plugins": [
-      [
-        "expo-router",
-        {
-          "root": "./app"
-        }
-      ],
+      "expo-router",
       [
         "expo-splash-screen",
         {
@@ -69,9 +64,6 @@
       "reactCompiler": true
     },
     "extra": {
-      "router": {
-        "root": "./app"
-      },
       "eas": {
         "projectId": "061074a9-2855-4362-9833-31427026dd41"
       },
