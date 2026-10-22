@@ -1,4 +1,14 @@
-import { MonthlyReport, TopWastedItemApiResponse, WasteReportApiResponse, WastedItemRank } from '../types';
+import {
+  MonthlyReport,
+  TopWastedItemApiResponse,
+  WasteCategoryStat,
+  WastePatternApiResponse,
+  WasteReportApiResponse,
+  WastedItemRank,
+} from '../types';
+
+// 차트에 들어가는 막대 수
+const MAX_WASTE_CATEGORIES = 4;
 
 const mapTopWastedItem = (item: TopWastedItemApiResponse): WastedItemRank => ({
   rank: item.rank,
@@ -21,10 +31,19 @@ export const mapWasteReport = (report: WasteReportApiResponse): MonthlyReport =>
   registeredCount: report.registeredCount,
   consumedCount: report.consumedCount,
   expiredCount: report.expiredCount,
-  // 월별 카테고리 통계는 백엔드 미제공
-  wasteCategories: [],
   topWastedItems: report.topWastedItems.map(mapTopWastedItem),
 });
+
+// 폐기 금액이 있는 카테고리만 금액 큰 순으로 상위 몇 개
+export const mapWastePatterns = (patterns: WastePatternApiResponse[]): WasteCategoryStat[] =>
+  patterns
+    .filter((pattern) => pattern.totalWastedAmount > 0)
+    .sort((a, b) => b.totalWastedAmount - a.totalWastedAmount)
+    .slice(0, MAX_WASTE_CATEGORIES)
+    .map((pattern) => ({
+      category: pattern.categoryName ?? '기타',
+      wastedAmount: pattern.totalWastedAmount,
+    }));
 
 // 폐기 기록이 없는 달은 리포트가 내려오지 않으므로 빈 리포트로 표시
 export const createEmptyReport = (year: number, month: number): MonthlyReport => ({
@@ -35,6 +54,5 @@ export const createEmptyReport = (year: number, month: number): MonthlyReport =>
   registeredCount: 0,
   consumedCount: 0,
   expiredCount: 0,
-  wasteCategories: [],
   topWastedItems: [],
 });

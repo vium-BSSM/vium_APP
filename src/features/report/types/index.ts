@@ -20,7 +20,6 @@ export interface MonthlyReport {
   registeredCount: number;
   consumedCount: number;
   expiredCount: number;
-  wasteCategories: WasteCategoryStat[];
   topWastedItems: WastedItemRank[];
 }
 
@@ -48,6 +47,23 @@ export interface WasteReportApiResponse {
   consumedCount: number;
   expiredCount: number;
   topWastedItems: TopWastedItemApiResponse[];
+}
+
+// 월 구분 없는 전체 기간 카테고리별 폐기 통계
+export interface WastePatternApiResponse {
+  categoryId: number | null;
+  categoryName: string | null; // 카테고리 없는 재료는 null
+  wasteCount: number;
+  totalWastedAmount: number;
+  wasteRatio: number;
+}
+
+export interface WastePatternsApiResponse {
+  success: boolean;
+  data: {
+    patterns: WastePatternApiResponse[];
+  } | null;
+  error: ApiError | null;
 }
 
 export interface WasteReportsApiResponse {

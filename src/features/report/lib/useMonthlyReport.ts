@@ -1,14 +1,32 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { isAxiosError } from 'axios';
-import { getWasteReports } from '../api/wasteReportsApi';
-import { createEmptyReport, getReportYearMonth, mapWasteReport } from './reportMapper';
+import { getWastePatterns, getWasteReports } from '../api/wasteReportsApi';
+import {
+  createEmptyReport,
+  getReportYearMonth,
+  mapWastePatterns,
+  mapWasteReport,
+} from './reportMapper';
 import { getSelectableMonths } from './reportMonths';
-import { WasteReportApiResponse } from '../types';
+import { WasteCategoryStat, WasteReportApiResponse } from '../types';
+
+// 카테고리 통계는 부가 정보라 실패해도 리포트는 보여주고 차트만 숨김
+const loadWasteCategories = async (): Promise<WasteCategoryStat[]> => {
+  try {
+    const response = await getWastePatterns();
+    return response.success && response.data ? mapWastePatterns(response.data.patterns) : [];
+  } catch (err) {
+    console.error('Failed to load waste patterns:', err);
+    return [];
+  }
+};
 
 // 전체 월 리포트를 한 번에 받아두고, 월 전환은 요청 없이 그중에서 고름
 export const useMonthlyReport = (year: number, month: number) => {
   const [reports, setReports] = useState<WasteReportApiResponse[]>([]);
+  // 월 구분 없는 전체 기간 통계 (월별 카테고리 통계는 백엔드 미제공)
+  const [wasteCategories, setWasteCategories] = useState<WasteCategoryStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const hasLoaded = useRef(false);
@@ -18,10 +36,11 @@ export const useMonthlyReport = (year: number, month: number) => {
       // 이미 받은 리포트가 있으면 로딩 화면 없이 갱신 (탭 복귀 시 깜빡임 방지)
       if (!hasLoaded.current) setIsLoading(true);
       setError(null);
-      const response = await getWasteReports();
+      const [response, categories] = await Promise.all([getWasteReports(), loadWasteCategories()]);
 
       if (response.success && response.data) {
         setReports(response.data.reports);
+        setWasteCategories(categories);
         hasLoaded.current = true;
       } else {
         setError(response.error?.message || '리포트를 불러오지 못했어요.');
@@ -60,6 +79,7 @@ export const useMonthlyReport = (year: number, month: number) => {
 
   return {
     report,
+    wasteCategories,
     selectableMonths,
     isLoading,
     error: hasLoaded.current ? null : error,

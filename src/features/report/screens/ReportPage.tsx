@@ -5,7 +5,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useCountUp } from '@/shared/lib/hooks/useCountUp';
 import ShareIcon from '@/../assets/icons/share-icon.svg';
 import { useMonthlyReport } from '../lib/useMonthlyReport';
-import { formatCount, formatWon } from '../lib/formatters';
+import { formatCount, formatWon, withObjectParticle } from '../lib/formatters';
 import { YearMonth, getCurrentYearMonth } from '../lib/reportMonths';
 import { useReportShare } from '../lib/useReportShare';
 import { ReportMonthPicker } from '../ui/ReportMonthPicker';
@@ -17,7 +17,7 @@ const BAR_MIN_HEIGHT = 11;
 export const ReportPage: React.FC = () => {
   const router = useRouter();
   const [selectedMonth, setSelectedMonth] = useState<YearMonth>(getCurrentYearMonth);
-  const { report, selectableMonths, isLoading, error, refresh } = useMonthlyReport(
+  const { report, wasteCategories, selectableMonths, isLoading, error, refresh } = useMonthlyReport(
     selectedMonth.year,
     selectedMonth.month
   );
@@ -28,8 +28,8 @@ export const ReportPage: React.FC = () => {
   const displayedSpent = useCountUp(report.totalSpent ?? 0, 900, animationKey);
   const displayedWasted = useCountUp(report.totalWasted, 900, animationKey);
 
-  const maxWasted = Math.max(...report.wasteCategories.map((c) => c.wastedAmount), 1);
-  const mostWasted = report.wasteCategories.find((c) => c.wastedAmount === maxWasted);
+  const maxWasted = Math.max(...wasteCategories.map((c) => c.wastedAmount), 1);
+  const mostWasted = wasteCategories.find((c) => c.wastedAmount === maxWasted);
   const hasSpent = report.totalSpent !== null;
 
   const summaryRows = [
@@ -109,14 +109,17 @@ export const ReportPage: React.FC = () => {
               </View>
 
               <View className="px-[7px] gap-[15px]">
-                {report.wasteCategories.length > 0 && (
+                {wasteCategories.length > 0 && mostWasted && (
                   <View className="gap-4">
                     <Text className="text-text18 font-medium font-sans text-text-100">
-                      <Text className="text-primary-700">{mostWasted?.category}</Text>를{'\n'}가장
-                      많이 버렸어요!
+                      지금까지{' '}
+                      <Text className="text-primary-700">
+                        {withObjectParticle(mostWasted.category)}
+                      </Text>
+                      {'\n'}가장 많이 버렸어요!
                     </Text>
                     <View className="flex-row items-end justify-center gap-6 p-5">
-                      {report.wasteCategories.map((category, index) => (
+                      {wasteCategories.map((category, index) => (
                         <WasteBar
                           key={category.category}
                           label={category.category}
