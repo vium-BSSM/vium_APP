@@ -17,16 +17,20 @@ const BAR_MIN_HEIGHT = 11;
 export const ReportPage: React.FC = () => {
   const router = useRouter();
   const [selectedMonth, setSelectedMonth] = useState<YearMonth>(getCurrentYearMonth);
-  const { report } = useMonthlyReport(selectedMonth.year, selectedMonth.month);
+  const { report, isLoading, error, refresh } = useMonthlyReport(
+    selectedMonth.year,
+    selectedMonth.month
+  );
 
   const animationKey = `${report.year}-${report.month}`;
   const captureTargetRef = useRef<View>(null);
   const { isSharing, shareAsImage } = useReportShare(captureTargetRef, animationKey);
-  const displayedSpent = useCountUp(report.totalSpent, 900, animationKey);
+  const displayedSpent = useCountUp(report.totalSpent ?? 0, 900, animationKey);
   const displayedWasted = useCountUp(report.totalWasted, 900, animationKey);
 
   const maxWasted = Math.max(...report.wasteCategories.map((c) => c.wastedAmount), 1);
   const mostWasted = report.wasteCategories.find((c) => c.wastedAmount === maxWasted);
+  const hasSpent = report.totalSpent !== null;
 
   const summaryRows = [
     { label: '등록한 재료', value: report.registeredCount },
@@ -45,91 +49,120 @@ export const ReportPage: React.FC = () => {
         <View className="w-full max-w-[480px] items-center gap-[50px]">
           <ReportMonthPicker value={selectedMonth} onChange={setSelectedMonth} />
 
-          <View className="w-full gap-[54px]">
-            <View className="gap-4">
-              <Text className="text-text18 font-medium font-sans text-text-100">이번달 식비</Text>
-              <View className="bg-primary-300 rounded-lg p-5 gap-2">
-                <Text className="text-title font-medium font-sans text-text-100 tabular-nums">
-                  총 {formatWon(displayedSpent)}원
-                </Text>
-                <Text className="text-text12 font-sans text-text-50 tabular-nums">
-                  그중에 총 {formatWon(displayedWasted)}원치를 폐기했어요.
-                </Text>
-              </View>
+          {isLoading ? (
+            <View className="w-full items-center py-20">
+              <ActivityIndicator size="large" color="#A2CD87" />
+              <Text className="mt-4 text-text14 text-text-200 font-sans">
+                리포트를 불러오는 중...
+              </Text>
             </View>
-
-            <View className="px-[14px] gap-8">
-              <View className="px-[5px] gap-3">
-                {summaryRows.map((row) => (
-                  <View key={row.label} className="flex-row items-center justify-between">
-                    <Text className="text-text14 font-medium font-sans text-text-300">
-                      {row.label}
-                    </Text>
-                    <Text className="text-text15 font-medium font-sans text-text-100">
-                      {formatCount(row.value)}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-              <View className="h-px bg-neutral-100" />
+          ) : error ? (
+            <View className="w-full items-center py-20">
+              <Text className="text-text16 text-text-100 font-semibold font-sans mb-2">
+                오류 발생
+              </Text>
+              <Text className="text-text14 text-text-200 font-sans text-center">{error}</Text>
+              <Pressable onPress={() => refresh()} hitSlop={8} className="mt-4">
+                <Text className="text-text14 font-medium font-sans text-text-100">다시 시도</Text>
+              </Pressable>
             </View>
-
-            <View className="px-[7px] gap-[15px]">
+          ) : (
+            <View className="w-full gap-[54px]">
               <View className="gap-4">
                 <Text className="text-text18 font-medium font-sans text-text-100">
-                  <Text className="text-primary-700">{mostWasted?.category}</Text>
-                  를{'\n'}가장 많이 버렸어요!
+                  {hasSpent ? '이번달 식비' : '이번달 폐기 금액'}
                 </Text>
-                <View className="flex-row items-end justify-center gap-6 p-5">
-                  {report.wasteCategories.map((category, index) => (
-                    <WasteBar
-                      key={category.category}
-                      label={category.category}
-                      height={Math.max(
-                        BAR_MIN_HEIGHT,
-                        Math.round((category.wastedAmount / maxWasted) * BAR_MAX_HEIGHT)
-                      )}
-                      isHighlighted={category === mostWasted}
-                      index={index}
-                      animationKey={animationKey}
-                    />
-                  ))}
+                {/* 식비 합계가 없으면(백엔드 미제공) 폐기 금액을 대표 값으로 표시 */}
+                <View className="bg-primary-300 rounded-lg p-5 gap-2">
+                  <Text className="text-title font-medium font-sans text-text-100 tabular-nums">
+                    총 {formatWon(hasSpent ? displayedSpent : displayedWasted)}원
+                  </Text>
+                  <Text className="text-text12 font-sans text-text-50 tabular-nums">
+                    {hasSpent
+                      ? `그중에 총 ${formatWon(displayedWasted)}원치를 폐기했어요.`
+                      : report.totalWasted > 0
+                        ? '소비기한을 놓쳐 버린 재료 금액이에요.'
+                        : '이번달에는 버린 재료가 없어요.'}
+                  </Text>
                 </View>
               </View>
 
-              <View key={animationKey} className="px-[7px] gap-[6px]">
-                {report.topWastedItems.map((item, index) => (
-                  <Animated.View
-                    key={item.rank}
-                    entering={FadeInDown.delay(400 + index * 100).duration(400)}
-                  >
-                    {index > 0 && <View className="h-px bg-neutral-100 mb-[6px]" />}
-                    <View className="flex-row items-end justify-between p-2.5 rounded-lg bg-white">
-                      <View className="flex-row items-center gap-4">
-                        <Text className="text-subtitle font-bold font-sans text-text-300">
-                          {item.rank}
-                        </Text>
-                        <View className="gap-1">
-                          <Text className="text-text15 font-sans text-text-100">{item.name}</Text>
-                          <Text className="text-text14 font-medium font-sans text-text-100">
-                            -{formatWon(item.lossAmount)}
+              <View className="px-[14px] gap-8">
+                <View className="px-[5px] gap-3">
+                  {summaryRows.map((row) => (
+                    <View key={row.label} className="flex-row items-center justify-between">
+                      <Text className="text-text14 font-medium font-sans text-text-300">
+                        {row.label}
+                      </Text>
+                      <Text className="text-text15 font-medium font-sans text-text-100">
+                        {formatCount(row.value)}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+                <View className="h-px bg-neutral-100" />
+              </View>
+
+              <View className="px-[7px] gap-[15px]">
+                {report.wasteCategories.length > 0 && (
+                  <View className="gap-4">
+                    <Text className="text-text18 font-medium font-sans text-text-100">
+                      <Text className="text-primary-700">{mostWasted?.category}</Text>를{'\n'}가장
+                      많이 버렸어요!
+                    </Text>
+                    <View className="flex-row items-end justify-center gap-6 p-5">
+                      {report.wasteCategories.map((category, index) => (
+                        <WasteBar
+                          key={category.category}
+                          label={category.category}
+                          height={Math.max(
+                            BAR_MIN_HEIGHT,
+                            Math.round((category.wastedAmount / maxWasted) * BAR_MAX_HEIGHT)
+                          )}
+                          isHighlighted={category === mostWasted}
+                          index={index}
+                          animationKey={animationKey}
+                        />
+                      ))}
+                    </View>
+                  </View>
+                )}
+
+                <View key={animationKey} className="px-[7px] gap-[6px]">
+                  {report.topWastedItems.map((item, index) => (
+                    <Animated.View
+                      key={item.rank}
+                      entering={FadeInDown.delay(400 + index * 100).duration(400)}
+                    >
+                      {index > 0 && <View className="h-px bg-neutral-100 mb-[6px]" />}
+                      <View className="flex-row items-end justify-between p-2.5 rounded-lg bg-white">
+                        <View className="flex-row items-center gap-4">
+                          <Text className="text-subtitle font-bold font-sans text-text-300">
+                            {item.rank}
+                          </Text>
+                          <View className="gap-1">
+                            <Text className="text-text15 font-sans text-text-100">{item.name}</Text>
+                            <Text className="text-text14 font-medium font-sans text-text-100">
+                              -{formatWon(item.lossAmount)}
+                            </Text>
+                          </View>
+                        </View>
+                        <View className="items-end gap-1">
+                          <Text className="text-text12 font-sans text-text-200">
+                            구매 :{' '}
+                            {item.purchaseAmount === null ? '-' : formatWon(item.purchaseAmount)}
+                          </Text>
+                          <Text className="text-text12 font-sans text-text-200">
+                            폐기 : {item.wastePercent === null ? '-' : `${item.wastePercent}%`}
                           </Text>
                         </View>
                       </View>
-                      <View className="items-end gap-1">
-                        <Text className="text-text12 font-sans text-text-200">
-                          구매 : {formatWon(item.purchaseAmount)}
-                        </Text>
-                        <Text className="text-text12 font-sans text-text-200">
-                          폐기 : {item.wastePercent}%
-                        </Text>
-                      </View>
-                    </View>
-                  </Animated.View>
-                ))}
+                    </Animated.View>
+                  ))}
+                </View>
               </View>
             </View>
-          </View>
+          )}
         </View>
       </View>
 
