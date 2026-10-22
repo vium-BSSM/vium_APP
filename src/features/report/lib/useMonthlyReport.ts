@@ -3,6 +3,7 @@ import { useFocusEffect } from 'expo-router';
 import { isAxiosError } from 'axios';
 import { getWasteReports } from '../api/wasteReportsApi';
 import { createEmptyReport, getReportYearMonth, mapWasteReport } from './reportMapper';
+import { getSelectableMonths } from './reportMonths';
 import { WasteReportApiResponse } from '../types';
 
 // 전체 월 리포트를 한 번에 받아두고, 월 전환은 요청 없이 그중에서 고름
@@ -52,8 +53,14 @@ export const useMonthlyReport = (year: number, month: number) => {
     return found ? mapWasteReport(found) : createEmptyReport(year, month);
   }, [reports, year, month]);
 
+  const selectableMonths = useMemo(
+    () => getSelectableMonths(reports.map(getReportYearMonth)),
+    [reports]
+  );
+
   return {
     report,
+    selectableMonths,
     isLoading,
     error: hasLoaded.current ? null : error,
     refresh: loadReports,

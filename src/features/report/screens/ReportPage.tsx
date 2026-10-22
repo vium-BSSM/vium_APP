@@ -17,7 +17,7 @@ const BAR_MIN_HEIGHT = 11;
 export const ReportPage: React.FC = () => {
   const router = useRouter();
   const [selectedMonth, setSelectedMonth] = useState<YearMonth>(getCurrentYearMonth);
-  const { report, isLoading, error, refresh } = useMonthlyReport(
+  const { report, selectableMonths, isLoading, error, refresh } = useMonthlyReport(
     selectedMonth.year,
     selectedMonth.month
   );
@@ -39,25 +39,30 @@ export const ReportPage: React.FC = () => {
   ];
 
   return (
-    <ScrollView className="flex-1 bg-white" contentContainerStyle={{ paddingBottom: 140 }}>
+    <ScrollView className="flex-1 bg-white" contentContainerStyle={{ flexGrow: 1, paddingBottom: 140 }}>
       {/* 공유 시 이미지로 캡처되는 영역 (하단 버튼·네비게이션 제외) */}
       <View
         ref={captureTargetRef}
         collapsable={false}
-        className="bg-white px-screen md:px-10 lg:px-20 pt-8 pb-8 mt-[43px] items-center"
+        className="flex-1 bg-white px-screen md:px-10 lg:px-20 pt-8 pb-8 mt-[43px] items-center"
       >
-        <View className="w-full max-w-[480px] items-center gap-[50px]">
-          <ReportMonthPicker value={selectedMonth} onChange={setSelectedMonth} />
+        <View className="flex-1 w-full max-w-[480px] items-center gap-[50px]">
+          <ReportMonthPicker
+            value={selectedMonth}
+            onChange={setSelectedMonth}
+            selectableMonths={selectableMonths}
+            disabled={isLoading || !!error}
+          />
 
           {isLoading ? (
-            <View className="w-full items-center py-20">
+            <View className="w-full flex-1 items-center justify-center">
               <ActivityIndicator size="large" color="#A2CD87" />
               <Text className="mt-4 text-text14 text-text-200 font-sans">
                 리포트를 불러오는 중...
               </Text>
             </View>
           ) : error ? (
-            <View className="w-full items-center py-20">
+            <View className="w-full flex-1 items-center justify-center">
               <Text className="text-text16 text-text-100 font-semibold font-sans mb-2">
                 오류 발생
               </Text>
