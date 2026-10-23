@@ -3,12 +3,11 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Alert } from '@/shared/lib/alert';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import ChevronIcon from '@/../assets/icons/chevron-left-icon.svg';
 import { useLogout } from '@/features/auth';
 import { profileStore } from '../lib/profileStore';
 import { useMyProfile } from '../lib/useMyProfile';
 import { MyPageMenuKey } from '../types';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, MenuList } from '@/shared/ui';
 
 const MENU_ITEMS: { key: MyPageMenuKey; label: string }[] = [
   { key: 'logout', label: '로그아웃' },
@@ -60,10 +59,10 @@ export const MyPage: React.FC = () => {
       <AppHeader />
 
       <View className="items-center px-screen pt-[55px]">
-        <View className="w-full max-w-[271px] items-center gap-[78px]">
+        <View className="w-full max-w-[338px] items-center gap-[78px]">
           <View className="w-full max-w-[256px] items-center gap-[26px]">
             <View className="items-center gap-6">
-              <View className="w-[117px] h-[117px] rounded-full border-[3px] border-secondary-400 overflow-hidden bg-neutral-50">
+              <View className="w-[117px] h-[117px] rounded-full border-[3px] border-status-danger overflow-hidden bg-neutral-50">
                 {profile.profileImageUrl && (
                   <Image
                     source={{ uri: profile.profileImageUrl }}
@@ -73,10 +72,10 @@ export const MyPage: React.FC = () => {
                 )}
               </View>
               <View className="items-center gap-2">
-                <Text className="text-text16 font-medium font-sans text-text-100 text-center">
+                <Text className="text-text16 font-sans text-black text-center">
                   {profile.nickname}
                 </Text>
-                <Text className="text-text15 font-light font-sans text-neutral-300 text-center">
+                <Text className="text-text14 font-sans text-neutral-300 text-center">
                   @{profile.handle}
                 </Text>
               </View>
@@ -86,24 +85,13 @@ export const MyPage: React.FC = () => {
               onPress={handleEditProfile}
               className="w-full bg-neutral-50 rounded-2xl p-[10px] items-center justify-center"
             >
-              <Text className="text-text15 font-normal font-sans text-text-100">프로필 수정</Text>
+              <Text className="text-text14 font-sans text-black">프로필 수정</Text>
             </Pressable>
           </View>
 
-          <View className="w-full gap-[33px]">
-            {MENU_ITEMS.map((item) => (
-              <Pressable
-                key={item.key}
-                onPress={() => handleMenuPress(item.key)}
-                className="flex-row items-center justify-between"
-              >
-                <Text className="text-text15 font-normal font-sans text-text-100">{item.label}</Text>
-                <View className="rotate-180">
-                  <ChevronIcon width={16} height={16} color="#242529" />
-                </View>
-              </Pressable>
-            ))}
-          </View>
+          <MenuList
+            items={MENU_ITEMS.map((item) => ({ label: item.label, onPress: () => handleMenuPress(item.key) }))}
+          />
         </View>
       </View>
     </ScrollView>

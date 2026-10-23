@@ -1,14 +1,13 @@
 import React, { useMemo } from 'react';
 import { View, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Banner, HomeHeader } from '@/shared/ui';
+import { Banner, HomeHeader, MenuList } from '@/shared/ui';
 import { useFridgeCleanup, FridgeCleanupModal, useExpiringIngredients } from '@/features/fridge';
 import { useRecipesList } from '@/features/recipe';
 import { useMyProfile } from '@/features/account';
 import { SectionTitle } from '../ui/SectionTitle';
 import { ExpiringIngredientList } from '../ui/ExpiringIngredientList';
 import { RecommendRecipeCard } from '../ui/RecommendRecipeCard';
-import { HomeMenuList } from '../ui/HomeMenuList';
 
 const RECIPE_LIMIT = 5;
 
@@ -75,7 +74,7 @@ export const MainPage = () => {
             </View>
           </View>
 
-          <HomeMenuList items={menuItems} />
+          <MenuList items={menuItems} />
         </View>
       </ScrollView>
 

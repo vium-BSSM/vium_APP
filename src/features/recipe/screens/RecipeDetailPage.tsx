@@ -92,7 +92,7 @@ export const RecipeDetailPage: React.FC = () => {
               <Text className="text-heading-md font-medium font-sans text-text-100">
                 조리방법을 알려드릴게요!
               </Text>
-              <View className="gap-5">
+              <View className="gap-6">
                 {recipe.steps.map((step) => (
                   <RecipeStepCard key={step.step} step={step} />
                 ))}

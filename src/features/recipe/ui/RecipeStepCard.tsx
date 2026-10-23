@@ -14,7 +14,7 @@ export const RecipeStepCard: React.FC<RecipeStepCardProps> = ({ step }) => {
         <FireIcon width={16} height={16} color="#B2E194" />
         <Text className="text-text16 font-sans text-text-100">Step {step.step}</Text>
       </View>
-      <Text className="text-text14 font-sans text-text-100">{step.description}</Text>
+      <Text className="text-text16 font-sans text-text-100">{step.description}</Text>
     </View>
   );
 };

@@ -20,3 +20,4 @@ export type { HomeTab } from './HomeHeader';
 export { BackTitle } from './BackTitle';
 export { ComingSoon } from './ComingSoon';
 export { PageTitle } from './PageTitle';
+export { MenuList } from './MenuList';
