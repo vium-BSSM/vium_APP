@@ -41,7 +41,7 @@ export const ExpiringIngredientList: React.FC<ExpiringIngredientListProps> = ({
                 className="bg-white p-2.5 flex-row items-center justify-between active:bg-neutral-10"
               >
                 <View className="gap-1">
-                  <Text className="text-text-100 text-text14 font-sans">{ingredient.name}</Text>
+                  <Text className="text-text-100 text-text15 font-sans">{ingredient.name}</Text>
                   <Text className="text-text-200 text-text12 font-sans">{ingredient.untilLabel}</Text>
                 </View>
                 <View className={`px-2.5 py-[5px] rounded ${BADGE_COLORS[ingredient.status]}`}>

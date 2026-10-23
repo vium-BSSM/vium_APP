@@ -40,7 +40,7 @@ export const RecommendRecipeCard: React.FC<RecommendRecipeCardProps> = ({
                   className={`px-1 py-0.5 rounded-lg ${isExpiring ? 'bg-primary-200' : 'bg-neutral-50'}`}
                 >
                   <Text
-                    className={`text-text8 font-sans ${isExpiring ? 'text-primary-700' : 'text-text-200'}`}
+                    className={`text-text10 font-sans ${isExpiring ? 'text-primary-700' : 'text-text-200'}`}
                     numberOfLines={1}
                   >
                     {name}
@@ -50,7 +50,7 @@ export const RecommendRecipeCard: React.FC<RecommendRecipeCardProps> = ({
             })}
           </View>
         </View>
-        <Text className="text-text-200 text-text8 font-sans">보유 재료 {ingredientNames.length}개 사용</Text>
+        <Text className="text-text-200 text-text10 font-sans">보유 재료 {ingredientNames.length}개 사용</Text>
       </View>
     </Pressable>
   );
