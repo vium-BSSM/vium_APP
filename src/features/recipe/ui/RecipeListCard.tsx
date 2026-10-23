@@ -12,12 +12,12 @@ export const RecipeListCard: React.FC<RecipeListCardProps> = ({ recipe, onPress 
   return (
     <Pressable
       onPress={onPress}
-      className="w-full bg-white border-2 border-neutral-100 rounded-lg p-5 gap-[34px]"
+      className="w-full bg-primary-200 rounded-lg p-5 gap-[34px]"
     >
       <View className="flex-row items-center justify-between w-full">
-        <Text className="text-subtitle font-medium font-sans text-text-100">{recipe.title}</Text>
+        <Text className="text-heading-md font-medium font-sans text-text-100">{recipe.title}</Text>
         <View className="w-6 h-6 items-center justify-center rotate-180">
-          <BackIcon width={24} height={24} color="#242529" />
+          <BackIcon width={24} height={24} color="#A1A1A1" />
         </View>
       </View>
 

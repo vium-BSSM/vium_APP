@@ -21,6 +21,8 @@ export interface RecipeListItem {
   title: string;
   cookTimeMinutes: number;
   tags: string[];
+  // 레시피에 쓰이는 내 보유 재료 이름 (홈 추천 카드의 재료 칩)
+  ingredientNames: string[];
   category: RecipeCategory;
   image?: string;
 }

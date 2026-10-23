@@ -115,7 +115,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                     취소
                   </Text>
                 </Pressable>
-                <Text className="text-subtitle font-normal text-text-100 font-sans">
+                <Text className="text-heading-md font-normal text-text-100 font-sans">
                   날짜 선택
                 </Text>
                 <Pressable onPress={handleConfirm}>

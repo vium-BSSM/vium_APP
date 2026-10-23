@@ -88,7 +88,7 @@ const FridgeEditForm: React.FC<{ ingredient: IngredientApiResponse }> = ({ ingre
 
             <View className="gap-[5px]">
               <TextInput
-                className={`text-title font-medium font-sans ${isCatalogItem ? 'text-neutral-300' : 'text-text-100'}`}
+                className={`text-heading-lg font-medium font-sans ${isCatalogItem ? 'text-neutral-300' : 'text-text-100'}`}
                 style={{ fontFamily: 'Paperlogy' }}
                 value={name}
                 onChangeText={setName}

@@ -1,116 +1,82 @@
-import React from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Banner, AppHeader } from '@/shared/ui';
-import { useFridgeCleanup, FridgeCleanupModal } from '@/features/fridge';
+import { Banner, HomeHeader, MenuList } from '@/shared/ui';
+import { useFridgeCleanup, FridgeCleanupModal, useExpiringIngredients } from '@/features/fridge';
 import { useRecipesList } from '@/features/recipe';
-import ReportIcon from '@/../assets/icons/report-icon.svg';
-import CartIcon from '@/../assets/icons/cart-icon.svg';
-import BrushIcon from '@/../assets/icons/brush-icon.svg';
-import RefrigeratorIcon from '@/../assets/icons/refrigerator-icon.svg';
-import ChefIcon from '@/../assets/icons/chef-icon.svg';
-import BellIcon from '@/../assets/icons/bell-icon.svg';
-import ChevronRightIcon from '@/../assets/icons/chevron-right-icon.svg';
+import { useMyProfile } from '@/features/account';
+import { SectionTitle } from '../ui/SectionTitle';
+import { ExpiringIngredientList } from '../ui/ExpiringIngredientList';
+import { RecommendRecipeCard } from '../ui/RecommendRecipeCard';
+
+const RECIPE_LIMIT = 5;
 
 export const MainPage = () => {
   const router = useRouter();
   const { isCleanupModalVisible, openCleanupModal, closeCleanupModal } = useFridgeCleanup();
+  const { profile } = useMyProfile();
+  const { ingredients: expiringIngredients } = useExpiringIngredients();
+  const { recipes: allRecipes } = useRecipesList();
+  const recipes = allRecipes.slice(0, RECIPE_LIMIT);
+  const expiringNames = useMemo(
+    () => new Set(expiringIngredients.map((ingredient) => ingredient.name)),
+    [expiringIngredients]
+  );
 
   const handleBannerPress = (variant: 'tomato' | 'potato' | 'onion') => {
-    if (variant === 'tomato') router.push('/recipe' as any);
-    if (variant === 'potato') router.push('/report' as any);
-    if (variant === 'onion') router.push('/shopping' as any);
+    if (variant === 'tomato') router.navigate('/recipe' as any);
+    if (variant === 'potato') router.navigate('/report' as any);
+    if (variant === 'onion') router.navigate('/shopping' as any);
   };
 
   const menuItems = [
-    { icon: ReportIcon, label: '식재료 리포트', onPress: () => router.push('/report' as any) },
-    { icon: CartIcon, label: '장보기 도우미', onPress: () => router.push('/shopping' as any) },
-    { icon: BrushIcon, label: '냉장고 대청소', onPress: openCleanupModal },
-    { icon: RefrigeratorIcon, label: 'My 냉장고', onPress: () => router.push('/fridge') },
-    { icon: ChefIcon, label: '레시피', onPress: () => router.push('/recipe') },
+    { label: '장보기 도우미', onPress: () => router.navigate('/shopping' as any) },
+    { label: '식재료 리포트', onPress: () => router.navigate('/report' as any) },
+    { label: '냉장고 대청소', onPress: openCleanupModal },
+    { label: '레시피', onPress: () => router.navigate('/recipe' as any) },
   ];
 
-  const { recipes: allRecipes } = useRecipesList();
-  const recipes = allRecipes.slice(0, 5);
   return (
     <View className="flex-1 bg-white">
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 140 }}>
-        <AppHeader
-          style={{ marginBottom: 36 }}
-          right={
-            // TODO: 알림 페이지 연결
-            <Pressable className="w-[35px] h-[35px]">
-              <BellIcon width={35} height={35} />
-            </Pressable>
-          }
-        />
+      <View className="mb-[42px]">
+        <HomeHeader activeTab="recommend" profileImageUrl={profile.profileImageUrl} />
+      </View>
 
-        <View className="px-screen md:px-10 lg:px-20 max-w-[1200px] w-full mx-auto gap-[50px]">
-          <View className="items-center gap-[53px]">
+      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 140 }}>
+        <View className="px-screen md:px-10 lg:px-20 max-w-[1200px] w-full mx-auto gap-16">
+          <View className="gap-12">
             <Banner onPress={handleBannerPress} />
 
-            <View className="w-full items-center gap-10">
-              <View className="w-full flex-row flex-wrap gap-y-8">
-                {menuItems.map((item) => (
-                  <Pressable
-                    key={item.label}
-                    className="w-1/3 items-center gap-3"
-                    onPress={item.onPress}
-                  >
-                    <item.icon width={44} height={44} />
-                    <Text className="text-text14 font-sans text-text-100 text-center">
-                      {item.label}
-                    </Text>
-                  </Pressable>
+            <ExpiringIngredientList
+              ingredients={expiringIngredients}
+              onTitlePress={() => router.navigate('/fridge' as any)}
+              onItemPress={(id) => router.push(`/fridge/${id}` as any)}
+            />
+
+            <View className="gap-[22px]">
+              <SectionTitle title="냉장고 털이 레시피" onPress={() => router.navigate('/recipe' as any)} />
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap: 13 }}
+              >
+                {recipes.map((recipe) => (
+                  <RecommendRecipeCard
+                    key={recipe.id}
+                    title={recipe.title}
+                    image={recipe.image}
+                    ingredientNames={recipe.ingredientNames}
+                    expiringNames={expiringNames}
+                    onPress={() => router.push(`/recipe/${recipe.id}` as any)}
+                  />
                 ))}
-              </View>
-              <View className="w-full h-px bg-neutral-100" />
+              </ScrollView>
             </View>
           </View>
 
-          <View className="gap-4">
-            <Pressable
-              className="flex-row items-center justify-between"
-              onPress={() => router.push('/recipe')}
-            >
-              <Text className="text-text18 font-medium font-sans text-neutral-800">
-                오늘의 냉털 레시피
-              </Text>
-              <ChevronRightIcon width={9.3} height={14.8} color="#242529" />
-            </Pressable>
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ gap: 16 }}
-            >
-              {recipes.map((recipe) => (
-                <Pressable
-                  key={recipe.id}
-                  className="bg-white rounded-lg border border-neutral-100 p-4 w-[240px] h-[140px] justify-between"
-                  onPress={() => router.push(`/recipe/${recipe.id}` as any)}
-                >
-                  <Text numberOfLines={1} className="text-text18 font-semibold font-sans text-primary-800">
-                    {recipe.title}
-                  </Text>
-                  <View className="gap-[7px]">
-                    <Text className="text-text14 font-sans text-text-200">
-                      조리시간{' '}
-                      <Text className="text-text15 font-medium font-sans text-neutral-500">
-                        {recipe.cookTimeMinutes}분
-                      </Text>
-                    </Text>
-                    <Text numberOfLines={1} className="text-text12 font-sans text-neutral-400">
-                      {recipe.tags.join(' ')}
-                    </Text>
-                  </View>
-                </Pressable>
-              ))}
-            </ScrollView>
-          </View>
+          <MenuList items={menuItems} />
         </View>
       </ScrollView>
-
 
       <FridgeCleanupModal
         visible={isCleanupModalVisible}

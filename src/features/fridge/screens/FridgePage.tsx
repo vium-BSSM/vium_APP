@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
@@ -6,12 +6,13 @@ import { useIngredientUpload } from '../lib/useIngredientUpload';
 import { useIngredientsList } from '../lib/useIngredientsList';
 import { useIngredientDispose } from '../lib/useIngredientDispose';
 import { useFridgeCleanup } from '../lib/useFridgeCleanup';
-import { FridgeHeader } from '../ui/FridgeHeader';
+import { formatExpiringTitle, pickExpiringIngredients } from '../lib/expiringIngredients';
+import { FridgeHeader, FridgeFilterBar, FridgeSelectionBar } from '../ui/FridgeHeader';
 import { FridgeGrid } from '../ui/FridgeGrid';
 import { FridgeCleanupModal } from '../ui/FridgeCleanupModal';
+import { FridgeStorageFilter } from '../types';
 import { useMyProfile } from '@/features/account';
-import { AddButton, Card, AppHeader, BackTitle } from '@/shared/ui';
-import TrashIcon from '@/../assets/icons/trash-icon.svg';
+import { AddButton, Card, HomeHeader } from '@/shared/ui';
 
 export const FridgePage = () => {
   const router = useRouter();
@@ -22,7 +23,9 @@ export const FridgePage = () => {
   const { disposeItems, isDisposing } = useIngredientDispose();
   const { isCleanupModalVisible, openCleanupModal, closeCleanupModal } = useFridgeCleanup();
   const { profile } = useMyProfile();
-  const fridgeTitle = profile.nickname ? `${profile.nickname}의 식재료` : '나의 식재료';
+  // TODO: 목록 API(GET /api/me/ingredients)에 storageMethodId가 없어 필터는 선택 표시만 함 — 응답에 추가되면 fridgeItems를 걸러서 표시
+  const [storageFilter, setStorageFilter] = useState<FridgeStorageFilter>('all');
+  const expiringTitle = useMemo(() => formatExpiringTitle(pickExpiringIngredients(fridgeItems)), [fridgeItems]);
 
   const handleReceiptPress = () => {
     showIngredientUploadOptions((uri) => {
@@ -76,6 +79,8 @@ export const FridgePage = () => {
     );
   };
 
+  const handleBannerPress = () => router.navigate('/recipe' as any);
+
   const handleCancelDelete = () => {
     setSelectedItems(new Set());
     setIsDeleteMode(false);
@@ -109,6 +114,16 @@ export const FridgePage = () => {
       return (
         <FridgeGrid
           items={fridgeItems}
+          header={
+            <FridgeHeader expiringTitle={expiringTitle} onBannerPress={handleBannerPress}>
+              <FridgeFilterBar
+                storageFilter={storageFilter}
+                onStorageFilterChange={setStorageFilter}
+                sortType={sortType}
+                onSortToggle={() => setSortType(sortType === 'expiry' ? 'recent' : 'expiry')}
+              />
+            </FridgeHeader>
+          }
           onAddPress={() => router.push('/fridge/add' as any)}
           onItemPress={(item) => router.push(`/fridge/${item.id}` as any)}
         />
@@ -118,34 +133,44 @@ export const FridgePage = () => {
     return (
       <ScrollView
         className="flex-1 px-screen md:px-8 lg:px-16"
-        contentContainerStyle={{ paddingBottom: 100 }}
+        contentContainerStyle={{ paddingBottom: 140 }}
       >
-        <View className="flex-row flex-wrap -mx-2 max-w-[1200px] mx-auto w-full">
-          {fridgeItems.map((item) => {
-            const isSelected = selectedItems.has(item.id);
+        <View className="max-w-[1200px] mx-auto w-full">
+          <FridgeHeader expiringTitle={expiringTitle} onBannerPress={handleBannerPress}>
+            <FridgeSelectionBar
+              selectedCount={selectedItems.size}
+              isDeleting={isDisposing}
+              onDelete={handleDelete}
+              onCancel={handleCancelDelete}
+            />
+          </FridgeHeader>
+          <View className="flex-row flex-wrap -mx-1.5">
+            {fridgeItems.map((item) => {
+              const isSelected = selectedItems.has(item.id);
 
-            return (
-              <View key={item.id} className="mb-4 px-2 w-1/3 md:w-1/4 lg:w-1/5">
-                <Pressable onPress={() => handleToggleSelect(item.id)}>
-                  <View className="relative">
-                    <Card
-                      title={item.title}
-                      subtitle={item.subtitle}
-                      status={item.status}
-                      image={item.image}
-                      visible={true}
-                    />
+              return (
+                <View key={item.id} className="mb-[13px] px-1.5 w-1/3 md:w-1/4 lg:w-1/5">
+                  <Pressable onPress={() => handleToggleSelect(item.id)}>
+                    <View className="relative">
+                      <Card
+                        title={item.title}
+                        subtitle={item.subtitle}
+                        status={item.status}
+                        image={item.image}
+                        visible={true}
+                      />
 
-                    <View className="absolute top-2 right-2 z-20">
-                      <View className={`w-[17px] h-[17px] rounded-full border-2 border-neutral-400 ${
-                        isSelected ? 'bg-neutral-300' : 'bg-white'
-                      }`} />
+                      <View
+                        className={`absolute -top-1.5 -right-1.5 z-20 w-[17px] h-[17px] rounded-full border-2 border-primary-700 ${
+                          isSelected ? 'bg-primary-600' : 'bg-white'
+                        }`}
+                      />
                     </View>
-                  </View>
-                </Pressable>
-              </View>
-            );
-          })}
+                  </Pressable>
+                </View>
+              );
+            })}
+          </View>
         </View>
       </ScrollView>
     );
@@ -153,50 +178,21 @@ export const FridgePage = () => {
 
   return (
     <View className="flex-1 bg-white">
-      {!isDeleteMode ? (
-        <FridgeHeader
-          title={fridgeTitle}
-          onBackPress={() => router.back()}
-          onManagePress={() => setIsDeleteMode(true)}
-          sortType={sortType}
-          onSortChange={setSortType}
-        />
-      ) : (
-        <View>
-          <AppHeader />
-          <View className="px-screen md:px-8 lg:px-16 pt-10 pb-4 max-w-[1200px] mx-auto w-full">
-            <BackTitle title="식재료 관리하기" onPress={handleCancelDelete} className="mb-[27px]" />
-
-            <View className="flex-row items-center pl-[10px] justify-between h-10">
-              <Text className="text-neutral-700 text-text14 font-sans">
-                {selectedItems.size}개의 식재료가 선택됨
-              </Text>
-              <Pressable
-                onPress={handleDelete}
-                disabled={isDisposing}
-                hitSlop={8}
-                className={isDisposing ? 'opacity-50' : ''}
-              >
-                <TrashIcon width={24} height={24} />
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      )}
+      <View className="mb-[42px]">
+        <HomeHeader activeTab="fridge" profileImageUrl={profile.profileImageUrl} />
+      </View>
 
       {renderContent()}
 
-      {/* AddButton - 일반 모드: 사진/영수증 등록, 삭제 모드: 냉장고 대청소 (목록을 불러온 뒤에만 표시) */}
+      {/* AddButton - 일반 모드: 영수증 등록/냉장고 관리하기 메뉴, 삭제 모드: 냉장고 대청소 (목록을 불러온 뒤에만 표시) */}
       {isReady && (!isDeleteMode ? (
         <AddButton
-          icon="photo"
           onReceiptPress={handleReceiptPress}
-          onCartPress={() => console.log('온라인 장바구니 등록')}
+          onManagePress={() => setIsDeleteMode(true)}
           style={{ position: 'absolute', bottom: 120, right: 29 }}
         />
       ) : (
         <AddButton
-          icon="plus"
           onPress={openCleanupModal}
           style={{ position: 'absolute', bottom: 120, right: 29 }}
         />

@@ -46,3 +46,5 @@ yarn-error.*
 .mcp.json
 
 .claude
+# personal Claude rules
+CLAUDE.local.md

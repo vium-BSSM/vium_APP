@@ -58,7 +58,7 @@ export const ProfileEditPage: React.FC = () => {
               <Text className="text-text14 font-sans text-text-300">닉네임</Text>
               <View className="flex-row items-center justify-between">
                 <TextInput
-                  className="flex-1 text-subtitle font-sans text-text-100"
+                  className="flex-1 text-heading-md font-sans text-text-100"
                   style={{ fontFamily: 'Paperlogy' }}
                   value={nickname}
                   onChangeText={setNickname}
@@ -80,7 +80,7 @@ export const ProfileEditPage: React.FC = () => {
 
             <View className="w-full gap-2">
               <Text className="text-text14 font-sans text-text-300">아이디</Text>
-              <Text className="text-subtitle font-sans text-neutral-200">@{handle}</Text>
+              <Text className="text-heading-md font-sans text-neutral-200">@{handle}</Text>
               <View className="h-[2px] bg-neutral-50 rounded-full" />
             </View>
           </View>

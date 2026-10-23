@@ -88,7 +88,7 @@ export const FridgeAddPage: React.FC = () => {
 
             <View className="gap-2">
               <TextInput
-                className="text-title font-medium font-sans"
+                className="text-heading-lg font-medium font-sans"
                 style={{ fontFamily: 'Paperlogy' }}
                 value={name}
                 onChangeText={handleNameChange}
