@@ -66,7 +66,7 @@ export const ProfilePage = () => {
               <View className="w-[232px] md:w-[280px]">
                 <View className="flex-row items-center justify-between mb-[6px]">
                   <TextInput
-                    className="text-subtitle md:text-title text-text-100 font-sans flex-1"
+                    className="text-heading-md md:text-heading-lg text-text-100 font-sans flex-1"
                     style={{ fontFamily: 'Paperlogy' }}
                     value={nickname}
                     onChangeText={setNickname}

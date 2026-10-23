@@ -50,7 +50,7 @@ export const RecipeWastePage: React.FC = () => {
                 >
                   <BackIcon width={30} height={30} />
                 </Pressable>
-                <Text className="text-title font-medium font-sans text-neutral-600">
+                <Text className="text-heading-lg font-medium font-sans text-neutral-600">
                   맛있게 드셨나요?{'\n'}재료 사용량 조사를 시작할게요!
                 </Text>
               </View>
@@ -58,7 +58,7 @@ export const RecipeWastePage: React.FC = () => {
               <View className="gap-7">
                 {items.map((item) => (
                   <View key={item.id} className="gap-[19px] p-2.5">
-                    <Text className="text-subtitle font-medium font-sans text-text-100">{item.name}</Text>
+                    <Text className="text-heading-md font-medium font-sans text-text-100">{item.name}</Text>
                     <View className="gap-2">
                       <View className="flex-row items-center justify-between">
                         <Text className="text-text12 font-sans text-neutral-400">0%</Text>

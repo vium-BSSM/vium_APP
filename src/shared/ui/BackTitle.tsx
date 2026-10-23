@@ -21,7 +21,7 @@ export const BackTitle: React.FC<BackTitleProps> = ({ title, onPress, className 
       style={style}
     >
       <BackIcon width={30} height={30} color="#242529" />
-      <Text className="text-title font-medium font-sans text-text-100">{title}</Text>
+      <Text className="text-heading-lg font-medium font-sans text-text-100">{title}</Text>
     </Pressable>
   );
 };

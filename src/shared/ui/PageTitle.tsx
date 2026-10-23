@@ -15,7 +15,7 @@ interface PageTitleProps {
 export const PageTitle: React.FC<PageTitleProps> = ({ children, className = '', style }) => {
   return (
     <Text
-      className={`text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 font-sans ${className}`}
+      className={`text-heading-lg md:text-[28px] lg:text-[32px] font-medium text-text-100 font-sans ${className}`}
       style={style}
     >
       {children}

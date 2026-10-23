@@ -44,7 +44,7 @@ export const ReportMonthPicker: React.FC<ReportMonthPickerProps> = ({
   return (
     <>
       <Pressable className="flex-row items-center gap-[7px]" disabled={!canOpen} onPress={open}>
-        <Text className="text-subtitle font-medium font-sans text-text-100">
+        <Text className="text-heading-md font-medium font-sans text-text-100">
           {formatYearMonth(value.year, value.month)}
         </Text>
         <View style={{ transform: [{ rotate: '-90deg' }] }}>
@@ -68,7 +68,7 @@ export const ReportMonthPicker: React.FC<ReportMonthPickerProps> = ({
               >
                 <ChevronLeftIcon width={18} height={18} color={canGoPrev ? '#242529' : '#C0C0C0'} />
               </Pressable>
-              <Text className="text-subtitle font-sans text-text-100">
+              <Text className="text-heading-md font-sans text-text-100">
                 {formatYear(viewYear)}
               </Text>
               <Pressable

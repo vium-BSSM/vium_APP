@@ -72,7 +72,7 @@ Route groups like `(tabs)` do not appear in URLs — `/fridge/3` maps to `app/(t
 ### Design System
 All design tokens are defined in `tailwind.config.js`:
 - **Colors**: primary, secondary, neutral, text
-- **Font sizes**: title, subtitle, text18, text16, text15, text14, text12
+- **Font sizes**: heading-lg, heading-md, text18, text16, text15, text14, text12
 - **Font family**: Paperlogy (default sans)
 
 ### NativeWind + Tailwind CSS
@@ -90,7 +90,7 @@ All design tokens are defined in `tailwind.config.js`:
 ### Example Component Styling
 ```tsx
 <View className="flex-1 bg-white px-4">
-  <Text className="text-title font-bold text-text-100 font-sans">
+  <Text className="text-heading-lg font-bold text-text-100 font-sans">
     Title
   </Text>
   <Text className="text-text14 text-text-200 font-sans">

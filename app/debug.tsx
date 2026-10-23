@@ -11,19 +11,19 @@ export default function DebugPage() {
   return (
     <View className="flex-1 bg-white">
       <ScrollView className="flex-1 p-4">
-        <Text className="text-title font-bold mt-6 mb-4 text-text-100 font-sans">
+        <Text className="text-heading-lg font-bold mt-6 mb-4 text-text-100 font-sans">
           Component Debug Page
         </Text>
 
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
+          <Text className="text-heading-md font-medium mb-3 text-text-100 font-sans">
             NavBar Component
           </Text>
           <NavBar />
         </View>
 
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
+          <Text className="text-heading-md font-medium mb-3 text-text-100 font-sans">
             Check Component
           </Text>
           <View className="flex-row" style={{ gap: 16 }}>
@@ -39,7 +39,7 @@ export default function DebugPage() {
         </View>
 
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
+          <Text className="text-heading-md font-medium mb-3 text-text-100 font-sans">
             StateBall Component
           </Text>
           <View className="flex-row items-center" style={{ gap: 16 }}>
@@ -59,7 +59,7 @@ export default function DebugPage() {
         </View>
 
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
+          <Text className="text-heading-md font-medium mb-3 text-text-100 font-sans">
             Card Component
           </Text>
           <View className="flex-row flex-wrap" style={{ gap: 16 }}>
@@ -99,14 +99,14 @@ export default function DebugPage() {
         </View>
 
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
+          <Text className="text-heading-md font-medium mb-3 text-text-100 font-sans">
             Banner Component
           </Text>
           <Banner onPress={(variant) => console.log(`${variant} banner pressed`)} />
         </View>
 
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
+          <Text className="text-heading-md font-medium mb-3 text-text-100 font-sans">
             InputBox Component
           </Text>
           <View style={{ gap: 16 }}>
@@ -150,7 +150,7 @@ export default function DebugPage() {
         </View>
 
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
+          <Text className="text-heading-md font-medium mb-3 text-text-100 font-sans">
             Button Component
           </Text>
           <View className="items-center" style={{ gap: 16 }}>
@@ -167,7 +167,7 @@ export default function DebugPage() {
         </View>
 
         <View className="mb-8">
-          <Text className="text-subtitle font-medium mb-3 text-text-100 font-sans">
+          <Text className="text-heading-md font-medium mb-3 text-text-100 font-sans">
             AddButton Component
           </Text>
           <View className="flex-row justify-center" style={{ gap: 16 }}>

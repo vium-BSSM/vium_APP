@@ -89,7 +89,7 @@ export const RecipeDetailPage: React.FC = () => {
             </View>
 
             <View className="gap-8">
-              <Text className="text-subtitle font-medium font-sans text-neutral-600">
+              <Text className="text-heading-md font-medium font-sans text-neutral-600">
                 조리방법을 알려드릴게요!
               </Text>
               <View className="gap-[19px]">

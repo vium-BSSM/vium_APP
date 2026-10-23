@@ -79,7 +79,7 @@ export const ReportPage: React.FC = () => {
                 </Text>
                 {/* 식비 합계가 없으면(백엔드 미제공) 폐기 금액을 대표 값으로 표시 */}
                 <View className="bg-primary-300 rounded-lg p-5 gap-2">
-                  <Text className="text-title font-medium font-sans text-text-100 tabular-nums">
+                  <Text className="text-heading-lg font-medium font-sans text-text-100 tabular-nums">
                     총 {formatWon(hasSpent ? displayedSpent : displayedWasted)}원
                   </Text>
                   <Text className="text-text12 font-sans text-text-50 tabular-nums">
@@ -145,7 +145,7 @@ export const ReportPage: React.FC = () => {
                       {index > 0 && <View className="h-px bg-neutral-100 mb-[6px]" />}
                       <View className="flex-row items-end justify-between p-2.5 rounded-lg bg-white">
                         <View className="flex-row items-center gap-4">
-                          <Text className="text-subtitle font-bold font-sans text-text-300">
+                          <Text className="text-heading-md font-bold font-sans text-text-300">
                             {item.rank}
                           </Text>
                           <View className="gap-1">
@@ -184,7 +184,7 @@ export const ReportPage: React.FC = () => {
               className="flex-1 bg-neutral-500 rounded-3xl items-center justify-center px-2.5 py-[15px]"
               onPress={() => router.push('/main')}
             >
-              <Text className="text-text-400 text-subtitle text-center font-sans">홈으로</Text>
+              <Text className="text-text-400 text-heading-md text-center font-sans">홈으로</Text>
             </Pressable>
             <Pressable
               className={`w-[71px] bg-primary-500 rounded-3xl items-center justify-center px-2.5 py-[15px] ${isSharing ? 'opacity-60' : ''}`}

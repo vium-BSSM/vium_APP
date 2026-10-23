@@ -75,7 +75,7 @@ export const FridgeCleanupSelectPage: React.FC = () => {
                           : 'bg-white border-neutral-100'
                       }`}
                     >
-                      <Text className="text-subtitle font-sans text-text-100">
+                      <Text className="text-heading-md font-sans text-text-100">
                         {item.title}
                       </Text>
                     </Pressable>

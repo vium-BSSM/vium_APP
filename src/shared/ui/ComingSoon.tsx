@@ -26,7 +26,7 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({ title, icon }) => {
       <View className="flex-1 items-center justify-center px-screen pb-[140px] gap-5">
         {icon && <View className="w-20 h-20 rounded-full bg-primary-200 items-center justify-center">{icon}</View>}
         <View className="items-center gap-2">
-          <Text className="text-subtitle font-medium font-sans text-text-100">아직 준비 중이에요</Text>
+          <Text className="text-heading-md font-medium font-sans text-text-100">아직 준비 중이에요</Text>
           <Text className="text-text14 font-sans text-text-200 text-center">
             {title} 기능을 열심히 만들고 있어요.{'\n'}조금만 기다려 주세요!
           </Text>
