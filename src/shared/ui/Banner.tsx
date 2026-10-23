@@ -149,7 +149,7 @@ export const Banner: React.FC<BannerProps> = ({ variant = 'tomato', onPress, sty
                     {slide.title2}
                   </Text>
                 </View>
-                <Text className="text-text-50 text-text12 font-sans">
+                <Text className="text-text-50 text-text14 font-sans">
                   {slide.action}
                 </Text>
               </View>
