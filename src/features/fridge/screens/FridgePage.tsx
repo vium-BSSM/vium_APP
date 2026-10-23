@@ -186,17 +186,15 @@ export const FridgePage = () => {
 
       {renderContent()}
 
-      {/* AddButton - 일반 모드: 사진/영수증 등록, 삭제 모드: 냉장고 대청소 (목록을 불러온 뒤에만 표시) */}
+      {/* AddButton - 일반 모드: 영수증 등록/냉장고 관리하기 메뉴, 삭제 모드: 냉장고 대청소 (목록을 불러온 뒤에만 표시) */}
       {isReady && (!isDeleteMode ? (
         <AddButton
-          icon="photo"
           onReceiptPress={handleReceiptPress}
-          onCartPress={() => console.log('온라인 장바구니 등록')}
+          onManagePress={() => setIsDeleteMode(true)}
           style={{ position: 'absolute', bottom: 120, right: 29 }}
         />
       ) : (
         <AddButton
-          icon="plus"
           onPress={openCleanupModal}
           style={{ position: 'absolute', bottom: 120, right: 29 }}
         />

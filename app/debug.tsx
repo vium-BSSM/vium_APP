@@ -172,11 +172,10 @@ export default function DebugPage() {
           </Text>
           <View className="flex-row justify-center" style={{ gap: 16 }}>
             <AddButton
-              icon="photo"
               onReceiptPress={() => console.log('Receipt pressed')}
-              onCartPress={() => console.log('Cart pressed')}
+              onManagePress={() => console.log('Manage pressed')}
             />
-            <AddButton icon="plus" />
+            <AddButton onPress={() => console.log('Plus pressed')} />
           </View>
         </View>
 

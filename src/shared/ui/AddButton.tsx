@@ -1,71 +1,55 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
-import PhotoIcon from '@/../assets/icons/photo-icon.svg';
 import PlusIcon from '@/../assets/icons/plus-icon.svg';
 
 interface AddButtonProps {
-  icon?: 'photo' | 'plus';
-  onReceiptPress?: () => void;
-  onCartPress?: () => void;
+  /** 넘기면 메뉴 없이 바로 실행, 없으면 메뉴(영수증 등록 / 냉장고 관리하기)를 연다 */
   onPress?: () => void;
+  onReceiptPress?: () => void;
+  onManagePress?: () => void;
   style?: any;
 }
 
+const MenuItem: React.FC<{ label: string; onPress: () => void }> = ({ label, onPress }) => (
+  <Pressable onPress={onPress} className="p-[5px] rounded-lg active:bg-neutral-10">
+    <Text className="text-black text-text14 md:text-text15 leading-tight font-sans">
+      {label}
+    </Text>
+  </Pressable>
+);
+
 export const AddButton: React.FC<AddButtonProps> = ({
-  icon = 'photo',
-  onReceiptPress,
-  onCartPress,
   onPress,
+  onReceiptPress,
+  onManagePress,
   style,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
-  const isPhoto = icon === 'photo';
 
   const handlePress = () => {
-    if (isPhoto) {
-      setShowMenu(!showMenu);
+    if (onPress) {
+      onPress();
     } else {
-      onPress?.();
+      setShowMenu(!showMenu);
     }
+  };
+
+  const selectMenu = (action?: () => void) => {
+    setShowMenu(false);
+    action?.();
   };
 
   return (
     <View className="relative items-end" style={style}>
-      {showMenu && isPhoto && (
-        <View className="absolute bottom-[53px] md:bottom-[60px] right-0 bg-white rounded-lg p-2.5 md:p-3 shadow-md w-[153px] md:w-[180px] z-10">
-          <Pressable
-            onPress={() => {
-              setShowMenu(false);
-              onReceiptPress?.();
-            }}
-          >
-            <Text className="text-text-100 text-text14 md:text-text15 text-right font-sans">
-              영수증 등록
-            </Text>
-          </Pressable>
-          <View className="h-px bg-neutral-200 rounded-lg my-2" />
-          <Pressable
-            onPress={() => {
-              setShowMenu(false);
-              onCartPress?.();
-            }}
-          >
-            <Text className="text-text-100 text-text14 md:text-text15 text-right font-sans">
-              온라인 장바구니 등록
-            </Text>
-          </Pressable>
+      {showMenu && (
+        <View className="absolute bottom-[59px] md:bottom-[68px] right-0 bg-white border border-neutral-50 rounded-lg p-2.5 gap-2 w-[153px] md:w-[180px] z-10">
+          <MenuItem label="영수증 등록" onPress={() => selectMenu(onReceiptPress)} />
+          <MenuItem label="냉장고 관리하기" onPress={() => selectMenu(onManagePress)} />
         </View>
       )}
 
-      <Pressable
-        className="w-[43px] h-[43px] md:w-[52px] md:h-[52px] bg-neutral-500 rounded-full items-center justify-center"
-        onPress={handlePress}
-      >
-        {isPhoto ? (
-          <PhotoIcon width={24} height={24} />
-        ) : (
-          <PlusIcon width={24} height={24} />
-        )}
+      <Pressable className="w-[43px] h-[43px] md:w-[52px] md:h-[52px]" onPress={handlePress}>
+        <PlusIcon width="100%" height="100%" />
       </Pressable>
     </View>
   );
