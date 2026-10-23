@@ -45,7 +45,7 @@ export const MainPage = () => {
 
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 140 }}>
         <View className="px-screen md:px-10 lg:px-20 max-w-[1200px] w-full mx-auto gap-16">
-          <View className="gap-8">
+          <View className="gap-12">
             <Banner onPress={handleBannerPress} />
 
             <ExpiringIngredientList

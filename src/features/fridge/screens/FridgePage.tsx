@@ -7,13 +7,12 @@ import { useIngredientsList } from '../lib/useIngredientsList';
 import { useIngredientDispose } from '../lib/useIngredientDispose';
 import { useFridgeCleanup } from '../lib/useFridgeCleanup';
 import { formatExpiringTitle, pickExpiringIngredients } from '../lib/expiringIngredients';
-import { FridgeHeader } from '../ui/FridgeHeader';
+import { FridgeHeader, FridgeFilterBar, FridgeSelectionBar } from '../ui/FridgeHeader';
 import { FridgeGrid } from '../ui/FridgeGrid';
 import { FridgeCleanupModal } from '../ui/FridgeCleanupModal';
 import { FridgeStorageFilter } from '../types';
 import { useMyProfile } from '@/features/account';
-import { AddButton, Card, AppHeader, BackTitle, HomeHeader } from '@/shared/ui';
-import TrashIcon from '@/../assets/icons/trash-icon.svg';
+import { AddButton, Card, HomeHeader } from '@/shared/ui';
 
 export const FridgePage = () => {
   const router = useRouter();
@@ -80,6 +79,8 @@ export const FridgePage = () => {
     );
   };
 
+  const handleBannerPress = () => router.navigate('/recipe' as any);
+
   const handleCancelDelete = () => {
     setSelectedItems(new Set());
     setIsDeleteMode(false);
@@ -114,14 +115,14 @@ export const FridgePage = () => {
         <FridgeGrid
           items={fridgeItems}
           header={
-            <FridgeHeader
-              expiringTitle={expiringTitle}
-              onBannerPress={() => router.navigate('/recipe' as any)}
-              storageFilter={storageFilter}
-              onStorageFilterChange={setStorageFilter}
-              sortType={sortType}
-              onSortToggle={() => setSortType(sortType === 'expiry' ? 'recent' : 'expiry')}
-            />
+            <FridgeHeader expiringTitle={expiringTitle} onBannerPress={handleBannerPress}>
+              <FridgeFilterBar
+                storageFilter={storageFilter}
+                onStorageFilterChange={setStorageFilter}
+                sortType={sortType}
+                onSortToggle={() => setSortType(sortType === 'expiry' ? 'recent' : 'expiry')}
+              />
+            </FridgeHeader>
           }
           onAddPress={() => router.push('/fridge/add' as any)}
           onItemPress={(item) => router.push(`/fridge/${item.id}` as any)}
@@ -135,6 +136,14 @@ export const FridgePage = () => {
         contentContainerStyle={{ paddingBottom: 140 }}
       >
         <View className="max-w-[1200px] mx-auto w-full">
+          <FridgeHeader expiringTitle={expiringTitle} onBannerPress={handleBannerPress}>
+            <FridgeSelectionBar
+              selectedCount={selectedItems.size}
+              isDeleting={isDisposing}
+              onDelete={handleDelete}
+              onCancel={handleCancelDelete}
+            />
+          </FridgeHeader>
           <View className="flex-row flex-wrap -mx-1.5">
             {fridgeItems.map((item) => {
               const isSelected = selectedItems.has(item.id);
@@ -151,11 +160,11 @@ export const FridgePage = () => {
                         visible={true}
                       />
 
-                      <View className="absolute top-2 right-2 z-20">
-                        <View className={`w-[17px] h-[17px] rounded-full border-2 border-neutral-400 ${
-                          isSelected ? 'bg-neutral-300' : 'bg-white'
-                        }`} />
-                      </View>
+                      <View
+                        className={`absolute -top-1.5 -right-1.5 z-20 w-[17px] h-[17px] rounded-full border-2 border-primary-700 ${
+                          isSelected ? 'bg-primary-600' : 'bg-white'
+                        }`}
+                      />
                     </View>
                   </Pressable>
                 </View>
@@ -169,32 +178,9 @@ export const FridgePage = () => {
 
   return (
     <View className="flex-1 bg-white">
-      {!isDeleteMode ? (
-        <View className="mb-[42px]">
-          <HomeHeader activeTab="fridge" profileImageUrl={profile.profileImageUrl} />
-        </View>
-      ) : (
-        <View>
-          <AppHeader />
-          <View className="px-screen md:px-8 lg:px-16 pt-10 pb-4 max-w-[1200px] mx-auto w-full">
-            <BackTitle title="식재료 관리하기" onPress={handleCancelDelete} className="mb-[27px]" />
-
-            <View className="flex-row items-center pl-[10px] justify-between h-10">
-              <Text className="text-neutral-700 text-text14 font-sans">
-                {selectedItems.size}개의 식재료가 선택됨
-              </Text>
-              <Pressable
-                onPress={handleDelete}
-                disabled={isDisposing}
-                hitSlop={8}
-                className={isDisposing ? 'opacity-50' : ''}
-              >
-                <TrashIcon width={24} height={24} />
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      )}
+      <View className="mb-[42px]">
+        <HomeHeader activeTab="fridge" profileImageUrl={profile.profileImageUrl} />
+      </View>
 
       {renderContent()}
 
