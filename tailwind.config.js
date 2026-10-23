@@ -87,7 +87,6 @@ module.exports = {
         text14: ['14px', { lineHeight: 'normal' }],
         text12: ['12px', { lineHeight: 'normal' }],
         text10: ['10px', { lineHeight: 'normal' }],
-        text8: ['8px', { lineHeight: 'normal' }],
       },
     },
   },
