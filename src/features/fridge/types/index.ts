@@ -2,6 +2,9 @@ export type FridgeItemStatus = '위험' | '보통' | '양호';
 
 export type FridgeSortType = 'expiry' | 'recent';
 
+// 'all' 또는 보관 방법 id (1 냉장, 2 냉동, 3 실온)
+export type FridgeStorageFilter = 'all' | number;
+
 export interface FridgeItem {
   id: number;
   title: string;
@@ -10,6 +13,15 @@ export interface FridgeItem {
   remainingQuantity: number;
   image?: string;
   expiresOn: string; // 원본 'YYYY-MM-DD', 소비기한 순 정렬 키
+}
+
+export interface ExpiringIngredient {
+  id: number;
+  name: string;
+  daysLeft: number;
+  status: FridgeItemStatus;
+  untilLabel: string; // '10월 30일까지'
+  ddayLabel: string; // 'D-3'
 }
 
 export interface FridgeItemDetail extends FridgeItem {

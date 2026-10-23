@@ -1,57 +1,82 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { AppHeader, BackTitle } from '@/shared/ui';
-import { FridgeSortType } from '../types';
+import { FridgeSortType, FridgeStorageFilter } from '../types';
+import { STORAGE_METHOD_OPTIONS } from './StorageMethodSelect';
+import ArrowIcon from '@/../assets/icons/outlined-left-icon.svg';
+import SortArrowIcon from '@/../assets/icons/outlined-left-small-icon.svg';
 
-const SORT_OPTIONS: { type: FridgeSortType; label: string }[] = [
-  { type: 'expiry', label: '소비기한 순' },
-  { type: 'recent', label: '추가 순' },
+const STORAGE_FILTERS: { value: FridgeStorageFilter; label: string }[] = [
+  { value: 'all', label: '전체' },
+  ...STORAGE_METHOD_OPTIONS.map((option) => ({ value: option.id, label: option.label })),
 ];
 
+const SORT_LABEL: Record<FridgeSortType, string> = {
+  expiry: '임박순',
+  recent: '추가순',
+};
+
 interface FridgeHeaderProps {
-  title: string;
-  onBackPress: () => void;
-  onManagePress: () => void;
+  /** 가장 임박한 재료 문구 — 없으면 배너 숨김 */
+  expiringTitle: string | null;
+  onBannerPress: () => void;
+  storageFilter: FridgeStorageFilter;
+  onStorageFilterChange: (filter: FridgeStorageFilter) => void;
   sortType: FridgeSortType;
-  onSortChange: (sortType: FridgeSortType) => void;
+  onSortToggle: () => void;
 }
 
+/** 냉장고 그리드 위: 임박 재료 배너 + 보관 방법 필터 + 정렬 */
 export const FridgeHeader: React.FC<FridgeHeaderProps> = ({
-  title,
-  onBackPress,
-  onManagePress,
+  expiringTitle,
+  onBannerPress,
+  storageFilter,
+  onStorageFilterChange,
   sortType,
-  onSortChange,
+  onSortToggle,
 }) => {
   return (
-    <View>
-      <AppHeader />
-      <View className="px-screen md:px-8 lg:px-16 pt-10 pb-4 max-w-[1200px] mx-auto w-full">
-        <BackTitle title={title} onPress={onBackPress} className="mb-[27px]" />
+    <View className="gap-[53px] mb-[22px]">
+      {expiringTitle && (
+        <Pressable
+          onPress={onBannerPress}
+          className="bg-primary-300 rounded-lg p-5 h-[86px] flex-row items-center gap-3"
+        >
+          <View className="flex-1 gap-2">
+            <Text className="text-text-100 text-heading-md font-medium font-sans" numberOfLines={1}>
+              {expiringTitle}
+            </Text>
+            <Text className="text-text-50 text-text12 font-sans">사용할 수 있는 레시피를 추천해드릴게요</Text>
+          </View>
+          <View className="rotate-180">
+            <ArrowIcon width={24} height={24} />
+          </View>
+        </Pressable>
+      )}
 
-      {/* 관리 모드 헤더(FridgePage)와 높이를 h-10으로 맞춰 모드 전환 시 아래 요소가 밀리지 않게 함 */}
-      <View className="flex-row items-center justify-between h-10">
-        <View className="flex-row items-center pl-[10px]">
-          {SORT_OPTIONS.map(({ type, label }, index) => (
-            <React.Fragment key={type}>
-              {index > 0 && <Text className="mx-2 text-text-200 text-text14 font-sans">|</Text>}
-              <Pressable onPress={() => onSortChange(type)} hitSlop={8}>
-                <Text
-                  className={`text-text14 md:text-text15 font-sans ${
-                    sortType === type ? 'text-text-100' : 'text-text-200'
-                  }`}
-                >
-                  {label}
-                </Text>
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center gap-2">
+          {STORAGE_FILTERS.map(({ value, label }) => {
+            const isActive = storageFilter === value;
+            return (
+              <Pressable
+                key={label}
+                onPress={() => onStorageFilterChange(value)}
+                className={`w-[55px] h-8 rounded-2xl items-center justify-center border-2 ${
+                  isActive ? 'bg-primary-300 border-primary-200' : 'bg-neutral-10 border-neutral-10'
+                }`}
+              >
+                <Text className="text-text-50 text-text14 font-sans">{label}</Text>
               </Pressable>
-            </React.Fragment>
-          ))}
+            );
+          })}
         </View>
 
-        <Pressable onPress={onManagePress} hitSlop={8} className="px-4">
-          <Text className="text-text-200 text-text14 md:text-text15 font-sans">관리하기 {'>'}</Text>
+        <Pressable onPress={onSortToggle} hitSlop={8} className="flex-row items-end gap-1">
+          <Text className="text-text-100 text-text12 font-sans">{SORT_LABEL[sortType]}</Text>
+          <View className="-rotate-90">
+            <SortArrowIcon width={14} height={14} />
+          </View>
         </Pressable>
-      </View>
       </View>
     </View>
   );
