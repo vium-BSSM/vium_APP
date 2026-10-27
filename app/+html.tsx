@@ -12,6 +12,8 @@ export default function Root({ children }: PropsWithChildren) {
           content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
         />
         <meta name="theme-color" content="#ffffff" />
+        {/* 브라우저 자동 다크 모드가 색을 반전시키지 않도록 라이트 고정 */}
+        <meta name="color-scheme" content="light" />
 
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" type="image/png" href="/favicon.png" />

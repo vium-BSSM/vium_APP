@@ -79,7 +79,7 @@ export const FridgeAddPage: React.FC = () => {
         <AppHeader />
 
         <View className="px-screen gap-10 pt-10">
-          <Pressable onPress={() => router.back()}>
+          <Pressable onPress={() => router.back()} hitSlop={8} className="self-start">
             <BackIcon width={30} height={30} />
           </Pressable>
 

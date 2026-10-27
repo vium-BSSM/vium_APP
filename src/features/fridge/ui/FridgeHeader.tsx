@@ -82,7 +82,7 @@ export const FridgeFilterBar: React.FC<FridgeFilterBarProps> = ({
       })}
     </View>
 
-    <Pressable onPress={onSortToggle} hitSlop={8} className="flex-row items-end gap-1">
+    <Pressable onPress={onSortToggle} hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }} className="flex-row items-end gap-1">
       <Text className="text-text-100 text-text12 font-sans">{SORT_LABEL[sortType]}</Text>
       <View className="-rotate-90">
         <SortArrowIcon width={14} height={14} />
@@ -108,7 +108,7 @@ export const FridgeSelectionBar: React.FC<FridgeSelectionBarProps> = ({
   <View className="flex-row items-center justify-between px-3 mb-8">
     <Text className="text-neutral-700 text-text14 font-sans">{selectedCount}개의 식재료가 선택됨</Text>
     <View className="flex-row items-center gap-4">
-      <Pressable onPress={onCancel} hitSlop={8}>
+      <Pressable onPress={onCancel} hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}>
         <Text className="text-text-200 text-text14 font-sans">취소</Text>
       </Pressable>
       <Pressable onPress={onDelete} disabled={isDeleting} hitSlop={8} className={isDeleting ? 'opacity-50' : ''}>
