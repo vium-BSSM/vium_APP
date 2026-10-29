@@ -57,6 +57,7 @@ export const ProfilePage = () => {
 
                 <Pressable
                   onPress={handleImagePick}
+                  hitSlop={8}
                   className="absolute bottom-1 right-1 w-[29px] h-[29px] md:w-[34px] md:h-[34px]"
                 >
                   <CameraIcon width="100%" height="100%" />
@@ -77,6 +78,7 @@ export const ProfilePage = () => {
                   {nickname.length > 0 && (
                     <Pressable
                       onPress={handleClearNickname}
+                      hitSlop={10}
                       className="w-6 h-6 items-center justify-center"
                     >
                       <ClearIcon width={24} height={24} />

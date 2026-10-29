@@ -45,6 +45,7 @@ export const FridgeDetailPage = () => {
         <View className="px-screen pt-8">
           <TouchableOpacity
             onPress={() => router.back()}
+            hitSlop={8}
             className="w-[30px] h-[30px] items-center justify-center"
           >
             <BackIcon width={30} height={30} />

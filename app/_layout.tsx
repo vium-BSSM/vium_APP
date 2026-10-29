@@ -1,5 +1,6 @@
 import '../global.css';
 import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { AppProvider } from '@/providers/AppProvider';
 import { useIsSessionReady, useSessionUser } from '@/shared/lib/sessionUser';
 
@@ -32,6 +33,8 @@ const RootNavigator = () => {
 export default function RootLayout() {
   return (
     <AppProvider>
+      {/* 앱은 라이트 전용 → 시스템 다크 모드에서도 상태바 글자를 어둡게 고정 (흰 배경 위에서 안 보이는 것 방지) */}
+      <StatusBar style="dark" />
       <RootNavigator />
     </AppProvider>
   );

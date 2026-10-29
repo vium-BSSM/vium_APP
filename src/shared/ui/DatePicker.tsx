@@ -63,6 +63,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       <Pressable
         className="bg-neutral-50 rounded-lg px-2.5 h-[27px] w-[199px] justify-center"
         onPress={() => setShow(true)}
+        hitSlop={{ top: 8, bottom: 8 }}
       >
         <Text className="text-text15 font-sans" style={{ color: '#242529' }}>
           {formatDate(value)}
@@ -88,6 +89,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           value={value}
           mode="date"
           display="default"
+          themeVariant="light"
           onChange={handleChange}
           maximumDate={new Date(2030, 11, 31)}
           minimumDate={new Date(2020, 0, 1)}
@@ -110,7 +112,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               onPress={(e) => e.stopPropagation()}
             >
               <View className="flex-row justify-between items-center px-4 py-3 border-b border-neutral-100 w-full">
-                <Pressable onPress={handleCancel}>
+                <Pressable onPress={handleCancel} hitSlop={12}>
                   <Text className="text-text16 text-neutral-400 font-sans">
                     취소
                   </Text>
@@ -118,7 +120,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                 <Text className="text-heading-md font-normal text-text-100 font-sans">
                   날짜 선택
                 </Text>
-                <Pressable onPress={handleConfirm}>
+                <Pressable onPress={handleConfirm} hitSlop={12}>
                   <Text className="text-text16 text-neutral-500 font-normal font-sans">
                     확인
                   </Text>
@@ -130,6 +132,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                   value={tempDate}
                   mode="date"
                   display="spinner"
+                  // 다크 모드에서 스피너 글자가 흰색이 되어 흰 모달 위에서 안 보이는 것 방지
+                  themeVariant="light"
                   onChange={handleChange}
                   maximumDate={new Date(2030, 11, 31)}
                   minimumDate={new Date(2020, 0, 1)}

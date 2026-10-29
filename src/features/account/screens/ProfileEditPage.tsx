@@ -48,6 +48,7 @@ export const ProfileEditPage: React.FC = () => {
               </View>
               <Pressable
                 onPress={pickImage}
+                hitSlop={4}
                 className="absolute bottom-0 right-0 w-9 h-9"
               >
                 <PhotoIcon width={36} height={36} />
@@ -67,7 +68,7 @@ export const ProfileEditPage: React.FC = () => {
                   maxLength={NICKNAME_MAX_LENGTH}
                 />
                 {nickname.length > 0 && (
-                  <Pressable onPress={clearNickname} className="w-6 h-6 items-center justify-center">
+                  <Pressable onPress={clearNickname} hitSlop={10} className="w-6 h-6 items-center justify-center">
                     <Text className="text-text18 font-sans text-text-100">✕</Text>
                   </Pressable>
                 )}

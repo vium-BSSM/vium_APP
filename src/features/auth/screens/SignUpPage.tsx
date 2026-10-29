@@ -56,6 +56,7 @@ export const SignUpPage = () => {
                   />
                   <Pressable
                     onPress={handleCheckDuplicate}
+                    hitSlop={{ top: 6, bottom: 6 }}
                     className="w-[72px] py-1.5 bg-primary-400 border-2 border-primary-200 rounded-lg items-center justify-center"
                   >
                     <Text className="text-text14 text-text-100 font-sans">중복 확인</Text>

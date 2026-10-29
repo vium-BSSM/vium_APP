@@ -11,7 +11,7 @@ interface AddButtonProps {
 }
 
 const MenuItem: React.FC<{ label: string; onPress: () => void }> = ({ label, onPress }) => (
-  <Pressable onPress={onPress} className="p-[5px] rounded-lg active:bg-neutral-10">
+  <Pressable onPress={onPress} hitSlop={{ top: 4, bottom: 4 }} className="p-[5px] rounded-lg active:bg-neutral-10">
     <Text className="text-black text-text14 md:text-text15 leading-tight font-sans">
       {label}
     </Text>
