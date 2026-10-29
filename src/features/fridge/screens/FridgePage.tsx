@@ -3,6 +3,7 @@ import { View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-nati
 import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
 import { useIngredientUpload } from '../lib/useIngredientUpload';
+import { isReceiptScanSupported, useReceiptScan } from '../lib/useReceiptScan';
 import { useIngredientsList } from '../lib/useIngredientsList';
 import { useIngredientDispose } from '../lib/useIngredientDispose';
 import { useFridgeCleanup } from '../lib/useFridgeCleanup';
@@ -19,6 +20,7 @@ export const FridgePage = () => {
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const { showIngredientUploadOptions } = useIngredientUpload();
+  const { scanReceipt, isScanning } = useReceiptScan();
   const { items: fridgeItems, isLoading, error, refresh, sortType, setSortType } = useIngredientsList();
   const { disposeItems, isDisposing } = useIngredientDispose();
   const { isCleanupModalVisible, openCleanupModal, closeCleanupModal } = useFridgeCleanup();
@@ -28,8 +30,22 @@ export const FridgePage = () => {
   const expiringTitle = useMemo(() => formatExpiringTitle(pickExpiringIngredients(fridgeItems)), [fridgeItems]);
 
   const handleReceiptPress = () => {
-    showIngredientUploadOptions((uri) => {
-      console.log('처리할 재료 이미지:', uri);
+    if (!isReceiptScanSupported) {
+      Alert.alert('영수증 인식 불가', '웹에서는 영수증 인식을 지원하지 않아요. 앱에서 이용하거나 직접 등록해주세요.', [
+        { text: '취소', style: 'cancel' },
+        { text: '직접 등록', onPress: () => router.push('/fridge/add' as any) },
+      ]);
+      return;
+    }
+
+    showIngredientUploadOptions(async (image) => {
+      const purchase = await scanReceipt(image);
+      if (!purchase) return;
+
+      // TODO: 확인 화면(디자인 대기)으로 이동 → 품목 확인·수정 후 confirmPurchase로 재고 등록
+      console.log('영수증 인식 결과:', JSON.stringify(purchase, null, 2));
+      const names = purchase.items.map((item) => item.ingredientName ?? `${item.rawName} (미확인)`);
+      Alert.alert(`${purchase.items.length}개 품목 인식`, names.join('\n'));
     });
   };
 
@@ -207,6 +223,14 @@ export const FridgePage = () => {
           router.push('/fridge/cleanup/select' as any);
         }}
       />
+
+      {/* 인식 중에는 버튼까지 덮어 중복 실행 방지 */}
+      {isScanning && (
+        <View className="absolute inset-0 z-50 items-center justify-center bg-white/80">
+          <ActivityIndicator size="large" color="#A2CD87" />
+          <Text className="mt-4 text-text14 text-text-200 font-sans">영수증을 인식하는 중...</Text>
+        </View>
+      )}
     </View>
   );
 };

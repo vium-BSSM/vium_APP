@@ -1,6 +1,6 @@
 import { ActionSheetIOS, Platform } from 'react-native';
 import { Alert } from '@/shared/lib/alert';
-import { pickImageFromLibrary } from '@/shared/lib/pickImage';
+import { pickImageAssetFromLibrary, PickedImage } from '@/shared/lib/pickImage';
 import * as ImagePicker from 'expo-image-picker';
 import * as Device from 'expo-device';
 
@@ -23,7 +23,7 @@ export const useIngredientUpload = () => {
     return status !== 'denied';
   };
 
-  const pickImageFromCamera = async () => {
+  const pickImageFromCamera = async (): Promise<PickedImage | null> => {
     // 웹 환경에서는 웹캠으로 직접 촬영
     if (Platform.OS === 'web') {
       return pickImageFromWebCamera();
@@ -54,7 +54,8 @@ export const useIngredientUpload = () => {
       });
 
       if (!result.canceled) {
-        return result.assets[0].uri;
+        const { uri, width, height } = result.assets[0];
+        return { uri, width, height };
       }
     } catch (error) {
       Alert.alert('오류', '카메라를 실행할 수 없습니다.');
@@ -64,16 +65,16 @@ export const useIngredientUpload = () => {
     return null;
   };
 
-  const pickImageFromGallery = async () => {
+  const pickImageFromGallery = async (): Promise<PickedImage | null> => {
     // 웹 환경에서는 파일 선택으로 처리
     if (Platform.OS === 'web') {
       return pickImageFromWebGallery();
     }
 
-    return pickImageFromLibrary({ quality: 0.8 });
+    return pickImageAssetFromLibrary({ quality: 0.8 });
   };
 
-  const pickImageFromWebCamera = async (): Promise<string | null> => {
+  const pickImageFromWebCamera = async (): Promise<PickedImage | null> => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' }, // 후면 카메라 우선
@@ -135,7 +136,7 @@ export const useIngredientUpload = () => {
           context?.drawImage(video, 0, 0);
           const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
           cleanup();
-          resolve(dataUrl);
+          resolve({ uri: dataUrl, width: canvas.width, height: canvas.height });
         };
 
         cancelButton.onclick = () => {
@@ -150,7 +151,7 @@ export const useIngredientUpload = () => {
     }
   };
 
-  const pickImageFromWebGallery = (): Promise<string | null> => {
+  const pickImageFromWebGallery = (): Promise<PickedImage | null> => {
     return new Promise((resolve) => {
       const input = document.createElement('input');
       input.type = 'file';
@@ -162,7 +163,11 @@ export const useIngredientUpload = () => {
         if (file) {
           const reader = new FileReader();
           reader.onloadend = () => {
-            resolve(reader.result as string);
+            const dataUrl = reader.result as string;
+            const image = new window.Image();
+            image.onload = () => resolve({ uri: dataUrl, width: image.naturalWidth, height: image.naturalHeight });
+            image.onerror = () => resolve(null);
+            image.src = dataUrl;
           };
           reader.onerror = () => {
             console.error('Failed to read file');
@@ -182,12 +187,11 @@ export const useIngredientUpload = () => {
     });
   };
 
-  const showIngredientUploadOptions = async (onImageSelected?: (uri: string) => void) => {
-    const handleImageSelected = async (picker: () => Promise<string | null>) => {
-      const uri = await picker();
-      if (uri) {
-        console.log('선택된 재료 이미지:', uri);
-        onImageSelected?.(uri);
+  const showIngredientUploadOptions = async (onImageSelected?: (image: PickedImage) => void) => {
+    const handleImageSelected = async (picker: () => Promise<PickedImage | null>) => {
+      const image = await picker();
+      if (image) {
+        onImageSelected?.(image);
       }
     };
 
