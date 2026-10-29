@@ -96,7 +96,8 @@ export const ShoppingPage: React.FC = () => {
                   <Text className="text-[18px] font-medium font-sans text-text-100">이번에 사면 좋을 재료</Text>
                   {available && monthLabel && (
                     <Text className="text-[12px] font-sans text-text-50">
-                      {monthLabel} 리포트를 바탕으로 추천했어요.
+                      {/* 서버 기준: 지난달 소비량 − 현재 보유량을 지난달 폐기 비율(폐기 ÷ (소비+폐기))만큼 줄인 양 */}
+                      {monthLabel}에 먹은 양에서 냉장고에 있는 양을 빼고,{'\n'}버린 비율만큼 줄여서 추천했어요.
                     </Text>
                   )}
                 </View>
