@@ -1,4 +1,6 @@
-import { Alert, ActionSheetIOS, Platform } from 'react-native';
+import { ActionSheetIOS, Platform } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
+import { pickImageFromLibrary } from '@/shared/lib/pickImage';
 import * as ImagePicker from 'expo-image-picker';
 import * as Device from 'expo-device';
 
@@ -68,24 +70,7 @@ export const useIngredientUpload = () => {
       return pickImageFromWebGallery();
     }
 
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (status !== 'granted') {
-      Alert.alert('권한 필요', '사진 라이브러리 접근 권한이 필요합니다.');
-      return null;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      quality: 0.8,
-    });
-
-    if (!result.canceled) {
-      return result.assets[0].uri;
-    }
-
-    return null;
+    return pickImageFromLibrary({ quality: 0.8 });
   };
 
   const pickImageFromWebCamera = async (): Promise<string | null> => {
@@ -126,11 +111,11 @@ export const useIngredientUpload = () => {
 
         const captureButton = document.createElement('button');
         captureButton.textContent = '📷 촬영';
-        captureButton.style.cssText = 'padding: 15px 30px; font-size: 18px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 5px;';
+        captureButton.style.cssText = 'padding: 15px 30px; font-size: 18px; cursor: pointer; background: #333333; color: #FAFAFA; border: none; border-radius: 5px;';
 
         const cancelButton = document.createElement('button');
         cancelButton.textContent = '❌ 취소';
-        cancelButton.style.cssText = 'padding: 15px 30px; font-size: 18px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 5px;';
+        cancelButton.style.cssText = 'padding: 15px 30px; font-size: 18px; cursor: pointer; background: #FF7171; color: #FAFAFA; border: none; border-radius: 5px;';
 
         buttonContainer.appendChild(captureButton);
         buttonContainer.appendChild(cancelButton);

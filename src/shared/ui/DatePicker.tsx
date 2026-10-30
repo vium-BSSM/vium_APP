@@ -41,11 +41,18 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     setShow(false);
   };
 
-  const formatDate = (date: Date): string => {
+  const formatDate = (date: Date, separator = '/'): string => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    return `${year}/${month}/${day}`;
+    return [year, month, day].join(separator);
+  };
+
+  // <input type="date">의 값(YYYY-MM-DD)을 로컬 날짜로 변환 (new Date(문자열)은 UTC 기준이라 하루 밀릴 수 있음)
+  const handleWebChange = (inputValue: string) => {
+    if (!inputValue) return;
+    const [year, month, day] = inputValue.split('-').map(Number);
+    onChange(new Date(year, month - 1, day));
   };
 
   return (
@@ -56,10 +63,25 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       <Pressable
         className="bg-neutral-50 rounded-lg px-2.5 h-[27px] w-[199px] justify-center"
         onPress={() => setShow(true)}
+        hitSlop={{ top: 8, bottom: 8 }}
       >
         <Text className="text-text15 font-sans" style={{ color: '#242529' }}>
           {formatDate(value)}
         </Text>
+
+        {/* 웹은 DateTimePicker가 없어 브라우저 기본 날짜 선택창을 투명하게 덮어 사용 */}
+        {Platform.OS === 'web' && (
+          <input
+            type="date"
+            value={formatDate(value, '-')}
+            min="2020-01-01"
+            max="2030-12-31"
+            onChange={(e) => handleWebChange(e.target.value)}
+            // 데스크톱 크롬은 입력칸을 눌러도 달력이 안 열려 직접 열어줌
+            onClick={(e) => e.currentTarget.showPicker?.()}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+          />
+        )}
       </Pressable>
 
       {show && Platform.OS === 'android' && (
@@ -67,6 +89,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           value={value}
           mode="date"
           display="default"
+          themeVariant="light"
           onChange={handleChange}
           maximumDate={new Date(2030, 11, 31)}
           minimumDate={new Date(2020, 0, 1)}
@@ -89,15 +112,15 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               onPress={(e) => e.stopPropagation()}
             >
               <View className="flex-row justify-between items-center px-4 py-3 border-b border-neutral-100 w-full">
-                <Pressable onPress={handleCancel}>
+                <Pressable onPress={handleCancel} hitSlop={12}>
                   <Text className="text-text16 text-neutral-400 font-sans">
                     취소
                   </Text>
                 </Pressable>
-                <Text className="text-subtitle font-normal text-text-100 font-sans">
+                <Text className="text-heading-md font-normal text-text-100 font-sans">
                   날짜 선택
                 </Text>
-                <Pressable onPress={handleConfirm}>
+                <Pressable onPress={handleConfirm} hitSlop={12}>
                   <Text className="text-text16 text-neutral-500 font-normal font-sans">
                     확인
                   </Text>
@@ -109,6 +132,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                   value={tempDate}
                   mode="date"
                   display="spinner"
+                  // 다크 모드에서 스피너 글자가 흰색이 되어 흰 모달 위에서 안 보이는 것 방지
+                  themeVariant="light"
                   onChange={handleChange}
                   maximumDate={new Date(2030, 11, 31)}
                   minimumDate={new Date(2020, 0, 1)}

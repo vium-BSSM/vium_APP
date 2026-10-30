@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Alert, TextInput, ActivityIndicator, Keyboard } from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput, Keyboard } from 'react-native';
 import { useRouter } from 'expo-router';
+import { pickImageFromLibrary } from '@/shared/lib/pickImage';
 import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, Button, AppHeader } from '@/shared/ui';
 import { useIngredientRegister } from '../lib/useIngredientRegister';
+import { toDateString } from '../lib/dateUtils';
 import { StorageMethodSelect, STORAGE_METHOD_OPTIONS } from '../ui/StorageMethodSelect';
 import { useIngredientCatalogSearch } from '../lib/useIngredientCatalogSearch';
 import { CatalogSuggestions } from '../ui/CatalogSuggestions';
 import { IngredientCatalogItem } from '../types';
-import * as ImagePicker from 'expo-image-picker';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const FridgeAddPage: React.FC = () => {
@@ -25,22 +26,8 @@ export const FridgeAddPage: React.FC = () => {
   const [expiryDate, setExpiryDate] = useState(new Date());
 
   const handleImagePick = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('권한 필요', '사진 라이브러리 접근 권한이 필요합니다.');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'images' as any,
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setImageUri(result.assets[0].uri);
-    }
+    const uri = await pickImageFromLibrary({ aspect: [16, 9] });
+    if (uri) setImageUri(uri);
   };
 
   const { items: catalogItems, isLoading: isSearchingCatalog } = useIngredientCatalogSearch(name, catalogItem === null);
@@ -63,13 +50,6 @@ export const FridgeAddPage: React.FC = () => {
     setUnitLabel(label);
   };
 
-  const formatDateToString = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
   const handleRegister = async () => {
     const success = await register({
       name,
@@ -78,8 +58,8 @@ export const FridgeAddPage: React.FC = () => {
       unitId,
       storageMethodId,
       price,
-      registeredDate: formatDateToString(registeredDate),
-      expiryDate: formatDateToString(expiryDate),
+      registeredDate: toDateString(registeredDate),
+      expiryDate: toDateString(expiryDate),
       imageUri,
     });
 
@@ -99,7 +79,7 @@ export const FridgeAddPage: React.FC = () => {
         <AppHeader />
 
         <View className="px-screen gap-10 pt-10">
-          <Pressable onPress={() => router.back()}>
+          <Pressable onPress={() => router.back()} hitSlop={8} className="self-start">
             <BackIcon width={30} height={30} />
           </Pressable>
 
@@ -108,12 +88,12 @@ export const FridgeAddPage: React.FC = () => {
 
             <View className="gap-2">
               <TextInput
-                className="text-title font-medium font-sans"
+                className="text-heading-lg font-medium font-sans"
                 style={{ fontFamily: 'Paperlogy' }}
                 value={name}
                 onChangeText={handleNameChange}
                 placeholder="입력해주세요"
-                placeholderTextColor="#878787"
+                placeholderTextColor="#767676"
               />
               {catalogItem ? (
                 <Text className="text-text14 font-sans text-primary-800">기본 식재료로 등록돼요 · 레시피 추천에 쓰여요</Text>
@@ -158,21 +138,10 @@ export const FridgeAddPage: React.FC = () => {
         </View>
       </ScrollView>
 
-      <View className="px-12 pt-4 pb-[100px] items-center">
-        {/* 등록 중에도 버튼 크기가 바뀌지 않도록 높이 고정, 내용만 교체 */}
-        <Pressable
-          className={`bg-neutral-500 rounded-3xl items-center justify-center px-2.5 h-[54px] w-[299px] ${isLoading ? 'opacity-70' : ''}`}
-          onPress={handleRegister}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text className="text-text-400 text-subtitle text-center font-sans">
-              등록하기
-            </Text>
-          )}
-        </Pressable>
+      <View className="w-full items-center pb-[100px]">
+        <Button onPress={handleRegister} loading={isLoading}>
+          등록하기
+        </Button>
       </View>
     </View>
   );

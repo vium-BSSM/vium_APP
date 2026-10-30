@@ -66,7 +66,7 @@ export const ShoppingPage: React.FC = () => {
       <View className="px-screen pt-10 pb-4">
         <Pressable onPress={handleBack} className="flex-row items-center gap-4 self-start" hitSlop={8}>
           <BackIcon width={30} height={30} color="#242529" />
-          <Text className="text-title font-medium font-sans text-text-100">장보기 도우미</Text>
+          <Text className="text-heading-lg font-medium font-sans text-text-100">장보기 도우미</Text>
         </Pressable>
       </View>
 

@@ -52,6 +52,7 @@ export const LabelInputWithUnit: React.FC<LabelInputWithUnitProps> = ({
           <Pressable
             className="bg-neutral-50 rounded-lg px-2.5 h-[27px] w-[50px] justify-center items-center"
             onPress={() => setShowUnitModal(true)}
+            hitSlop={{ top: 8, bottom: 8 }}
           >
             <Text className="text-text15 font-sans" style={{ color: selectedUnit ? '#242529' : '#767676' }}>
               {selectedUnit?.label || '단위'}

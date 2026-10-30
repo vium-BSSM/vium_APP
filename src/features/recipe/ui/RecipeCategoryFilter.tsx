@@ -26,7 +26,7 @@ export const RecipeCategoryFilter: React.FC<RecipeCategoryFilterProps> = ({
             key={category}
             onPress={() => onSelect(category)}
             className={`h-8 min-w-[55px] px-3 items-center justify-center rounded-2xl border-[3px] ${
-              isActive ? 'bg-primary-500 border-primary-300' : 'bg-neutral-50 border-neutral-50'
+              isActive ? 'bg-primary-400 border-primary-200' : 'bg-neutral-10 border-neutral-10'
             }`}
           >
             <Text className="text-text14 font-sans text-text-50">{category}</Text>

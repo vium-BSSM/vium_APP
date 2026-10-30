@@ -18,7 +18,7 @@ export const FridgeDetailPage = () => {
   if (isLoading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator size="large" color="#00D1A7" />
+        <ActivityIndicator size="large" color="#A2CD87" />
         <Text className="mt-4 text-text14 text-text-200 font-sans">재료 정보를 불러오는 중...</Text>
       </View>
     );
@@ -45,6 +45,7 @@ export const FridgeDetailPage = () => {
         <View className="px-screen pt-8">
           <TouchableOpacity
             onPress={() => router.back()}
+            hitSlop={8}
             className="w-[30px] h-[30px] items-center justify-center"
           >
             <BackIcon width={30} height={30} />
@@ -60,7 +61,7 @@ export const FridgeDetailPage = () => {
             <View className="pt-6 px-2.5">
               <View className="flex-row justify-between items-center h-8 mb-[32px]">
                 <View className="flex-row items-center gap-2 flex-1 mr-3">
-                  <Text numberOfLines={1} className="text-title font-bold font-sans text-text-100 shrink">
+                  <Text numberOfLines={1} className="text-heading-lg font-bold font-sans text-text-100 shrink">
                     {item.title}
                   </Text>
                   <Pressable

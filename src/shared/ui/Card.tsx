@@ -28,54 +28,39 @@ export const Card: React.FC<CardProps> = ({
     return (
       <Pressable onPress={onPress}>
         <View
-          className="w-full aspect-[111/140] bg-white rounded-lg border-2 border-dashed border-neutral-100 items-center justify-center"
+          className="w-full aspect-[111/140] bg-white rounded-lg border-2 border-dashed border-neutral-300 items-center justify-center"
           style={style}
         >
-          <Text className="text-neutral-300 text-[40px] md:text-[48px] font-sans">+</Text>
+          <Text className="text-neutral-300 text-heading-lg md:text-[28px] font-medium font-sans">+</Text>
         </View>
       </Pressable>
     );
   }
 
   const content = (
-    <View className="w-full aspect-[111/140] bg-white rounded-lg border-2 border-neutral-400" style={style}>
-      <View className="flex-1 flex-col">
-        <View className="p-2">
-          <View className="w-full aspect-[20/15] bg-neutral-10 rounded items-center justify-center">
-            {image ? (
-              <Image source={image} contentFit="cover" className="w-full h-full rounded" />
-            ) : (
-              <View className="w-full h-full bg-neutral-10 rounded" />
-            )}
-          </View>
+    <View className="w-full aspect-[111/140] bg-white rounded-lg border-2 border-neutral-100 p-2.5 gap-[7px]" style={style}>
+      <View className="flex-1 w-full bg-neutral-10">
+        {image && <Image source={image} contentFit="cover" className="w-full h-full" />}
+      </View>
 
-          <View className="flex-row items-start justify-between gap-1 mt-1">
-            <Text
-              className="text-text-100 text-text14 md:text-text15 font-medium font-sans flex-1"
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {title}
-            </Text>
-            {visible && status && (
-              <View className="mt-0.5">
-                <StateBall state={status} />
-              </View>
-            )}
-          </View>
-        </View>
-
-        <View className="flex-1" />
-
-        <View className="px-2 pb-2">
+      <View className="gap-1">
+        <View className="flex-row items-center justify-between gap-1">
           <Text
-            className="text-text-200 text-[12px] md:text-[13px] font-sans"
+            className="text-black text-text14 md:text-text15 font-medium font-sans flex-1"
             numberOfLines={1}
             ellipsizeMode="tail"
           >
-            {subtitle}
+            {title}
           </Text>
+          {visible && status && <StateBall state={status} />}
         </View>
+        <Text
+          className="text-black text-text10 md:text-text12 font-light font-sans"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {subtitle}
+        </Text>
       </View>
     </View>
   );

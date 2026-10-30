@@ -32,6 +32,7 @@ export const mapRecipeCard = (card: RecipeCard): RecipeListItem => ({
   cookTimeMinutes: card.cookTime,
   category: CATEGORY_BY_CODE[card.category] ?? '전체',
   tags: card.usedIngredients.slice(0, 3).map((ingredient) => `#${ingredient.name}`),
+  ingredientNames: card.usedIngredients.map((ingredient) => ingredient.name),
 });
 
 export const mapRecipeDetail = (detail: RecipeDetailData): RecipeDetail => ({
@@ -41,6 +42,7 @@ export const mapRecipeDetail = (detail: RecipeDetailData): RecipeDetail => ({
   category: CATEGORY_BY_CODE[detail.category] ?? '전체',
   image: detail.imageUrl ?? undefined,
   tags: detail.ingredients.slice(0, 3).map((ingredient) => `#${ingredient.name}`),
+  ingredientNames: detail.ingredients.filter((ingredient) => ingredient.inventoryId != null).map((ingredient) => ingredient.name),
   // 같은 카탈로그 재료가 두 번 나올 수 있어 순번을 id로 사용
   ingredients: detail.ingredients.map((ingredient, index) => ({
     id: index + 1,

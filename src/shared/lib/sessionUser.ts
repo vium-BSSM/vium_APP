@@ -1,76 +1,76 @@
-import { useSyncExternalStore } from 'react';
+import { useEffect } from 'react';
+import { create } from 'zustand';
 import { getItem, removeItem, setItem } from './secureStorage';
 
-/**
- * 로그인한 사용자 정보.
- * 로그인 응답으로 저장하고, 화면 진입 시 GET /api/me 응답으로 갱신합니다.
- */
+
 export interface SessionUser {
   id: number;
   email: string;
   displayName: string;
 }
 
+interface SessionState {
+  user: SessionUser | null;
+  isReady: boolean;
+}
+
 const SESSION_USER_KEY = 'sessionUser';
 
-let state: SessionUser | null = null;
+// persist 미들웨어 대신 직접 복원: 복원 중에 로그인·로그아웃이 먼저 일어나면 복원 결과로 덮어쓰지 않도록 version으로 구분
+const useSessionStore = create<SessionState>()(() => ({ user: null, isReady: false }));
 let hasLoaded = false;
-// 저장소에서 읽기를 마쳤는지 (읽는 중에는 로그아웃 상태로 오판하지 않도록 구분)
-let isReady = false;
-// 저장소 로딩 중에 set/clear가 먼저 일어나면 로딩 결과로 덮어쓰지 않도록 구분
 let version = 0;
-const listeners = new Set<() => void>();
-
-const emit = () => listeners.forEach((listener) => listener());
 
 const load = async () => {
   const loadVersion = version;
+  let user: SessionUser | null = null;
   try {
     const raw = await getItem(SESSION_USER_KEY);
-    if (loadVersion !== version) return;
-    state = raw ? (JSON.parse(raw) as SessionUser) : null;
+    user = raw ? (JSON.parse(raw) as SessionUser) : null;
   } catch (err) {
     console.error('Failed to load session user:', err);
   } finally {
     if (loadVersion === version) {
-      isReady = true;
-      emit();
+      useSessionStore.setState({ user, isReady: true });
     }
   }
 };
 
-const subscribe = (listener: () => void) => {
-  listeners.add(listener);
-  if (!hasLoaded) {
-    hasLoaded = true;
-    load();
-  }
-  return () => listeners.delete(listener);
+// 처음 구독할 때 한 번만 저장소에서 읽음 (모듈을 불러오는 시점에는 읽지 않음)
+const ensureLoaded = () => {
+  if (hasLoaded) return;
+  hasLoaded = true;
+  load();
 };
 
-const getSnapshot = () => state;
-const getReadySnapshot = () => isReady;
+const replaceUser = (user: SessionUser | null) => {
+  version += 1;
+  hasLoaded = true;
+  useSessionStore.setState({ user, isReady: true });
+};
 
 export const sessionUserStore = {
-  getState: () => state,
+  getState: () => useSessionStore.getState().user,
+  subscribe: (listener: () => void) => {
+    ensureLoaded();
+    return useSessionStore.subscribe(listener);
+  },
   set: async (user: SessionUser) => {
-    version += 1;
-    hasLoaded = true;
-    isReady = true;
-    state = user;
-    emit();
+    replaceUser(user);
     await setItem(SESSION_USER_KEY, JSON.stringify(user));
   },
   clear: async () => {
-    version += 1;
-    hasLoaded = true;
-    isReady = true;
-    state = null;
-    emit();
+    replaceUser(null);
     await removeItem(SESSION_USER_KEY);
   },
 };
 
-export const useSessionUser = () => useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+export const useSessionUser = () => {
+  useEffect(ensureLoaded, []);
+  return useSessionStore((state) => state.user);
+};
 
-export const useIsSessionReady = () => useSyncExternalStore(subscribe, getReadySnapshot, getReadySnapshot);
+export const useIsSessionReady = () => {
+  useEffect(ensureLoaded, []);
+  return useSessionStore((state) => state.isReady);
+};

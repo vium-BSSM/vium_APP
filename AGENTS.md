@@ -72,7 +72,7 @@ Route groups like `(tabs)` do not appear in URLs — `/fridge/3` maps to `app/(t
 ### Design System
 All design tokens are defined in `tailwind.config.js`:
 - **Colors**: primary, secondary, neutral, text
-- **Font sizes**: title, subtitle, text16, text15, text14
+- **Font sizes**: heading-lg, heading-md, text18, text16, text15, text14, text12, text10
 - **Font family**: Paperlogy (default sans)
 
 ### NativeWind + Tailwind CSS
@@ -90,7 +90,7 @@ All design tokens are defined in `tailwind.config.js`:
 ### Example Component Styling
 ```tsx
 <View className="flex-1 bg-white px-4">
-  <Text className="text-title font-bold text-text-100 font-sans">
+  <Text className="text-heading-lg font-bold text-text-100 font-sans">
     Title
   </Text>
   <Text className="text-text14 text-text-200 font-sans">
@@ -152,6 +152,9 @@ const [fontsLoaded] = useFonts({
 - **Banner**: Banner component
 - **AddButton**: Floating action button with icons
 - **NavBar**: Navigation bar
+- **PageTitle**: Screen heading text (24 → md 28 → lg 32px), spacing via className
+- **HomeHeader**: 홈·냉장고 공통 상단 (로고·알림·프로필 + 오늘의 추천/내 식재료 탭)
+- **MenuList**: 화살표가 붙은 메뉴 목록 (홈 하단, 마이페이지)
 - **UnitPickerModal**: Unit selection modal (`UNIT_OPTIONS` matches backend unit IDs)
 
 ### Component Props Pattern
@@ -411,6 +414,19 @@ try {
 import { useState } from 'react';
 
 const [value, setValue] = useState('');
+```
+
+Shared state across screens (multi-step flows, session) uses **zustand**.
+Keep the store in the feature's `lib/` and expose a hook + plain functions; subscribe with selectors.
+```tsx
+// features/fridge/lib/fridgeCleanupStore.ts
+const useCleanupStore = create<CleanupState>()((set) => ({
+  items: [],
+  reset: () => set({ items: [] }),
+}));
+
+const items = useCleanupStore((state) => state.items); // inside components
+useCleanupStore.getState().reset();                     // outside React
 ```
 
 ### Form Inputs

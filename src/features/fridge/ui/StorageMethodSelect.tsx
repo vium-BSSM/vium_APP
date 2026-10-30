@@ -25,6 +25,7 @@ export const StorageMethodSelect: React.FC<StorageMethodSelectProps> = ({ label,
             <Pressable
               key={option.id}
               onPress={() => onChange(option.id)}
+              hitSlop={{ top: 8, bottom: 8 }}
               className={`flex-1 h-[27px] rounded-lg items-center justify-center ${
                 isSelected ? 'bg-primary-400 border border-primary-200' : 'bg-neutral-50'
               }`}

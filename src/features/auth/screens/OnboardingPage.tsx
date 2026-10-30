@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Button } from '@/shared/ui/Button';
 import { router } from 'expo-router';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, PageTitle } from '@/shared/ui';
 
 const SHOPPING_FREQUENCY_OPTIONS = [
   '3일에 한 번',
@@ -27,9 +27,9 @@ export const OnboardingPage = () => {
         </View>
         <View className="w-full max-w-[480px]">
           <View>
-            <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 mb-[9px] font-sans">
+            <PageTitle className="mb-[9px]">
               마지막으로{'\n'}얼마나 자주 장을 보시나요?
-            </Text>
+            </PageTitle>
             <Text className="text-text14 md:text-text15 text-text-200 mb-[49px] font-sans">
               냉장고 정리 알림에 참고해요!
             </Text>

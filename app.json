@@ -5,28 +5,35 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "viumapp",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vium.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#B2E194"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
-      "output": "static"
+      "output": "static",
+      "favicon": "./public/favicon.png",
+      "name": "ViUM",
+      "shortName": "ViUM",
+      "themeColor": "#ffffff",
+      "backgroundColor": "#ffffff"
     },
     "plugins": [
-      [
-        "expo-router",
-        {
-          "root": "./app"
-        }
-      ],
+      "expo-router",
       [
         "expo-splash-screen",
         {
@@ -64,9 +71,6 @@
       "reactCompiler": true
     },
     "extra": {
-      "router": {
-        "root": "./app"
-      },
       "eas": {
         "projectId": "061074a9-2855-4362-9833-31427026dd41"
       },

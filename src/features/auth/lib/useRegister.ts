@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { isAxiosError } from 'axios';
 import { login as loginApi, register as registerApi } from '../api/authApi';
 import { saveSession } from './saveSession';

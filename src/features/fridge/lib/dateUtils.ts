@@ -23,9 +23,10 @@ export const getDaysDifference = (targetDate: string, baseDate?: Date): number =
   return diffDays;
 };
 
-export const calculateStatus = (expiresOn: string): FridgeItemStatus => {
-  const daysLeft = getDaysDifference(expiresOn);
-
+/**
+ * 소비기한까지 남은 일수로 신선도 상태 계산
+ */
+export const calculateStatus = (daysLeft: number): FridgeItemStatus => {
   if (daysLeft <= 5) {
     return '위험';
   } else if (daysLeft <= 14) {
@@ -36,12 +37,10 @@ export const calculateStatus = (expiresOn: string): FridgeItemStatus => {
 };
 
 /**
- * D-day 형태의 문자열 생성
+ * 소비기한까지 남은 일수로 D-day 형태의 문자열 생성
  * 예: "소비기한 D-3"
  */
-export const formatDday = (expiresOn: string): string => {
-  const daysLeft = getDaysDifference(expiresOn);
-
+export const formatDday = (daysLeft: number): string => {
   if (daysLeft < 0) {
     return `소비기한 D+${Math.abs(daysLeft)}`;
   } else if (daysLeft === 0) {

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Alert, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
-import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, AppHeader } from '@/shared/ui';
+import { pickImageFromLibrary } from '@/shared/lib/pickImage';
+import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, AppHeader, Button } from '@/shared/ui';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 import { useIngredientDetail } from '../lib/useIngredientDetail';
 import { useIngredientEdit } from '../lib/useIngredientEdit';
@@ -19,7 +19,7 @@ export const FridgeEditPage: React.FC = () => {
   if (isLoading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator size="large" color="#00D1A7" />
+        <ActivityIndicator size="large" color="#A2CD87" />
       </View>
     );
   }
@@ -58,22 +58,8 @@ const FridgeEditForm: React.FC<{ ingredient: IngredientApiResponse }> = ({ ingre
 
   // TODO: 이미지 업로드 API 연동 전 — 등록 화면과 동일하게 선택만 가능
   const handleImagePick = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('권한 필요', '사진 라이브러리 접근 권한이 필요합니다.');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'images' as any,
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setImageUri(result.assets[0].uri);
-    }
+    const uri = await pickImageFromLibrary({ aspect: [16, 9] });
+    if (uri) setImageUri(uri);
   };
 
   const handleSave = async () => {
@@ -91,24 +77,25 @@ const FridgeEditForm: React.FC<{ ingredient: IngredientApiResponse }> = ({ ingre
       >
         <AppHeader />
 
-        <View className="px-screen gap-10 pt-10">
-          <Pressable onPress={() => router.back()} hitSlop={8}>
+        {/* 넓은 화면(웹·태블릿)에서도 폼이 왼쪽에 붙지 않고 하단 버튼과 같은 중앙 열에 오도록 */}
+        <View className="px-screen gap-10 pt-10 w-full max-w-[394px] self-center">
+          <Pressable onPress={() => router.back()} hitSlop={8} className="self-start">
             <BackIcon width={30} height={30} />
           </Pressable>
 
-          <View className="gap-6 w-full max-w-[346px]">
+          <View className="gap-6 w-full">
             <ImageUpload imageUri={imageUri} onPress={handleImagePick} />
 
             <View className="gap-[5px]">
               <TextInput
-                className={`text-title font-medium font-sans ${isCatalogItem ? 'text-neutral-300' : 'text-text-100'}`}
+                className={`text-heading-lg font-medium font-sans ${isCatalogItem ? 'text-neutral-300' : 'text-text-100'}`}
                 style={{ fontFamily: 'Paperlogy' }}
                 value={name}
                 onChangeText={setName}
                 editable={!isCatalogItem}
                 maxLength={120}
                 placeholder="입력해주세요"
-                placeholderTextColor="#878787"
+                placeholderTextColor="#767676"
               />
               {isCatalogItem && (
                 <Text className="text-text14 font-sans text-text-300">기본 식재료는 이름을 수정할 수 없어요</Text>
@@ -146,19 +133,10 @@ const FridgeEditForm: React.FC<{ ingredient: IngredientApiResponse }> = ({ ingre
         </View>
       </ScrollView>
 
-      <View className="px-12 pt-4 pb-[100px] items-center">
-        {/* 저장 중에도 버튼 크기가 바뀌지 않도록 높이 고정, 내용만 교체 */}
-        <Pressable
-          className={`bg-neutral-500 rounded-3xl items-center justify-center px-2.5 h-[54px] w-[299px] ${isSaving ? 'opacity-70' : ''}`}
-          onPress={handleSave}
-          disabled={isSaving}
-        >
-          {isSaving ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text className="text-text-400 text-subtitle text-center font-sans">수정 완료</Text>
-          )}
-        </Pressable>
+      <View className="w-full items-center pb-[100px]">
+        <Button onPress={handleSave} loading={isSaving}>
+          수정 완료
+        </Button>
       </View>
     </View>
   );

@@ -33,7 +33,7 @@ export const UnitPickerModal: React.FC<UnitPickerModalProps> = ({ visible, selec
       <Pressable className="flex-1 bg-black/50 justify-center items-center" onPress={onClose}>
         <Pressable className="bg-white rounded-2xl w-[280px] max-h-[400px]" onPress={(e) => e.stopPropagation()}>
           <View className="py-4 border-b border-neutral-100">
-            <Text className="text-subtitle font-normal text-center font-sans text-text-100">단위 선택</Text>
+            <Text className="text-heading-md font-normal text-center font-sans text-black">단위 선택</Text>
           </View>
           <ScrollView className="max-h-[300px]">
             {UNIT_OPTIONS.map((option) => (

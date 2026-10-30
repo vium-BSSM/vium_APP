@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, Alert } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { useSignUpCredentials } from '../lib/useSignUpCredentials';
 import { Button } from '@/shared/ui/Button';
 import { InputBox } from '@/shared/ui/InputBox';
 import { router } from 'expo-router';
-import { SocialLoginButtons } from '../ui/SocialLoginButtons';
-import { AppHeader } from '@/shared/ui';
+import { AppHeader, PageTitle } from '@/shared/ui';
 
 export const SignUpPage = () => {
   const [email, setEmail] = useState('');
@@ -31,13 +31,13 @@ export const SignUpPage = () => {
           <AppHeader />
         </View>
         <View className="w-full max-w-[480px]">
-          <View className="mb-[35px]">
-            <Text className="text-title md:text-[28px] lg:text-[32px] font-medium text-text-100 mb-[67px] font-sans">
+          <View>
+            <PageTitle className="mb-[67px]">
               어서오세요,{'\n'}비움이 처음이신가요?
-            </Text>
+            </PageTitle>
 
             <View>
-              <Text className="text-text16 md:text-[18px] font-medium text-text-100 mb-[14px] font-sans">
+              <Text className="text-text16 md:text-text18 font-medium text-text-100 mb-[14px] font-sans">
                 회원가입
               </Text>
               <View className="gap-4">
@@ -56,6 +56,7 @@ export const SignUpPage = () => {
                   />
                   <Pressable
                     onPress={handleCheckDuplicate}
+                    hitSlop={{ top: 6, bottom: 6 }}
                     className="w-[72px] py-1.5 bg-primary-400 border-2 border-primary-200 rounded-lg items-center justify-center"
                   >
                     <Text className="text-text14 text-text-100 font-sans">중복 확인</Text>
@@ -84,15 +85,25 @@ export const SignUpPage = () => {
               </View>
             </View>
           </View>
-
-          <View className="items-center">
-            {/* TODO: 소셜 회원가입 연동 */}
-            <SocialLoginButtons label="SNS 계정으로 빠른 회원가입" />
-          </View>
         </View>
       </View>
 
       <View className="w-full items-center pb-[100px]">
+        <View className="flex-row items-center mb-2">
+          <Text className="text-text14 md:text-text15 text-text-300 font-sans">
+            이미 계정이 있나요?{' '}
+          </Text>
+          {/* 로그인 화면에서 push로 들어오므로 back으로 돌아가 스택이 쌓이지 않게 함 */}
+          <Pressable
+            onPress={() => (router.canGoBack() ? router.back() : router.replace('/login'))}
+            hitSlop={8}
+          >
+            <Text className="text-text14 md:text-text15 text-text-100 font-medium font-sans">
+              로그인하기
+            </Text>
+          </Pressable>
+        </View>
+
         <Button onPress={handleSignUp}>
           회원가입
         </Button>

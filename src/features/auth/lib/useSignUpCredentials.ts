@@ -1,4 +1,4 @@
-import { Alert } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { signUpDraftStore } from './signUpDraftStore';
 import { PASSWORD_MIN_LENGTH, isPasswordTooLong, isValidEmail } from './validators';
 

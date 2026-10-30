@@ -2,8 +2,7 @@ import React from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { Button, AppHeader } from '@/shared/ui';
-import BackIcon from '@/../assets/icons/back-icon.svg';
+import { Button, AppHeader, BackTitle } from '@/shared/ui';
 import PhotoIcon from '@/../assets/icons/photo-icon.svg';
 import { NICKNAME_MAX_LENGTH, useProfileEdit } from '../lib/useProfileEdit';
 
@@ -36,10 +35,7 @@ export const ProfileEditPage: React.FC = () => {
       >
         <AppHeader />
         <View className="px-screen md:px-10 lg:px-20 pt-10">
-          <Pressable onPress={() => router.back()} className="flex-row items-center gap-4 self-start">
-            <BackIcon width={30} height={30} color="#000000" />
-            <Text className="text-title font-medium font-sans text-black">프로필 수정</Text>
-          </Pressable>
+          <BackTitle title="프로필 수정" />
         </View>
 
         <View className="flex-1 items-center px-screen pt-[55px]">
@@ -52,6 +48,7 @@ export const ProfileEditPage: React.FC = () => {
               </View>
               <Pressable
                 onPress={pickImage}
+                hitSlop={4}
                 className="absolute bottom-0 right-0 w-9 h-9"
               >
                 <PhotoIcon width={36} height={36} />
@@ -62,7 +59,7 @@ export const ProfileEditPage: React.FC = () => {
               <Text className="text-text14 font-sans text-text-300">닉네임</Text>
               <View className="flex-row items-center justify-between">
                 <TextInput
-                  className="flex-1 text-subtitle font-sans text-text-100"
+                  className="flex-1 text-heading-md font-sans text-text-100"
                   style={{ fontFamily: 'Paperlogy' }}
                   value={nickname}
                   onChangeText={setNickname}
@@ -71,8 +68,8 @@ export const ProfileEditPage: React.FC = () => {
                   maxLength={NICKNAME_MAX_LENGTH}
                 />
                 {nickname.length > 0 && (
-                  <Pressable onPress={clearNickname} className="w-6 h-6 items-center justify-center">
-                    <Text className="text-[18px] font-sans text-text-100">✕</Text>
+                  <Pressable onPress={clearNickname} hitSlop={10} className="w-6 h-6 items-center justify-center">
+                    <Text className="text-text18 font-sans text-text-100">✕</Text>
                   </Pressable>
                 )}
               </View>
@@ -84,7 +81,7 @@ export const ProfileEditPage: React.FC = () => {
 
             <View className="w-full gap-2">
               <Text className="text-text14 font-sans text-text-300">아이디</Text>
-              <Text className="text-subtitle font-sans text-neutral-200">@{handle}</Text>
+              <Text className="text-heading-md font-sans text-neutral-200">@{handle}</Text>
               <View className="h-[2px] bg-neutral-50 rounded-full" />
             </View>
           </View>
