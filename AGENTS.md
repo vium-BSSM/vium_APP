@@ -155,6 +155,7 @@ const [fontsLoaded] = useFonts({
 - **PageTitle**: Screen heading text (24 → md 28 → lg 32px), spacing via className
 - **HomeHeader**: 홈·냉장고 공통 상단 (로고·알림·프로필 + 오늘의 추천/내 식재료 탭)
 - **MenuList**: 화살표가 붙은 메뉴 목록 (홈 하단, 마이페이지)
+- **UnitPickerModal**: Unit selection modal (`UNIT_OPTIONS` matches backend unit IDs)
 
 ### Component Props Pattern
 ```tsx
