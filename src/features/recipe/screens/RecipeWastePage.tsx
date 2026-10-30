@@ -52,7 +52,7 @@ export const RecipeWastePage: React.FC = () => {
                   <BackIcon width={30} height={30} />
                 </Pressable>
                 <Text className="text-title font-medium font-sans text-neutral-600">
-                  맛있게 드셨나요?{'\n'}재료 사용량 조사를 시작할게요!
+                  맛있게 드셨나요?{'\n'}재료를 얼마나 남겼는지 말해주세요
                 </Text>
               </View>
 
