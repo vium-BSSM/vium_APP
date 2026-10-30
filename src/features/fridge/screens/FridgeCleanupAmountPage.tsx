@@ -1,15 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import Slider from '@react-native-community/slider';
 import { useRouter } from 'expo-router';
 import { useFridgeCleanupStore } from '../lib/fridgeCleanupStore';
 import { useFridgeCleanupFinish } from '../lib/useFridgeCleanupFinish';
-import { AppHeader, Button, PageTitle } from '@/shared/ui';
+import { AppHeader, Button, PageTitle, QuantitySlider } from '@/shared/ui';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const FridgeCleanupAmountPage: React.FC = () => {
   const router = useRouter();
-  const { items, setRemainingPercent, reset } = useFridgeCleanupStore();
+  const { items, setRemainingAmount, reset } = useFridgeCleanupStore();
   const { finish, isSubmitting } = useFridgeCleanupFinish();
   const isFinishingRef = useRef(false);
 
@@ -61,22 +60,12 @@ export const FridgeCleanupAmountPage: React.FC = () => {
                   <Text className="text-heading-md font-medium font-sans text-text-100">
                     {item.title}
                   </Text>
-                  <View className="gap-2">
-                    <View className="flex-row items-center justify-between">
-                      <Text className="text-text14 font-sans text-neutral-400">0%</Text>
-                      <Text className="text-text14 font-sans text-neutral-400">100%</Text>
-                    </View>
-                    <Slider
-                      minimumValue={0}
-                      maximumValue={100}
-                      step={1}
-                      value={item.remainingPercent}
-                      minimumTrackTintColor="#A2CD87"
-                      maximumTrackTintColor="#EBEBEB"
-                      thumbTintColor="#EBEBEB"
-                      onValueChange={(value) => setRemainingPercent(item.id, value)}
-                    />
-                  </View>
+                  <QuantitySlider
+                    value={item.remainingAmount}
+                    max={item.remainingQuantity}
+                    unit={item.unit}
+                    onChange={(value) => setRemainingAmount(item.id, value)}
+                  />
                 </View>
               ))}
             </View>

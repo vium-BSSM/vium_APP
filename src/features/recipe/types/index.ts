@@ -66,6 +66,12 @@ export interface RecipeDetailApiResponse {
 }
 
 export interface RecipeCompleteRequest {
-  // usageRate: 남은 재고 중 이번 요리에 사용한 비율 (0~100)
-  usages: { inventoryId: number; usageRate: number }[];
+  // usageRate(0~100) 또는 usedQuantity 중 하나만 보냄
+  // wasteQuantity: 사용한 양 중 버린 양 (일반 폐기와 같은 규칙, usedQuantity 이하)
+  usages: {
+    inventoryId: number;
+    usageRate?: number;
+    usedQuantity?: number;
+    wasteQuantity?: number;
+  }[];
 }

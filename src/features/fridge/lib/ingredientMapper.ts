@@ -1,9 +1,12 @@
-import { FridgeItem, FridgeItemDetail, IngredientApiResponse } from '../types';
+import { FridgeItem, FridgeItemDetail, IngredientApiResponse, IngredientListItemApiResponse } from '../types';
 import { calculateStatus, formatDate, formatDateWithSuffix, formatDday, getDaysDifference } from './dateUtils';
 import { getIngredientImage } from './ingredientImageFixtures';
 
-// 목록 카드에 필요한 필드만 매핑 (상세 전용 포맷팅은 하지 않음)
-const mapIngredientToListItem = (ingredient: IngredientApiResponse, baseDate: Date): FridgeItem => {
+// 목록 카드에 필요한 필드만 매핑 — 목록·상세 응답 공통 필드만 사용
+const mapIngredientToListItem = (
+  ingredient: IngredientListItemApiResponse | IngredientApiResponse,
+  baseDate: Date
+): FridgeItem => {
   const daysLeft = getDaysDifference(ingredient.expiresOn, baseDate);
 
   return {
@@ -12,6 +15,8 @@ const mapIngredientToListItem = (ingredient: IngredientApiResponse, baseDate: Da
     subtitle: formatDday(daysLeft),
     status: calculateStatus(daysLeft),
     remainingQuantity: ingredient.remainingQuantity,
+    unit: ingredient.unit,
+    storageMethodId: ingredient.storageMethodId,
     image: getIngredientImage(ingredient.name),
     expiresOn: ingredient.expiresOn,
   };
@@ -33,7 +38,9 @@ export const mapIngredientToFridgeItem = (
   };
 };
 
-export const mapIngredientsToFridgeItems = (ingredients: IngredientApiResponse[]): FridgeItem[] => {
+export const mapIngredientsToFridgeItems = (
+  ingredients: IngredientListItemApiResponse[]
+): FridgeItem[] => {
   // 기준일을 한 번만 구해 모든 재료에 동일하게 적용 (자정 경계에서 항목별 기준일이 달라지는 것 방지)
   const today = new Date();
   return ingredients.map((ingredient) => mapIngredientToListItem(ingredient, today));

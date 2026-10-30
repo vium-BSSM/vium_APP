@@ -22,4 +22,5 @@ export type { HomeTab } from './HomeHeader';
 export { BackTitle } from './BackTitle';
 export { ComingSoon } from './ComingSoon';
 export { PageTitle } from './PageTitle';
+export { QuantitySlider } from './QuantitySlider';
 export { MenuList } from './MenuList';
