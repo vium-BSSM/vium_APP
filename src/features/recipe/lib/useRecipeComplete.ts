@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { isAxiosError } from 'axios';
 import { completeRecipe } from '../api/recipesApi';
 import { RecipeCompleteRequest } from '../types';

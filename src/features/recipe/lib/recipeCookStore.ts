@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { create } from 'zustand';
 import { InventoryQuantity } from '@/features/fridge';
 import { RecipeIngredient } from '../types';
 
@@ -13,72 +13,60 @@ export interface CookUsageItem extends RecipeIngredient {
 interface CookState {
   recipeId: number | null;
   items: CookUsageItem[];
+  startCookCompletion: (recipeId: number, ingredients: RecipeIngredient[]) => void;
+  applyInventoryQuantities: (quantities: Map<number, InventoryQuantity>) => void;
+  setRemainingAmount: (id: number, amount: number) => void;
+  reset: () => void;
 }
 
-let state: CookState = { recipeId: null, items: [] };
-const listeners = new Set<() => void>();
-
-const emit = () => listeners.forEach((listener) => listener());
-
-const subscribe = (listener: () => void) => {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-};
-
-const getSnapshot = () => state;
-
-const startCookCompletion = (recipeId: number, ingredients: RecipeIngredient[]) => {
-  state = {
-    recipeId,
-    items: ingredients.map((ingredient) => ({ ...ingredient, remainingAmount: 0, maxQuantity: null, unit: '' })),
-  };
-  emit();
-};
-
-/**
- * 재고 수량을 슬라이더 최대값으로 반영
- * 재고를 찾지 못했거나 수량이 0이면 기존처럼 0~100% 슬라이더로 대체
- */
-const applyInventoryQuantities = (quantities: Map<number, InventoryQuantity>) => {
-  state = {
-    ...state,
-    items: state.items.map((item) => {
-      const quantity = item.inventoryId != null ? quantities.get(item.inventoryId) : undefined;
-      return quantity && quantity.remainingQuantity > 0
-        ? { ...item, remainingAmount: 0, maxQuantity: quantity.remainingQuantity, unit: quantity.unit }
-        : { ...item, remainingAmount: 0, maxQuantity: 100, unit: '%' };
+const useCookStore = create<CookState>()((set) => ({
+  recipeId: null,
+  items: [],
+  startCookCompletion: (recipeId, ingredients) =>
+    set({
+      recipeId,
+      items: ingredients.map((ingredient) => ({ ...ingredient, remainingAmount: 0, maxQuantity: null, unit: '' })),
     }),
-  };
-  emit();
-};
+  /**
+   * 재고 수량을 슬라이더 최대값으로 반영
+   * 재고를 찾지 못했거나 수량이 0이면 기존처럼 0~100% 슬라이더로 대체
+   */
+  applyInventoryQuantities: (quantities) =>
+    set((state) => ({
+      items: state.items.map((item) => {
+        const quantity = item.inventoryId != null ? quantities.get(item.inventoryId) : undefined;
+        return quantity && quantity.remainingQuantity > 0
+          ? { ...item, remainingAmount: 0, maxQuantity: quantity.remainingQuantity, unit: quantity.unit }
+          : { ...item, remainingAmount: 0, maxQuantity: 100, unit: '%' };
+      }),
+    })),
+  setRemainingAmount: (id, amount) =>
+    set((state) => ({
+      items: state.items.map((item) => (item.id === id ? { ...item, remainingAmount: amount } : item)),
+    })),
+  reset: () => set({ recipeId: null, items: [] }),
+}));
 
-const setRemainingAmount = (id: number, amount: number) => {
-  state = {
-    ...state,
-    items: state.items.map((item) => (item.id === id ? { ...item, remainingAmount: amount } : item)),
-  };
-  emit();
-};
-
-const reset = () => {
-  state = { recipeId: null, items: [] };
-  emit();
-};
+const { startCookCompletion, applyInventoryQuantities, setRemainingAmount, reset } = useCookStore.getState();
 
 export const recipeCookStore = {
   startCookCompletion,
   applyInventoryQuantities,
   setRemainingAmount,
   reset,
-  getState: () => state,
+  getState: () => {
+    const { recipeId, items } = useCookStore.getState();
+    return { recipeId, items };
+  },
 };
 
 export const useRecipeCookStore = () => {
-  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  const recipeId = useCookStore((state) => state.recipeId);
+  const items = useCookStore((state) => state.items);
 
   return {
-    recipeId: snapshot.recipeId,
-    items: snapshot.items,
+    recipeId,
+    items,
     startCookCompletion,
     applyInventoryQuantities,
     setRemainingAmount,

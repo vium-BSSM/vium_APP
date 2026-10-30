@@ -11,3 +11,5 @@ export { getIngredientImage } from './lib/ingredientImageFixtures';
 export { onInventoryChanged } from './lib/inventoryEvents';
 export { getInventoryQuantities } from './lib/inventoryQuantities';
 export type { InventoryQuantity } from './lib/inventoryQuantities';
+export { useExpiringIngredients } from './lib/expiringIngredients';
+export type { ExpiringIngredient } from './types';

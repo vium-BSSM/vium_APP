@@ -1,4 +1,6 @@
-import { Alert, ActionSheetIOS, Platform } from 'react-native';
+import { ActionSheetIOS, Platform } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
+import { pickImageFromLibrary } from '@/shared/lib/pickImage';
 import * as ImagePicker from 'expo-image-picker';
 import * as Device from 'expo-device';
 
@@ -68,24 +70,7 @@ export const useIngredientUpload = () => {
       return pickImageFromWebGallery();
     }
 
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (status !== 'granted') {
-      Alert.alert('권한 필요', '사진 라이브러리 접근 권한이 필요합니다.');
-      return null;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      quality: 0.8,
-    });
-
-    if (!result.canceled) {
-      return result.assets[0].uri;
-    }
-
-    return null;
+    return pickImageFromLibrary({ quality: 0.8 });
   };
 
   const pickImageFromWebCamera = async (): Promise<string | null> => {

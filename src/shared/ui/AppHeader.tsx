@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { Alert, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { sessionUserStore } from '@/shared/lib/sessionUser';

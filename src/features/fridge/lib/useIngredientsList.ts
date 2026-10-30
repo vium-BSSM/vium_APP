@@ -1,13 +1,15 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { getIngredients } from '../api/ingredientsApi';
 import { mapIngredientsToFridgeItems } from './ingredientMapper';
-import { FridgeItem } from '../types';
+import { sortFridgeItems } from './sortFridgeItems';
+import { FridgeItem, FridgeSortType } from '../types';
 
 export const useIngredientsList = () => {
   const [items, setItems] = useState<FridgeItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortType, setSortType] = useState<FridgeSortType>('expiry');
   const hasLoaded = useRef(false);
 
   const loadIngredients = useCallback(async (expiringSoon: boolean = false) => {
@@ -37,8 +39,13 @@ export const useIngredientsList = () => {
     }, [loadIngredients])
   );
 
+  // 조회 결과나 정렬 기준이 바뀔 때만 재정렬
+  const sortedItems = useMemo(() => sortFridgeItems(items, sortType), [items, sortType]);
+
   return {
-    items,
+    items: sortedItems,
+    sortType,
+    setSortType,
     isLoading,
     error,
     refresh: loadIngredients,

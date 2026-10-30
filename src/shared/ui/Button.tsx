@@ -27,7 +27,7 @@ export const Button: React.FC<ButtonProps> = ({
       {loading ? (
         <ActivityIndicator color="#FAFAFA" />
       ) : (
-        <Text className="text-text-400 text-subtitle text-center font-sans">
+        <Text className="text-text-400 text-heading-md text-center font-sans">
           {children}
         </Text>
       )}

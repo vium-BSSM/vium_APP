@@ -39,8 +39,6 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-app-example
-
 # generated native folders
 /ios
 /android
@@ -48,3 +46,5 @@ app-example
 .mcp.json
 
 .claude
+# personal Claude rules
+CLAUDE.local.md

@@ -1,0 +1,23 @@
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
+import ChevronRightIcon from '@/../assets/icons/chevron-right-icon.svg';
+
+interface MenuListProps {
+  items: { label: string; onPress: () => void }[];
+}
+
+/** 화살표가 붙은 메뉴 목록 (홈 하단, 마이페이지) */
+export const MenuList: React.FC<MenuListProps> = ({ items }) => (
+  <View className="w-full bg-white rounded-lg p-2.5 gap-4">
+    {items.map((item) => (
+      <Pressable
+        key={item.label}
+        onPress={item.onPress}
+        className="p-2.5 rounded-lg flex-row items-center justify-between active:bg-neutral-10"
+      >
+        <Text className="text-text-100 text-text16 font-sans">{item.label}</Text>
+        <ChevronRightIcon width={8} height={12} color="#A1A1A1" />
+      </Pressable>
+    ))}
+  </View>
+);

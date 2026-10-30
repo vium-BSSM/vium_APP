@@ -35,7 +35,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
   };
 
   return (
-    <View className="bg-neutral-50 rounded-lg px-2.5 py-[15px] flex-row items-center justify-between h-12" style={style}>
+    <View className="bg-neutral-50 rounded-lg px-2.5 flex-row items-center justify-between h-[42px]" style={style}>
       <TextInput
         className="flex-1 text-text15 font-sans"
         style={{ color: getTextColor(), fontFamily: 'Paperlogy' }}
@@ -51,7 +51,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
 
       <View className="flex-row items-center gap-2.5">
         {type === 'password' && isActive && (
-          <Pressable onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+          <Pressable onPress={() => setIsPasswordVisible(!isPasswordVisible)} hitSlop={10}>
             {isPasswordVisible ? (
               <EyeIcon width={22} height={22} />
             ) : (

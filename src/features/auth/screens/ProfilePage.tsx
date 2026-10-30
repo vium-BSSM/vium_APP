@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, TextInput, Alert } from 'react-native';
+import { View, Text, Pressable, TextInput } from 'react-native';
 import { Image } from 'expo-image';
 import { useRegister } from '../lib/useRegister';
 import { Button } from '@/shared/ui/Button';
 import { router } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
+import { pickImageFromLibrary } from '@/shared/lib/pickImage';
 import CameraIcon from '@/../assets/icons/camera-icon.svg';
 import ClearIcon from '@/../assets/icons/clear-icon.svg';
 import { AppHeader, PageTitle } from '@/shared/ui';
@@ -27,22 +27,8 @@ export const ProfilePage = () => {
   };
 
   const handleImagePick = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('권한 필요', '사진 라이브러리 접근 권한이 필요합니다.');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'images' as any,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setProfileImageUri(result.assets[0].uri);
-    }
+    const uri = await pickImageFromLibrary({ aspect: [1, 1] });
+    if (uri) setProfileImageUri(uri);
   };
 
   return (
@@ -71,6 +57,7 @@ export const ProfilePage = () => {
 
                 <Pressable
                   onPress={handleImagePick}
+                  hitSlop={8}
                   className="absolute bottom-1 right-1 w-[29px] h-[29px] md:w-[34px] md:h-[34px]"
                 >
                   <CameraIcon width="100%" height="100%" />
@@ -80,7 +67,7 @@ export const ProfilePage = () => {
               <View className="w-[232px] md:w-[280px]">
                 <View className="flex-row items-center justify-between mb-[6px]">
                   <TextInput
-                    className="text-subtitle md:text-title text-text-100 font-sans flex-1"
+                    className="text-heading-md md:text-heading-lg text-text-100 font-sans flex-1"
                     style={{ fontFamily: 'Paperlogy' }}
                     value={nickname}
                     onChangeText={setNickname}
@@ -91,6 +78,7 @@ export const ProfilePage = () => {
                   {nickname.length > 0 && (
                     <Pressable
                       onPress={handleClearNickname}
+                      hitSlop={10}
                       className="w-6 h-6 items-center justify-center"
                     >
                       <ClearIcon width={24} height={24} />

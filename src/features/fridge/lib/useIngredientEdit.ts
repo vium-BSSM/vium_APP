@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert } from '@/shared/lib/alert';
 import { isAxiosError } from 'axios';
 import { updateIngredient } from '../api/ingredientsApi';
 import { toDateString } from './dateUtils';

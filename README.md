@@ -6,7 +6,7 @@ Expo Router와 Feature-Based 아키텍처를 기반으로 한 React Native 애�
 
 ## 🛠️ 필수 요구사항
 
-- **Node.js**: v18 이상
+- **Node.js**: v20.19.4 이상 (Expo SDK 54 / React Native 0.81 요구 사항)
 - **패키지 매니저**: npm (또는 yarn)
 - **모바일 테스트 기기**: [Expo Go](https://expo.dev/go) 앱 설치 필요 (iOS / Android)
 

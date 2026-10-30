@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { create } from 'zustand';
 import { FridgeItem } from '../types';
 
 export interface CleanupItem extends FridgeItem {
@@ -8,61 +8,42 @@ export interface CleanupItem extends FridgeItem {
 
 interface CleanupState {
   items: CleanupItem[];
+  setSelectedItems: (items: FridgeItem[]) => void;
+  setRemainingAmount: (id: number, amount: number) => void;
+  removeItems: (ids: number[]) => void;
+  reset: () => void;
 }
 
-let state: CleanupState = { items: [] };
-const listeners = new Set<() => void>();
+const useCleanupStore = create<CleanupState>()((set) => ({
+  items: [],
+  setSelectedItems: (items) =>
+    set({ items: items.map((item) => ({ ...item, remainingAmount: item.remainingQuantity })) }),
+  setRemainingAmount: (id, amount) =>
+    set((state) => ({
+      items: state.items.map((item) => (item.id === id ? { ...item, remainingAmount: amount } : item)),
+    })),
+  removeItems: (ids) => {
+    const removedIds = new Set(ids);
+    set((state) => ({ items: state.items.filter((item) => !removedIds.has(item.id)) }));
+  },
+  reset: () => set({ items: [] }),
+}));
 
-const emit = () => listeners.forEach((listener) => listener());
-
-const subscribe = (listener: () => void) => {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-};
-
-const getSnapshot = () => state;
-
-const setSelectedItems = (items: FridgeItem[]) => {
-  state = {
-    items: items.map((item) => ({ ...item, remainingAmount: item.remainingQuantity })),
-  };
-  emit();
-};
-
-const setRemainingAmount = (id: number, amount: number) => {
-  state = {
-    items: state.items.map((item) =>
-      item.id === id ? { ...item, remainingAmount: amount } : item
-    ),
-  };
-  emit();
-};
-
-const removeItems = (ids: number[]) => {
-  state = {
-    items: state.items.filter((item) => !ids.includes(item.id)),
-  };
-  emit();
-};
-
-const reset = () => {
-  state = { items: [] };
-  emit();
-};
+const { setSelectedItems, setRemainingAmount, removeItems, reset } = useCleanupStore.getState();
 
 export const fridgeCleanupStore = {
   setSelectedItems,
   setRemainingAmount,
   removeItems,
   reset,
-  getItems: () => state.items,
+  getItems: () => useCleanupStore.getState().items,
 };
 
 export const useFridgeCleanupStore = () => {
-  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  const items = useCleanupStore((state) => state.items);
 
   return {
-    items: snapshot.items,
+    items,
     setSelectedItems,
     setRemainingAmount,
     removeItems,
