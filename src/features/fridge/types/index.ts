@@ -7,6 +7,8 @@ export interface FridgeItem {
   status: FridgeItemStatus;
   remainingQuantity: number;
   unit: string;
+  // 보관 방법 id (1 냉장, 2 냉동, 3 실온), 보관 방법 없이 등록된 재료는 null
+  storageMethodId: number | null;
   image?: string;
 }
 
@@ -17,6 +19,19 @@ export interface FridgeItemDetail extends FridgeItem {
   expirationDate: string;
 }
 
+// GET /api/me/ingredients — 목록 카드에 필요한 필드만 내려옴
+export interface IngredientListItemApiResponse {
+  inventoryItemId: number;
+  name: string;
+  expiresOn: string;
+  remainingQuantity: number;
+  unitId: number;
+  unit: string;
+  storageMethodId: number | null;
+  storageMethodName: string | null;
+}
+
+// GET /api/me/ingredients/{id}
 export interface IngredientApiResponse {
   inventoryItemId: number;
   ingredientCatalogId: number | null;
@@ -27,6 +42,8 @@ export interface IngredientApiResponse {
   amount: number | null;
   unitId: number;
   unit: string;
+  storageMethodId: number | null;
+  storageMethodName: string | null;
   statusCode: string;
   purchasedOn: string;
   expiresOn: string;
@@ -35,8 +52,17 @@ export interface IngredientApiResponse {
 export interface IngredientsListApiResponse {
   success: boolean;
   data: {
-    ingredients: IngredientApiResponse[];
+    ingredients: IngredientListItemApiResponse[];
   };
+  error: null | {
+    code: string;
+    message: string;
+  };
+}
+
+export interface IngredientDetailApiResponse {
+  success: boolean;
+  data: IngredientApiResponse | null;
   error: null | {
     code: string;
     message: string;
