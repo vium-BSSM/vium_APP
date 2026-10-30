@@ -1,6 +1,7 @@
 import { apiClient } from '@/shared/api/client';
 import {
   IngredientsListApiResponse,
+  IngredientDetailApiResponse,
   IngredientRegisterRequest,
   IngredientRegisterApiResponse,
   IngredientStatusUpdateRequest,
@@ -14,6 +15,12 @@ export const getIngredients = async (expiringSoon: boolean = false): Promise<Ing
   const response = await apiClient.get<IngredientsListApiResponse>('/api/me/ingredients', {
     params: { expiringSoon },
   });
+  return response.data;
+};
+
+
+export const getIngredientDetail = async (ingredientId: number): Promise<IngredientDetailApiResponse> => {
+  const response = await apiClient.get<IngredientDetailApiResponse>(`/api/me/ingredients/${ingredientId}`);
   return response.data;
 };
 

@@ -1,18 +1,19 @@
 import React, { useEffect, useRef } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
-import Slider from '@react-native-community/slider';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRecipeCookStore } from '../lib/recipeCookStore';
 import { useRecipeComplete } from '../lib/useRecipeComplete';
-import { AppHeader, Button } from '@/shared/ui';
+import { useCookInventoryQuantities } from '../lib/useCookInventoryQuantities';
+import { AppHeader, Button, QuantitySlider } from '@/shared/ui';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 
 export const RecipeWastePage: React.FC = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const recipeId = parseInt(id || '1', 10);
-  const { items, setRemainingPercent, reset } = useRecipeCookStore();
+  const { items, setRemainingAmount, reset } = useRecipeCookStore();
   const { complete, isSubmitting } = useRecipeComplete();
+  const { isLoading: isQuantityLoading } = useCookInventoryQuantities(items.length > 0);
   const isFinishingRef = useRef(false);
 
   // 선택된 재료 없이 이 화면으로 바로 들어온 경우 상세 화면으로 돌려보냄
@@ -51,7 +52,7 @@ export const RecipeWastePage: React.FC = () => {
                   <BackIcon width={30} height={30} />
                 </Pressable>
                 <Text className="text-heading-lg font-medium font-sans text-neutral-600">
-                  맛있게 드셨나요?{'\n'}재료 사용량 조사를 시작할게요!
+                  맛있게 드셨나요?{'\n'}재료를 얼마나 남겼는지 말해주세요
                 </Text>
               </View>
 
@@ -59,22 +60,16 @@ export const RecipeWastePage: React.FC = () => {
                 {items.map((item) => (
                   <View key={item.id} className="gap-[19px] p-2.5">
                     <Text className="text-heading-md font-medium font-sans text-text-100">{item.name}</Text>
-                    <View className="gap-2">
-                      <View className="flex-row items-center justify-between">
-                        <Text className="text-text12 font-sans text-neutral-400">0%</Text>
-                        <Text className="text-text12 font-sans text-neutral-400">100%</Text>
-                      </View>
-                      <Slider
-                        minimumValue={0}
-                        maximumValue={100}
-                        step={1}
-                        value={item.remainingPercent}
-                        minimumTrackTintColor="#A2CD87"
-                        maximumTrackTintColor="#EBEBEB"
-                        thumbTintColor="#EBEBEB"
-                        onValueChange={(value) => setRemainingPercent(item.id, value)}
+                    {item.maxQuantity == null ? (
+                      <ActivityIndicator className="self-start" />
+                    ) : (
+                      <QuantitySlider
+                        value={item.remainingAmount}
+                        max={item.maxQuantity}
+                        unit={item.unit}
+                        onChange={(value) => setRemainingAmount(item.id, value)}
                       />
-                    </View>
+                    )}
                   </View>
                 ))}
               </View>
@@ -84,7 +79,7 @@ export const RecipeWastePage: React.FC = () => {
       </ScrollView>
 
       <View className="w-full items-center pb-[100px]">
-        <Button onPress={handleComplete} loading={isSubmitting}>
+        <Button onPress={handleComplete} loading={isSubmitting} disabled={isQuantityLoading}>
           완료
         </Button>
       </View>

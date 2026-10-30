@@ -48,8 +48,10 @@ const FridgeEditForm: React.FC<{ ingredient: IngredientApiResponse }> = ({ ingre
   const [name, setName] = useState(ingredient.name);
   const [quantity, setQuantity] = useState(String(ingredient.initialQuantity));
   const [unitId, setUnitId] = useState(ingredient.unitId);
-  // TODO: 목록 API가 보관방법을 내려주지 않아 기본값(냉장)으로 시작 — 백엔드에 storageMethodId 추가 요청
-  const [storageMethodId, setStorageMethodId] = useState<number>(STORAGE_METHOD_OPTIONS[0].id);
+  // 보관 방법 없이 등록된 재료는 기본값(냉장)으로 시작
+  const [storageMethodId, setStorageMethodId] = useState<number>(
+    ingredient.storageMethodId ?? STORAGE_METHOD_OPTIONS[0].id
+  );
   const [purchasedOn, setPurchasedOn] = useState(parseDateString(ingredient.purchasedOn));
   const [expiresOn, setExpiresOn] = useState(parseDateString(ingredient.expiresOn));
 
