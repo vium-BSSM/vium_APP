@@ -90,12 +90,11 @@ export const ShoppingPage: React.FC = () => {
         >
           <View className="px-screen pt-4 items-center">
             <View className="w-full max-w-[480px] gap-10">
-              {/* 추천 */}
-              <View className="gap-4">
-                <View className="gap-1">
-                  <Text className="text-[18px] font-medium font-sans text-text-100">이번에 사면 좋을 재료</Text>
+              <View className="gap-6">
+                <View className="gap-3">
+                  <Text className="text-text18 font-medium font-sans text-text-100">이번에 사면 좋을 재료</Text>
                   {available && monthLabel && (
-                    <Text className="text-[12px] font-sans text-text-50">
+                    <Text className="text-text15 font-sans text-text-300">
                       {/* 서버 기준: 지난달 소비량 − 현재 보유량을 지난달 폐기 비율(폐기 ÷ (소비+폐기))만큼 줄인 양 */}
                       {monthLabel}에 먹은 양에서 냉장고에 있는 양을 빼고,{'\n'}버린 비율만큼 줄여서 추천했어요.
                     </Text>
@@ -103,11 +102,11 @@ export const ShoppingPage: React.FC = () => {
                 </View>
 
                 {!available ? (
-                  <View className="rounded-lg bg-neutral-10 p-5 gap-1">
+                  <View className="rounded-lg bg-neutral-10 p-5 gap-10">
                     <Text className="text-text14 font-medium font-sans text-text-100">
                       {unavailableReason ?? '아직 추천을 만들 수 없어요.'}
                     </Text>
-                    <Text className="text-[12px] font-sans text-text-200">
+                    <Text className="text-text12 font-sans text-text-200">
                       월간 리포트가 생기면 장보기 추천을 받을 수 있어요.
                     </Text>
                   </View>
@@ -135,7 +134,7 @@ export const ShoppingPage: React.FC = () => {
                     <View className="flex-row flex-wrap gap-2">
                       {alreadyHave.map((item) => (
                         <View key={item.key} className="rounded-3xl bg-neutral-10 px-3 py-1.5">
-                          <Text className="text-[12px] font-sans text-text-200">
+                          <Text className="text-text12 font-sans text-text-200">
                             {item.name} {item.quantityLabel}
                           </Text>
                         </View>
@@ -150,7 +149,7 @@ export const ShoppingPage: React.FC = () => {
               {/* 장보기 리스트 */}
               <View className="gap-3">
                 <View className="flex-row items-center justify-between">
-                  <Text className="text-[18px] font-medium font-sans text-text-100">장보기 리스트</Text>
+                  <Text className="text-text18 font-medium font-sans text-text-100">장보기 리스트</Text>
                   {listItems.length > 0 && (
                     <Text className="text-text15 font-sans text-text-200 tabular-nums">
                       {checkedCount}/{listItems.length}
@@ -164,7 +163,7 @@ export const ShoppingPage: React.FC = () => {
                   </Text>
                 ) : (
                   <View>
-                    <Text className="text-[14px] font-sans text-text-300 pb-8">
+                    <Text className="text-text15 font-sans text-text-300 pb-8">
                       항목을 왼쪽으로 밀면 삭제할 수 있어요.
                     </Text>
                     {sortedListItems.map((item, index) => (

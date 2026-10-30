@@ -15,7 +15,7 @@ export const SuggestionRow: React.FC<SuggestionRowProps> = ({ suggestion, isAdde
       <View className="gap-1 flex-1">
         <Text className="text-text15 font-medium font-sans text-text-100">{suggestion.name}</Text>
         {!!suggestion.quantityLabel && (
-          <Text className="text-[12px] font-sans text-text-200">추천 수량 {suggestion.quantityLabel}</Text>
+          <Text className="text-text12 font-sans text-text-200">추천 수량 {suggestion.quantityLabel}</Text>
         )}
       </View>
       <Pressable
