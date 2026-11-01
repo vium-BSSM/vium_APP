@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, Pressable, TextInputProps } from 'react-native';
+import { View, Pressable, TextInputProps } from 'react-native';
+import { AppTextInput } from './AppTextInput';
 import { Check } from '@/shared/ui/Check';
 import EyeIcon from '@/../assets/icons/eye-icon.svg';
 import EyeOffIcon from '@/../assets/icons/eye-off-icon.svg';
@@ -36,9 +37,9 @@ export const InputBox: React.FC<InputBoxProps> = ({
 
   return (
     <View className="bg-neutral-50 rounded-lg px-2.5 flex-row items-center justify-between h-[42px]" style={style}>
-      <TextInput
+      <AppTextInput
         className="flex-1 text-text15 font-sans"
-        style={{ color: getTextColor(), fontFamily: 'Paperlogy' }}
+        style={{ color: getTextColor() }}
         value={value}
         onChangeText={onChangeText}
         placeholder={getPlaceholder()}

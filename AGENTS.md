@@ -80,7 +80,7 @@ All design tokens are defined in `tailwind.config.js`:
 - Follow Tailwind utility classes
 - Do NOT create separate CSS/style files
 - **IMPORTANT**: Always add `font-sans` class to all `<Text>` components to apply Paperlogy font
-- For `<TextInput>`, add both `font-sans` class AND `style={{ fontFamily: 'Paperlogy' }}`
+- Do NOT use `<TextInput>` directly — use `AppTextInput` from `@/shared/ui` (removes default padding/lineHeight that clip text, and maps `font-*` weight to the Paperlogy file so the placeholder keeps the font)
 - Font weights map to Paperlogy variants automatically:
   - `font-normal` → Paperlogy-Regular (400)
   - `font-medium` → Paperlogy-Medium (500)
@@ -96,9 +96,8 @@ All design tokens are defined in `tailwind.config.js`:
   <Text className="text-text14 text-text-200 font-sans">
     Body text
   </Text>
-  <TextInput
+  <AppTextInput
     className="text-text15 font-sans"
-    style={{ fontFamily: 'Paperlogy' }}
     placeholder="Input text"
   />
 </View>

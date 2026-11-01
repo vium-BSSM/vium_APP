@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, TextInput } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
+import { AppTextInput } from '@/shared/ui';
 import { Image } from 'expo-image';
 import { useRegister } from '../lib/useRegister';
 import { Button } from '@/shared/ui/Button';
@@ -66,9 +67,8 @@ export const ProfilePage = () => {
 
               <View className="w-[232px] md:w-[280px]">
                 <View className="flex-row items-center justify-between mb-[6px]">
-                  <TextInput
+                  <AppTextInput
                     className="text-heading-md md:text-heading-lg text-text-100 font-sans flex-1"
-                    style={{ fontFamily: 'Paperlogy' }}
                     value={nickname}
                     onChangeText={setNickname}
                     placeholder="픽도화이팅"

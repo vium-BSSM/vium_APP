@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { AppTextInput } from '@/shared/ui';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { pickImageFromLibrary } from '@/shared/lib/pickImage';
 import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, AppHeader, Button } from '@/shared/ui';
@@ -89,9 +90,8 @@ const FridgeEditForm: React.FC<{ ingredient: IngredientApiResponse }> = ({ ingre
             <ImageUpload imageUri={imageUri} onPress={handleImagePick} />
 
             <View className="gap-[5px]">
-              <TextInput
+              <AppTextInput
                 className={`text-heading-lg font-medium font-sans ${isCatalogItem ? 'text-neutral-300' : 'text-text-100'}`}
-                style={{ fontFamily: 'Paperlogy' }}
                 value={name}
                 onChangeText={setName}
                 editable={!isCatalogItem}
