@@ -12,6 +12,8 @@ export { DetailInfoRow } from './DetailInfoRow';
 export { ImageUpload } from './ImageUpload';
 export { LabelInput } from './LabelInput';
 export { LabelInputWithUnit } from './LabelInputWithUnit';
+export { UnitPickerModal, UNIT_OPTIONS } from './UnitPickerModal';
+export type { UnitOption } from './UnitPickerModal';
 export { DatePicker } from './DatePicker';
 export { Logo } from './Logo';
 export { AppHeader } from './AppHeader';

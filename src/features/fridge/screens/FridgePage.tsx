@@ -23,8 +23,11 @@ export const FridgePage = () => {
   const { disposeItems, isDisposing } = useIngredientDispose();
   const { isCleanupModalVisible, openCleanupModal, closeCleanupModal } = useFridgeCleanup();
   const { profile } = useMyProfile();
-  // TODO: 목록 API(GET /api/me/ingredients)에 storageMethodId가 없어 필터는 선택 표시만 함 — 응답에 추가되면 fridgeItems를 걸러서 표시
   const [storageFilter, setStorageFilter] = useState<FridgeStorageFilter>('all');
+  const visibleItems = useMemo(
+    () => (storageFilter === 'all' ? fridgeItems : fridgeItems.filter((item) => item.storageMethodId === storageFilter)),
+    [fridgeItems, storageFilter]
+  );
   const expiringTitle = useMemo(() => formatExpiringTitle(pickExpiringIngredients(fridgeItems)), [fridgeItems]);
 
   const handleReceiptPress = () => {
@@ -113,7 +116,7 @@ export const FridgePage = () => {
     if (!isDeleteMode) {
       return (
         <FridgeGrid
-          items={fridgeItems}
+          items={visibleItems}
           header={
             <FridgeHeader expiringTitle={expiringTitle} onBannerPress={handleBannerPress}>
               <FridgeFilterBar
