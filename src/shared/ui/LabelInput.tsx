@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TextInput, TextInputProps } from 'react-native';
+import { View, Text, TextInputProps } from 'react-native';
+import { AppTextInput } from './AppTextInput';
 
 interface LabelInputProps extends TextInputProps {
   label: string;
@@ -20,9 +21,9 @@ export const LabelInput: React.FC<LabelInputProps> = ({
         {label}
       </Text>
       <View className="bg-neutral-50 rounded-lg px-2.5 h-[27px] w-[199px] justify-center">
-        <TextInput
+        <AppTextInput
           className="text-text15 font-sans"
-          style={{ color: value ? '#242529' : '#767676', fontFamily: 'Paperlogy' }}
+          style={{ color: value ? '#242529' : '#767676' }}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}

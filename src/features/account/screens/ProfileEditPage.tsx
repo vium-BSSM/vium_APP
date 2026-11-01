@@ -1,5 +1,6 @@
 import React from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { AppTextInput } from '@/shared/ui';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Button, AppHeader, BackTitle } from '@/shared/ui';
@@ -58,9 +59,8 @@ export const ProfileEditPage: React.FC = () => {
             <View className="w-full gap-2">
               <Text className="text-text14 font-sans text-text-300">닉네임</Text>
               <View className="flex-row items-center justify-between">
-                <TextInput
+                <AppTextInput
                   className="flex-1 text-heading-md font-sans text-text-100"
-                  style={{ fontFamily: 'Paperlogy' }}
                   value={nickname}
                   onChangeText={setNickname}
                   placeholder="닉네임을 입력하세요"

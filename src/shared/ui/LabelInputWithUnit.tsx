@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TextInputProps, Pressable } from 'react-native';
+import { View, Text, TextInputProps, Pressable } from 'react-native';
+import { AppTextInput } from './AppTextInput';
 import { UNIT_OPTIONS, UnitOption, UnitPickerModal } from './UnitPickerModal';
 
 interface LabelInputWithUnitProps extends Omit<TextInputProps, 'onChangeText'> {
@@ -38,9 +39,9 @@ export const LabelInputWithUnit: React.FC<LabelInputWithUnitProps> = ({
         </Text>
         <View className="flex-row gap-2 items-center">
           <View className="bg-neutral-50 rounded-lg px-2.5 h-[27px] w-[139px] justify-center">
-            <TextInput
+            <AppTextInput
               className="text-text15 font-sans"
-              style={{ color: value ? '#242529' : '#767676', fontFamily: 'Paperlogy' }}
+              style={{ color: value ? '#242529' : '#767676' }}
               value={value}
               onChangeText={onChangeText}
               placeholder={placeholder}

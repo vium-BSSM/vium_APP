@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
-import { UnitOption, UnitPickerModal } from '@/shared/ui';
+import { ActivityIndicator, Keyboard, Pressable, Text, View } from 'react-native';
+import { AppTextInput, UnitOption, UnitPickerModal } from '@/shared/ui';
 import { ManualShoppingItemInput } from '../types';
 
 
@@ -90,9 +90,8 @@ export const ManualAddForm: React.FC<ManualAddFormProps> = ({ isSubmitting, onSu
       <View className="flex-row items-center">
         <Text className={LABEL_CLASS}>재료명</Text>
         <View className={`flex-1 ${INPUT_BOX_CLASS}`}>
-          <TextInput
+          <AppTextInput
             className={INPUT_CLASS}
-            style={{ fontFamily: 'Paperlogy' }}
             value={name}
             onChangeText={setName}
             placeholder="예: 두부"
@@ -108,9 +107,8 @@ export const ManualAddForm: React.FC<ManualAddFormProps> = ({ isSubmitting, onSu
         <Text className={LABEL_CLASS}>양 (선택)</Text>
         <View className="flex-1 flex-row gap-2">
           <View className={`flex-1 ${INPUT_BOX_CLASS}`}>
-            <TextInput
+            <AppTextInput
               className={INPUT_CLASS}
-              style={{ fontFamily: 'Paperlogy' }}
               value={quantity}
               onChangeText={setQuantity}
               placeholder="숫자 입력"

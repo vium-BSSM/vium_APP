@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput, Keyboard } from 'react-native';
+import { View, Text, ScrollView, Pressable, Keyboard } from 'react-native';
+import { AppTextInput } from '@/shared/ui';
 import { useRouter } from 'expo-router';
 import { pickImageFromLibrary } from '@/shared/lib/pickImage';
 import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, Button, AppHeader } from '@/shared/ui';
@@ -87,9 +88,8 @@ export const FridgeAddPage: React.FC = () => {
             <ImageUpload imageUri={imageUri} onPress={handleImagePick} />
 
             <View className="gap-2">
-              <TextInput
+              <AppTextInput
                 className="text-heading-lg font-medium font-sans"
-                style={{ fontFamily: 'Paperlogy' }}
                 value={name}
                 onChangeText={handleNameChange}
                 placeholder="입력해주세요"
