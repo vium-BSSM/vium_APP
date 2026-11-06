@@ -4,6 +4,7 @@ import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
 import { useIngredientUpload } from '../lib/useIngredientUpload';
 import { isReceiptScanSupported, useReceiptScan } from '../lib/useReceiptScan';
+import { useReceiptConfirm } from '../lib/useReceiptConfirm';
 import { useIngredientsList } from '../lib/useIngredientsList';
 import { useIngredientDispose } from '../lib/useIngredientDispose';
 import { useFridgeCleanup } from '../lib/useFridgeCleanup';
@@ -11,7 +12,8 @@ import { formatExpiringTitle, pickExpiringIngredients } from '../lib/expiringIng
 import { FridgeHeader, FridgeFilterBar, FridgeSelectionBar } from '../ui/FridgeHeader';
 import { FridgeGrid } from '../ui/FridgeGrid';
 import { FridgeCleanupModal } from '../ui/FridgeCleanupModal';
-import { FridgeStorageFilter } from '../types';
+import { ReceiptConfirmModal } from '../ui/ReceiptConfirmModal';
+import { FridgeStorageFilter, PurchaseDetail, PurchaseItemDraft } from '../types';
 import { useMyProfile } from '@/features/account';
 import { AddButton, Card, HomeHeader } from '@/shared/ui';
 
@@ -21,6 +23,9 @@ export const FridgePage = () => {
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const { showIngredientUploadOptions } = useIngredientUpload();
   const { scanReceipt, isScanning } = useReceiptScan();
+  const { confirmItems, isConfirming } = useReceiptConfirm();
+  // 인식 후 등록 대기 중인 구매 내역 (있으면 확인 모달 표시)
+  const [scannedPurchase, setScannedPurchase] = useState<PurchaseDetail | null>(null);
   const { items: fridgeItems, isLoading, error, refresh, sortType, setSortType } = useIngredientsList();
   const { disposeItems, isDisposing } = useIngredientDispose();
   const { isCleanupModalVisible, openCleanupModal, closeCleanupModal } = useFridgeCleanup();
@@ -45,11 +50,19 @@ export const FridgePage = () => {
       const purchase = await scanReceipt(image);
       if (!purchase) return;
 
-      // TODO: 확인 화면(디자인 대기)으로 이동 → 품목 확인·수정 후 confirmPurchase로 재고 등록
+      // TODO: 확인 화면(디자인 대기)이 나오면 임시 모달 대신 화면으로 이동
       console.log('영수증 인식 결과:', JSON.stringify(purchase, null, 2));
-      const names = purchase.items.map((item) => item.ingredientName ?? `${item.rawName} (미확인)`);
-      Alert.alert(`${purchase.items.length}개 품목 인식`, names.join('\n'));
+      setScannedPurchase(purchase);
     });
+  };
+
+  const handleReceiptConfirm = async (items: PurchaseItemDraft[]) => {
+    if (!scannedPurchase) return;
+    const success = await confirmItems(scannedPurchase, items);
+    if (success) {
+      setScannedPurchase(null);
+      refresh();
+    }
   };
 
   const handleToggleSelect = (itemId: number) => {
@@ -225,6 +238,13 @@ export const FridgePage = () => {
           closeCleanupModal();
           router.push('/fridge/cleanup/select' as any);
         }}
+      />
+
+      <ReceiptConfirmModal
+        purchase={scannedPurchase}
+        isConfirming={isConfirming}
+        onClose={() => setScannedPurchase(null)}
+        onConfirm={handleReceiptConfirm}
       />
 
       {/* 인식 중에는 버튼까지 덮어 중복 실행 방지 */}
