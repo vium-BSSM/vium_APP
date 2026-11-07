@@ -3,6 +3,8 @@ import { View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-nati
 import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
 import { useIngredientUpload } from '../lib/useIngredientUpload';
+import { isReceiptScanSupported, useReceiptScan } from '../lib/useReceiptScan';
+import { ReceiptItemForm, useReceiptConfirm } from '../lib/useReceiptConfirm';
 import { useIngredientsList } from '../lib/useIngredientsList';
 import { useIngredientDispose } from '../lib/useIngredientDispose';
 import { useFridgeCleanup } from '../lib/useFridgeCleanup';
@@ -10,7 +12,8 @@ import { formatExpiringTitle, pickExpiringIngredients } from '../lib/expiringIng
 import { FridgeHeader, FridgeFilterBar, FridgeSelectionBar } from '../ui/FridgeHeader';
 import { FridgeGrid } from '../ui/FridgeGrid';
 import { FridgeCleanupModal } from '../ui/FridgeCleanupModal';
-import { FridgeStorageFilter } from '../types';
+import { ReceiptConfirmModal } from '../ui/ReceiptConfirmModal';
+import { FridgeStorageFilter, PurchaseDetail } from '../types';
 import { useMyProfile } from '@/features/account';
 import { AddButton, Card, HomeHeader } from '@/shared/ui';
 
@@ -19,6 +22,10 @@ export const FridgePage = () => {
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const { showIngredientUploadOptions } = useIngredientUpload();
+  const { scanReceipt, isScanning } = useReceiptScan();
+  const { confirmItems, isConfirming } = useReceiptConfirm();
+  // 인식 후 등록 대기 중인 구매 내역 (있으면 확인 모달 표시)
+  const [scannedPurchase, setScannedPurchase] = useState<PurchaseDetail | null>(null);
   const { items: fridgeItems, isLoading, error, refresh, sortType, setSortType } = useIngredientsList();
   const { disposeItems, isDisposing } = useIngredientDispose();
   const { isCleanupModalVisible, openCleanupModal, closeCleanupModal } = useFridgeCleanup();
@@ -31,9 +38,29 @@ export const FridgePage = () => {
   const expiringTitle = useMemo(() => formatExpiringTitle(pickExpiringIngredients(fridgeItems)), [fridgeItems]);
 
   const handleReceiptPress = () => {
-    showIngredientUploadOptions((uri) => {
-      console.log('처리할 재료 이미지:', uri);
+    if (!isReceiptScanSupported) {
+      Alert.alert('영수증 인식 불가', '웹에서는 영수증 인식을 지원하지 않아요. 앱에서 이용하거나 직접 등록해주세요.', [
+        { text: '취소', style: 'cancel' },
+        { text: '직접 등록', onPress: () => router.push('/fridge/add' as any) },
+      ]);
+      return;
+    }
+
+    showIngredientUploadOptions(async (image) => {
+      const purchase = await scanReceipt(image);
+      if (!purchase) return;
+
+      setScannedPurchase(purchase);
     });
+  };
+
+  const handleReceiptConfirm = async (items: ReceiptItemForm[]) => {
+    if (!scannedPurchase) return;
+    const success = await confirmItems(scannedPurchase, items);
+    if (success) {
+      setScannedPurchase(null);
+      refresh();
+    }
   };
 
   const handleToggleSelect = (itemId: number) => {
@@ -210,6 +237,21 @@ export const FridgePage = () => {
           router.push('/fridge/cleanup/select' as any);
         }}
       />
+
+      <ReceiptConfirmModal
+        purchase={scannedPurchase}
+        isConfirming={isConfirming}
+        onClose={() => setScannedPurchase(null)}
+        onConfirm={handleReceiptConfirm}
+      />
+
+      {/* 인식 중에는 버튼까지 덮어 중복 실행 방지 */}
+      {isScanning && (
+        <View className="absolute inset-0 z-50 items-center justify-center bg-white/80">
+          <ActivityIndicator size="large" color="#A2CD87" />
+          <Text className="mt-4 text-text14 text-text-200 font-sans">영수증을 인식하는 중...</Text>
+        </View>
+      )}
     </View>
   );
 };
