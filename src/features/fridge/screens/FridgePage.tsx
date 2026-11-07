@@ -50,8 +50,6 @@ export const FridgePage = () => {
       const purchase = await scanReceipt(image);
       if (!purchase) return;
 
-      // TODO: 확인 화면(디자인 대기)이 나오면 임시 모달 대신 화면으로 이동
-      console.log('영수증 인식 결과:', JSON.stringify(purchase, null, 2));
       setScannedPurchase(purchase);
     });
   };

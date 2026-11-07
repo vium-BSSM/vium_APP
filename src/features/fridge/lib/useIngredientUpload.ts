@@ -12,14 +12,11 @@ export const useIngredientUpload = () => {
     }
 
     // 시뮬레이터/에뮬레이터에서는 카메라를 사용할 수 없음
-    console.log('Device.isDevice:', Device.isDevice);
     if (!Device.isDevice) {
-      console.log('Running on simulator/emulator - camera disabled');
       return false;
     }
 
     const { status } = await ImagePicker.getCameraPermissionsAsync();
-    console.log('Camera permission status:', status);
     return status !== 'denied';
   };
 

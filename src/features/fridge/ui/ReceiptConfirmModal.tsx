@@ -12,10 +12,7 @@ interface ReceiptConfirmModalProps {
   onConfirm: (items: ReceiptItemForm[]) => void;
 }
 
-/**
- * 영수증 인식 품목을 확인·수정해서 등록하는 임시 모달
- * TODO: 확인 화면 디자인이 나오면 교체 (품목 추가 포함)
- */
+/** 영수증 인식 품목을 확인·수정해서 등록하는 모달 */
 export const ReceiptConfirmModal: React.FC<ReceiptConfirmModalProps> = ({
   purchase,
   isConfirming,
