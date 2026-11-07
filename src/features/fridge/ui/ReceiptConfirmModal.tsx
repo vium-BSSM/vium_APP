@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Modal, Pressable, ScrollView } from 'react-native';
+import { View, Text, Modal, Pressable, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Button, Check } from '@/shared/ui';
-import { canConfirmItem } from '../lib/useReceiptConfirm';
-import { PurchaseDetail, PurchaseItemDraft } from '../types';
+import { canConfirmItem, ReceiptItemForm, toReceiptItemForm } from '../lib/useReceiptConfirm';
+import { ReceiptItemEditor } from './ReceiptItemEditor';
+import { PurchaseDetail } from '../types';
 
 interface ReceiptConfirmModalProps {
   purchase: PurchaseDetail | null;
   isConfirming: boolean;
   onClose: () => void;
-  onConfirm: (items: PurchaseItemDraft[]) => void;
+  onConfirm: (items: ReceiptItemForm[]) => void;
 }
 
 /**
- * 영수증 인식 품목을 골라 등록하는 임시 모달
- * TODO: 확인 화면 디자인이 나오면 교체 (수량·소비기한 수정, 품목 추가)
+ * 영수증 인식 품목을 확인·수정해서 등록하는 임시 모달
+ * TODO: 확인 화면 디자인이 나오면 교체 (품목 추가 포함)
  */
 export const ReceiptConfirmModal: React.FC<ReceiptConfirmModalProps> = ({
   purchase,
@@ -21,88 +22,106 @@ export const ReceiptConfirmModal: React.FC<ReceiptConfirmModalProps> = ({
   onClose,
   onConfirm,
 }) => {
+  const [forms, setForms] = useState<ReceiptItemForm[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   // 재료를 찾은 품목만 기본 선택 (못 찾은 품목은 비식품일 수 있음)
   useEffect(() => {
-    const defaults = purchase?.items.filter((item) => item.ingredientCatalogId !== null) ?? [];
-    setSelectedIds(new Set(defaults.map((item) => item.purchaseItemId)));
+    const items = purchase?.items ?? [];
+    setForms(items.map(toReceiptItemForm));
+    setSelectedIds(new Set(items.filter((item) => item.ingredientCatalogId !== null).map((item) => item.purchaseItemId)));
+    setEditingId(null);
   }, [purchase]);
 
-  const toggleItem = (item: PurchaseItemDraft) => {
-    if (!canConfirmItem(item)) return;
+  const updateForm = (purchaseItemId: number, patch: Partial<ReceiptItemForm>) => {
+    setForms((prev) => prev.map((form) => (form.purchaseItemId === purchaseItemId ? { ...form, ...patch } : form)));
+  };
+
+  const toggleItem = (form: ReceiptItemForm) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(item.purchaseItemId)) {
-        next.delete(item.purchaseItemId);
+      if (next.has(form.purchaseItemId)) {
+        next.delete(form.purchaseItemId);
       } else {
-        next.add(item.purchaseItemId);
+        next.add(form.purchaseItemId);
       }
       return next;
     });
   };
 
-  const selectedItems = purchase?.items.filter((item) => selectedIds.has(item.purchaseItemId)) ?? [];
+  // 수정하다 등록 조건이 깨진 품목은 선택돼 있어도 제외
+  const selectedForms = forms.filter((form) => selectedIds.has(form.purchaseItemId) && canConfirmItem(form));
 
   return (
     <Modal visible={purchase !== null} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable className="flex-1 bg-black/50 items-center justify-center px-6 py-10" onPress={onClose}>
-        <Pressable
-          className="bg-white rounded-lg w-full max-w-[400px] max-h-[80%] px-6 pt-[30px] pb-[25px] gap-5"
-          onPress={(e) => e.stopPropagation()}
-        >
-          <View className="items-center gap-2">
-            <Text className="text-heading-lg font-medium font-sans text-text-100 text-center">
-              {purchase?.items.length ?? 0}개 품목 인식
-            </Text>
-            <Text className="text-text14 font-sans text-text-200 text-center">
-              냉장고에 등록할 품목을 선택해주세요.
-            </Text>
-          </View>
-
-          <ScrollView className="flex-grow-0" contentContainerClassName="gap-1">
-            {purchase?.items.map((item) => {
-              const enabled = canConfirmItem(item);
-              const selected = selectedIds.has(item.purchaseItemId);
-
-              return (
-                <Pressable
-                  key={item.purchaseItemId}
-                  className={`flex-row items-center gap-3 py-3 border-b border-neutral-50 ${enabled ? '' : 'opacity-40'}`}
-                  disabled={!enabled}
-                  onPress={() => toggleItem(item)}
-                >
-                  {selected ? (
-                    <Check />
-                  ) : (
-                    <View className="w-[18px] h-[18px] rounded-full border border-neutral-100" />
-                  )}
-                  <View className="flex-1">
-                    <Text className="text-text16 font-sans text-text-100">
-                      {item.ingredientName ?? item.rawName}
-                    </Text>
-                    <Text className="text-text12 font-sans text-text-200">
-                      {item.ingredientName ? `영수증: ${item.rawName} · ` : '재료 미확인 · '}
-                      수량 {item.quantity}
-                      {item.expiresOn ? ` · ~${item.expiresOn}` : ''}
-                      {enabled ? '' : ' · 소비기한 없음'}
-                    </Text>
-                  </View>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-
-          <Button
-            fullWidth
-            loading={isConfirming}
-            disabled={selectedItems.length === 0}
-            onPress={() => onConfirm(selectedItems)}
+      <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <Pressable className="flex-1 bg-black/50 items-center justify-center px-6 py-10" onPress={onClose}>
+          <Pressable
+            className="bg-white rounded-lg w-full max-w-[400px] max-h-[85%] px-6 pt-[30px] pb-[25px] gap-5"
+            onPress={(e) => e.stopPropagation()}
           >
-            {`${selectedItems.length}개 등록`}
-          </Button>
+            <View className="items-center gap-2">
+              <Text className="text-heading-lg font-medium font-sans text-text-100 text-center">
+                {forms.length}개 품목 인식
+              </Text>
+              <Text className="text-text14 font-sans text-text-200 text-center">
+                냉장고에 등록할 품목을 선택하고 필요하면 수정해주세요.
+              </Text>
+            </View>
+
+            <ScrollView className="flex-grow-0" keyboardShouldPersistTaps="handled">
+              {forms.map((form) => {
+                const enabled = canConfirmItem(form);
+                const selected = enabled && selectedIds.has(form.purchaseItemId);
+                const isEditing = editingId === form.purchaseItemId;
+
+                return (
+                  <View key={form.purchaseItemId} className="border-b border-neutral-50">
+                    <View className="flex-row items-center gap-3 py-3">
+                      <Pressable
+                        className={`flex-row flex-1 items-center gap-3 ${enabled ? '' : 'opacity-40'}`}
+                        disabled={!enabled}
+                        onPress={() => toggleItem(form)}
+                      >
+                        {selected ? (
+                          <Check />
+                        ) : (
+                          <View className="w-[18px] h-[18px] rounded-full border border-neutral-100" />
+                        )}
+                        <View className="flex-1">
+                          <Text className="text-text16 font-sans text-text-100">{form.name || '(이름 없음)'}</Text>
+                          <Text className="text-text12 font-sans text-text-200">
+                            {form.ingredientCatalogId !== null ? `영수증: ${form.rawName}` : '목록에 없는 재료'}
+                            {` · 수량 ${form.quantity}`}
+                            {form.expiresOn ? ` · ~${form.expiresOn}` : ''}
+                          </Text>
+                        </View>
+                      </Pressable>
+                      <Pressable hitSlop={8} onPress={() => setEditingId(isEditing ? null : form.purchaseItemId)}>
+                        <Text className="text-text14 font-sans text-primary-700">{isEditing ? '완료' : '수정'}</Text>
+                      </Pressable>
+                    </View>
+
+                    {isEditing && (
+                      <ReceiptItemEditor item={form} onChange={(patch) => updateForm(form.purchaseItemId, patch)} />
+                    )}
+                  </View>
+                );
+              })}
+            </ScrollView>
+
+            <Button
+              fullWidth
+              loading={isConfirming}
+              disabled={selectedForms.length === 0}
+              onPress={() => onConfirm(selectedForms)}
+            >
+              {`${selectedForms.length}개 등록`}
+            </Button>
+          </Pressable>
         </Pressable>
-      </Pressable>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };

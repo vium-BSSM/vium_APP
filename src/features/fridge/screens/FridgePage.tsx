@@ -4,7 +4,7 @@ import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
 import { useIngredientUpload } from '../lib/useIngredientUpload';
 import { isReceiptScanSupported, useReceiptScan } from '../lib/useReceiptScan';
-import { useReceiptConfirm } from '../lib/useReceiptConfirm';
+import { ReceiptItemForm, useReceiptConfirm } from '../lib/useReceiptConfirm';
 import { useIngredientsList } from '../lib/useIngredientsList';
 import { useIngredientDispose } from '../lib/useIngredientDispose';
 import { useFridgeCleanup } from '../lib/useFridgeCleanup';
@@ -13,7 +13,7 @@ import { FridgeHeader, FridgeFilterBar, FridgeSelectionBar } from '../ui/FridgeH
 import { FridgeGrid } from '../ui/FridgeGrid';
 import { FridgeCleanupModal } from '../ui/FridgeCleanupModal';
 import { ReceiptConfirmModal } from '../ui/ReceiptConfirmModal';
-import { FridgeStorageFilter, PurchaseDetail, PurchaseItemDraft } from '../types';
+import { FridgeStorageFilter, PurchaseDetail } from '../types';
 import { useMyProfile } from '@/features/account';
 import { AddButton, Card, HomeHeader } from '@/shared/ui';
 
@@ -56,7 +56,7 @@ export const FridgePage = () => {
     });
   };
 
-  const handleReceiptConfirm = async (items: PurchaseItemDraft[]) => {
+  const handleReceiptConfirm = async (items: ReceiptItemForm[]) => {
     if (!scannedPurchase) return;
     const success = await confirmItems(scannedPurchase, items);
     if (success) {

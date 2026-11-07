@@ -5,15 +5,43 @@ import { confirmPurchase } from '../api/purchaseApi';
 import { notifyInventoryChanged } from './inventoryEvents';
 import { PurchaseConfirmItem, PurchaseDetail, PurchaseItemDraft } from '../types';
 
-// 재료를 못 찾은 품목은 소비기한이 없으면 서버가 400으로 거절
-export const canConfirmItem = (item: PurchaseItemDraft) =>
-  item.ingredientCatalogId !== null || item.expiresOn !== null;
+/** 확인 모달에서 수정 중인 품목 (인식 결과로 시작) */
+export interface ReceiptItemForm {
+  purchaseItemId: number;
+  rawName: string;
+  name: string;
+  // 이름을 직접 고치면 null (카탈로그 후보를 다시 고르면 채워짐)
+  ingredientCatalogId: number | null;
+  quantity: string;
+  unitId: number;
+  storageMethodId: number | null;
+  amount: number | null;
+  expiresOn: string | null; // 'YYYY-MM-DD'
+}
 
-const toConfirmItem = (item: PurchaseItemDraft): PurchaseConfirmItem => ({
+export const toReceiptItemForm = (item: PurchaseItemDraft): ReceiptItemForm => ({
+  purchaseItemId: item.purchaseItemId,
+  rawName: item.rawName,
+  name: item.ingredientName ?? item.rawName,
+  ingredientCatalogId: item.ingredientCatalogId,
+  quantity: String(item.quantity),
+  unitId: item.unitId,
+  storageMethodId: item.storageMethodId,
+  amount: item.amount,
+  expiresOn: item.expiresOn,
+});
+
+// 재료를 못 찾은 품목은 소비기한이 없으면 서버가 400으로 거절
+export const canConfirmItem = (item: ReceiptItemForm) =>
+  item.name.trim() !== '' &&
+  parseFloat(item.quantity) > 0 &&
+  (item.ingredientCatalogId !== null || item.expiresOn !== null);
+
+const toConfirmItem = (item: ReceiptItemForm): PurchaseConfirmItem => ({
   purchaseItemId: item.purchaseItemId,
   ingredientCatalogId: item.ingredientCatalogId,
-  customName: item.ingredientName ?? item.rawName,
-  quantity: item.quantity,
+  customName: item.name.trim(),
+  quantity: parseFloat(item.quantity),
   unitId: item.unitId,
   storageMethodId: item.storageMethodId ?? undefined,
   amount: item.amount ?? undefined,
@@ -27,7 +55,7 @@ const toConfirmItem = (item: PurchaseItemDraft): PurchaseConfirmItem => ({
 export const useReceiptConfirm = () => {
   const [isConfirming, setIsConfirming] = useState(false);
 
-  const confirmItems = async (purchase: PurchaseDetail, items: PurchaseItemDraft[]): Promise<boolean> => {
+  const confirmItems = async (purchase: PurchaseDetail, items: ReceiptItemForm[]): Promise<boolean> => {
     try {
       setIsConfirming(true);
 
