@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, TextInput } from 'react-native';
-import { DatePicker, LabelInputWithUnit } from '@/shared/ui';
+import { View, Text } from 'react-native';
+import { AppTextInput, DatePicker, LabelInputWithUnit } from '@/shared/ui';
 import { useIngredientCatalogSearch } from '../lib/useIngredientCatalogSearch';
 import { parseDateString, toDateString } from '../lib/dateUtils';
 import { ReceiptItemForm } from '../lib/useReceiptConfirm';
@@ -21,9 +21,8 @@ export const ReceiptItemEditor: React.FC<ReceiptItemEditorProps> = ({ item, onCh
       <View className="gap-2">
         <Text className="text-text16 text-neutral-200 font-medium font-sans">이름</Text>
         <View className="bg-neutral-50 rounded-lg px-2.5 h-[36px] justify-center">
-          <TextInput
+          <AppTextInput
             className="text-text15 font-sans text-text-100"
-            style={{ fontFamily: 'Paperlogy' }}
             value={item.name}
             onChangeText={(name) => onChange({ name, ingredientCatalogId: null })}
             placeholder="재료 이름"
