@@ -1,18 +1,20 @@
 import React from 'react';
-import { View, Pressable, Text } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { usePathname, useRouter } from 'expo-router';
 import HomeIcon from '@/../assets/icons/home-icon.svg';
-import FridgeIcon from '@/../assets/icons/fridge-icon.svg';
-import ReceiptIcon from '@/../assets/icons/receipt-icon.svg';
+import ChefIcon from '@/../assets/icons/chef-icon.svg';
+import ReportIcon from '@/../assets/icons/report-icon.svg';
 import SettingsIcon from '@/../assets/icons/settings-icon.svg';
 
-type NavItem = 'home' | 'fridge' | 'receipt' | 'settings';
+type NavItem = 'home' | 'recipe' | 'report' | 'settings';
 
-const navItems: { key: NavItem; label: string; route: string; Icon: any }[] = [
-  { key: 'home', label: '홈', route: '/main', Icon: HomeIcon },
-  { key: 'fridge', label: '냉장고', route: '/fridge', Icon: FridgeIcon },
-  { key: 'receipt', label: '레시피', route: '/recipe', Icon: ReceiptIcon },
-  { key: 'settings', label: '계정', route: '/mypage', Icon: SettingsIcon },
+// 아이콘 전용 탭 (라벨 없음) — 라벨은 스크린리더용 accessibilityLabel로만 둔다
+// size: 40x40 viewBox 아이콘(chef/report)은 여백이 있어 조금 크게 그려야 시각 크기가 맞는다
+const navItems: { key: NavItem; label: string; route: string; Icon: any; size: number }[] = [
+  { key: 'home', label: '홈', route: '/main', Icon: HomeIcon, size: 32 },
+  { key: 'recipe', label: '레시피', route: '/recipe', Icon: ChefIcon, size: 36 },
+  { key: 'report', label: '리포트', route: '/report', Icon: ReportIcon, size: 36 },
+  { key: 'settings', label: '계정', route: '/mypage', Icon: SettingsIcon, size: 32 },
 ];
 
 const isRouteActive = (pathname: string, route: string) =>
@@ -29,7 +31,7 @@ export const NavBar: React.FC = () => {
   };
 
   return (
-    <View className="bg-white rounded-[40px] px-6 py-4 flex-row justify-between items-center shadow-sm">
+    <View className="bg-white border-t border-neutral-50 px-3 pt-3 pb-2.5 flex-row items-center">
       {navItems.map((item) => {
         const isActive = isRouteActive(pathname, item.route);
         const { Icon } = item;
@@ -37,18 +39,16 @@ export const NavBar: React.FC = () => {
           <Pressable
             key={item.key}
             onPress={() => handlePress(item.route)}
-            className="items-center flex-1"
+            accessibilityRole="tab"
+            accessibilityLabel={item.label}
+            accessibilityState={{ selected: isActive }}
+            className="items-center justify-center flex-1 h-10"
           >
-            <View className={`w-8 h-8 items-center justify-center mb-1`}>
-              <Icon
-                width={32}
-                height={32}
-                color={isActive ? '#333333' : '#C0C0C0'}
-              />
-            </View>
-            <Text className={`text-text14 font-sans ${isActive ? 'text-neutral-500' : 'text-neutral-100'}`}>
-              {item.label}
-            </Text>
+            <Icon
+              width={item.size}
+              height={item.size}
+              color={isActive ? '#333333' : '#C0C0C0'}
+            />
           </Pressable>
         );
       })}
