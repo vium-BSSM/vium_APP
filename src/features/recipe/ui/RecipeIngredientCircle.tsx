@@ -6,6 +6,8 @@ import PlusBadgeIcon from '@/../assets/icons/plus-badge-icon.svg';
 interface RecipeIngredientCircleProps {
   name: string;
   image?: string;
+  // 1인분 분량 (예: "1/2개") — 상세 보강 전에는 없음
+  amount?: string | null;
   onPress?: () => void;
   isAddButton?: boolean;
 }
@@ -13,6 +15,7 @@ interface RecipeIngredientCircleProps {
 export const RecipeIngredientCircle: React.FC<RecipeIngredientCircleProps> = ({
   name,
   image,
+  amount,
   onPress,
   isAddButton = false,
 }) => {
@@ -41,6 +44,14 @@ export const RecipeIngredientCircle: React.FC<RecipeIngredientCircleProps> = ({
       >
         {name}
       </Text>
+      {amount ? (
+        <Text
+          className="-mt-2 text-text10 font-sans text-text-300 text-center"
+          numberOfLines={2}
+        >
+          {amount}
+        </Text>
+      ) : null}
     </View>
   );
 

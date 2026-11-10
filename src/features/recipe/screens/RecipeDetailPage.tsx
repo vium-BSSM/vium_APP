@@ -6,6 +6,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRecipeDetail } from '../lib/useRecipeDetail';
 import { recipeCookStore } from '../lib/recipeCookStore';
 import { RecipeIngredientCircle } from '../ui/RecipeIngredientCircle';
+import { RecipeSeasoningList } from '../ui/RecipeSeasoningList';
 import { RecipeStepCard } from '../ui/RecipeStepCard';
 import { AppHeader, BackTitle, Button } from '@/shared/ui';
 
@@ -13,7 +14,7 @@ export const RecipeDetailPage: React.FC = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const recipeId = parseInt(id || '1', 10);
-  const { recipe, isLoading, error } = useRecipeDetail(recipeId);
+  const { recipe, isLoading, error, isEnriching } = useRecipeDetail(recipeId);
 
   if (isLoading) {
     return (
@@ -73,7 +74,12 @@ export const RecipeDetailPage: React.FC = () => {
                     <Text className="text-text16 font-medium font-sans text-text-300">사용재료</Text>
                     <View className="flex-row flex-wrap gap-x-6 gap-y-[14px]">
                       {recipe.ingredients.map((ingredient, index) => (
-                        <RecipeIngredientCircle key={`${ingredient.id}-${index}`} name={ingredient.name} image={ingredient.image} />
+                        <RecipeIngredientCircle
+                          key={`${ingredient.id}-${index}`}
+                          name={ingredient.name}
+                          image={ingredient.image}
+                          amount={ingredient.amount}
+                        />
                       ))}
                       <RecipeIngredientCircle
                         name="추가"
@@ -81,7 +87,21 @@ export const RecipeDetailPage: React.FC = () => {
                         onPress={() => router.push(`/recipe/${recipe.id}/add` as any)}
                       />
                     </View>
+                    {!recipe.detailReady && (
+                      <Text className="text-text12 font-sans text-text-300">
+                        {isEnriching
+                          ? '재료 분량과 양념 정보를 준비하고 있어요...'
+                          : '재료 분량 정보를 아직 준비하지 못했어요. 잠시 후 다시 열어주세요.'}
+                      </Text>
+                    )}
                   </View>
+
+                  {recipe.seasonings.length > 0 && (
+                    <View className="gap-4">
+                      <Text className="text-text16 font-medium font-sans text-text-300">기본 양념</Text>
+                      <RecipeSeasoningList seasonings={recipe.seasonings} />
+                    </View>
+                  )}
                 </View>
 
                 <View className="h-px bg-neutral-100 w-full" />
