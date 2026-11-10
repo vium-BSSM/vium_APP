@@ -9,6 +9,14 @@ export interface RecipeIngredient {
   image?: string;
   // 내 냉장고 재고 id — 냉장고에 없는 재료는 null (요리 완료 시 차감 대상에서 제외)
   inventoryId?: number | null;
+  // 1인분 기준 분량 (자유 텍스트, 예: "1/2개(약 80g)") — 상세 보강 전에는 null
+  amount?: string | null;
+}
+
+// 기본 양념 (소금·간장 등) — 냉장고 재료가 아니라 카탈로그 밖 자유 텍스트
+export interface RecipeSeasoning {
+  name: string;
+  amount: string;
 }
 
 export interface RecipeStep {
@@ -29,7 +37,10 @@ export interface RecipeListItem {
 
 export interface RecipeDetail extends RecipeListItem {
   ingredients: RecipeIngredient[];
+  seasonings: RecipeSeasoning[];
   steps: RecipeStep[];
+  // AI 상세 보강(분량·양념·6~12단계) 완료 여부 — false면 기본 생성분만 있음
+  detailReady: boolean;
 }
 
 interface ApiError {
@@ -59,7 +70,16 @@ export interface RecipeDetailApiResponse {
     category: RecipeCategoryCode;
     cookTime: number;
     imageUrl: string | null;
-    ingredients: { ingredientCatalogId: number; inventoryId: number | null; name: string }[];
+    // 상세 최초 열람 시 서버가 AI로 분량·양념·단계를 보강 — 실패·다른 요청이 보강 중이면 false
+    detailReady: boolean | null;
+    ingredients: {
+      ingredientCatalogId: number;
+      inventoryId: number | null;
+      name: string;
+      unit: string | null;
+      amount: string | null; // detailReady가 false면 null
+    }[];
+    seasonings: { name: string; amount: string }[] | null; // detailReady가 false면 빈 배열
     steps: { step: number; description: string }[];
   } | null;
   error: ApiError | null;

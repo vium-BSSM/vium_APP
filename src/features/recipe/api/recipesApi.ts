@@ -19,8 +19,13 @@ export const getRecommendedRecipes = async (
   return response.data;
 };
 
+// 상세 최초 열람 시 서버가 AI로 분량·양념·단계를 보강하느라 수 초 걸릴 수 있음
+const DETAIL_TIMEOUT_MS = 60 * 1000;
+
 export const getRecipeDetail = async (recipeId: number): Promise<RecipeDetailApiResponse> => {
-  const response = await apiClient.get<RecipeDetailApiResponse>(`/api/me/recipes/${recipeId}`);
+  const response = await apiClient.get<RecipeDetailApiResponse>(`/api/me/recipes/${recipeId}`, {
+    timeout: DETAIL_TIMEOUT_MS,
+  });
   return response.data;
 };
 
