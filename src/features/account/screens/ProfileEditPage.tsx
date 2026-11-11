@@ -17,11 +17,12 @@ export const ProfileEditPage: React.FC = () => {
     handle,
     pickImage,
     canSave,
+    isSaving,
     save,
   } = useProfileEdit();
 
-  const handleSave = () => {
-    if (save()) router.back();
+  const handleSave = async () => {
+    if (await save()) router.back();
   };
 
   return (
@@ -49,6 +50,7 @@ export const ProfileEditPage: React.FC = () => {
               </View>
               <Pressable
                 onPress={pickImage}
+                disabled={isSaving}
                 hitSlop={4}
                 className="absolute bottom-0 right-0 w-9 h-9"
               >
@@ -88,7 +90,7 @@ export const ProfileEditPage: React.FC = () => {
         </View>
 
         <View className="w-full items-center pt-10 pb-[60px] px-screen">
-          <Button onPress={handleSave} disabled={!canSave}>
+          <Button onPress={handleSave} disabled={!canSave} loading={isSaving}>
             저장
           </Button>
         </View>
