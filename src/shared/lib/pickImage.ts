@@ -6,6 +6,9 @@ export interface PickedImage {
   uri: string;
   width: number;
   height: number;
+  // 업로드 전 형식·용량 검사용 (플랫폼에 따라 없을 수 있음)
+  mimeType?: string;
+  fileSize?: number;
 }
 
 /**
@@ -29,8 +32,8 @@ export const pickImageAssetFromLibrary = async (
   });
 
   if (result.canceled || !result.assets[0]) return null;
-  const { uri, width, height } = result.assets[0];
-  return { uri, width, height };
+  const { uri, width, height, mimeType, fileSize } = result.assets[0];
+  return { uri, width, height, mimeType: mimeType ?? undefined, fileSize: fileSize ?? undefined };
 };
 
 /** 사진 라이브러리에서 이미지 한 장을 골라 uri만 반환 */

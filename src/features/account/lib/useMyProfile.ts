@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { sessionUserStore, useSessionUser } from '@/shared/lib/sessionUser';
 import { getMe } from '../api/accountApi';
 import { MyProfile } from '../types';
-import { useProfileStore } from './profileStore';
+import { loadSavedProfileImageUrl } from './profileImage';
+import { profileStore, useProfileStore } from './profileStore';
 
 // 저장된 로그인 사용자 정보로 먼저 보여주고, GET /api/me 응답으로 최신화합니다.
 export const useMyProfile = () => {
@@ -38,6 +39,21 @@ export const useMyProfile = () => {
       isActive = false;
     };
   }, []);
+
+  // 이 기기에 보관한 프로필 사진 주소 복원 (서버에 프로필 이미지 저장이 생기기 전까지)
+  const userId = user?.id;
+  useEffect(() => {
+    if (userId == null || profileStore.getState().profileImageUrl) return;
+    let isActive = true;
+    loadSavedProfileImageUrl(userId).then((url) => {
+      if (isActive && url && !profileStore.getState().profileImageUrl) {
+        profileStore.updateProfile({ profileImageUrl: url });
+      }
+    });
+    return () => {
+      isActive = false;
+    };
+  }, [userId]);
 
   const profile: MyProfile = {
     nickname: overrides.nickname ?? user?.displayName ?? '',
