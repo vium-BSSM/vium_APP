@@ -5,3 +5,4 @@ export { ProfilePage } from './screens/ProfilePage';
 export { OnboardingPage } from './screens/OnboardingPage';
 
 export { useLogout } from './lib/useLogout';
+export { LaunchSplash } from './ui/LaunchSplash';
