@@ -8,14 +8,14 @@ interface RecipeSeasoningListProps {
 
 /** 기본 양념 칩 목록 (이름 + 1인분 분량) */
 export const RecipeSeasoningList: React.FC<RecipeSeasoningListProps> = ({ seasonings }) => (
-  <View className="flex-row flex-wrap gap-2">
+  <View className="flex-row flex-wrap gap-2.5">
     {seasonings.map((seasoning, index) => (
       <View
         key={`${seasoning.name}-${index}`}
-        className="flex-row items-center gap-1.5 rounded-full bg-neutral-10 px-3 py-1.5"
+        className="flex-row items-center gap-2 rounded-full bg-neutral-10 px-4 py-2.5"
       >
-        <Text className="text-text12 font-sans text-text-100">{seasoning.name}</Text>
-        <Text className="text-text12 font-sans text-text-300">{seasoning.amount}</Text>
+        <Text className="text-text15 font-medium font-sans text-text-100">{seasoning.name}</Text>
+        <Text className="text-text14 font-sans text-text-300">{seasoning.amount}</Text>
       </View>
     ))}
   </View>
