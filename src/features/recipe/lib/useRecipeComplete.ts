@@ -4,6 +4,7 @@ import { isAxiosError } from 'axios';
 import { completeRecipe } from '../api/recipesApi';
 import { RecipeCompleteRequest } from '../types';
 import { CookUsageItem } from './recipeCookStore';
+import { recipeDetailCache } from './recipeDetailCache';
 import { recipeListCache } from './recipeListCache';
 
 type CookUsage = RecipeCompleteRequest['usages'][number];
@@ -50,6 +51,8 @@ export const useRecipeComplete = () => {
       await completeRecipe(recipeId, { usages });
       // 재고가 바뀌어 추천 결과도 달라지므로 다음 목록 진입 때 새로 받음
       recipeListCache.invalidate();
+      // 소진·폐기된 재고는 상세의 inventoryId 매칭도 달라짐
+      recipeDetailCache.markStale();
       return true;
     } catch (err) {
       console.error('Failed to complete recipe:', err);

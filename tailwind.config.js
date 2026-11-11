@@ -78,6 +78,10 @@ module.exports = {
           'good-text': '#007AFF',
         },
       },
+      lineHeight: {
+        // 여러 줄 본문(레시피 조리 단계 등) — leading-body
+        body: '24px',
+      },
       fontSize: {
         'heading-lg': ['24px', { lineHeight: 'normal' }],
         'heading-md': ['20px', { lineHeight: 'normal' }],

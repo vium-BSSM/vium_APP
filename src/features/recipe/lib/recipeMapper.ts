@@ -49,6 +49,9 @@ export const mapRecipeDetail = (detail: RecipeDetailData): RecipeDetail => ({
     name: ingredient.name,
     image: getIngredientImage(ingredient.name),
     inventoryId: ingredient.inventoryId,
+    amount: ingredient.amount,
   })),
+  seasonings: detail.seasonings ?? [],
   steps: detail.steps,
+  detailReady: detail.detailReady === true,
 });
