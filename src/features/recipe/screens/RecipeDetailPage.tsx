@@ -7,7 +7,7 @@ import { useRecipeDetail } from '../lib/useRecipeDetail';
 import { recipeCookStore } from '../lib/recipeCookStore';
 import { RecipeIngredientCircle } from '../ui/RecipeIngredientCircle';
 import { RecipeSeasoningList } from '../ui/RecipeSeasoningList';
-import { RecipeStepCard } from '../ui/RecipeStepCard';
+import { RecipeStepList } from '../ui/RecipeStepList';
 import { AppHeader, BackTitle, Button } from '@/shared/ui';
 
 export const RecipeDetailPage: React.FC = () => {
@@ -108,15 +108,15 @@ export const RecipeDetailPage: React.FC = () => {
               </View>
             </View>
 
-            <View className="gap-8">
+            <View className="gap-4">
               <Text className="text-heading-md font-medium font-sans text-text-100">
                 조리방법을 알려드릴게요!
               </Text>
-              <View className="gap-6">
-                {recipe.steps.map((step) => (
-                  <RecipeStepCard key={step.step} step={step} />
-                ))}
-              </View>
+              {/* AI 보강으로 단계가 바뀌면 완료 체크를 초기화 */}
+              <RecipeStepList
+                key={`${recipe.id}-${recipe.detailReady}-${recipe.steps.length}`}
+                steps={recipe.steps}
+              />
             </View>
           </View>
         </View>
