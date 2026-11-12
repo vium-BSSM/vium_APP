@@ -1,10 +1,22 @@
 import { Platform } from 'react-native';
 import { apiClient } from '@/shared/api/client';
 import { PickedImage } from '@/shared/lib/pickImage';
-import { ImageUploadApiResponse, MeApiResponse } from '../types';
+import { DeleteMeApiResponse, ImageUploadApiResponse, MeApiResponse, UpdateMeRequest } from '../types';
 
 export const getMe = async (): Promise<MeApiResponse> => {
   const response = await apiClient.get<MeApiResponse>('/api/me');
+  return response.data;
+};
+
+/** 프로필 수정 — 이미지는 먼저 업로드(purpose=PROFILE)한 뒤 받은 imageId를 보냄 */
+export const updateMe = async (request: UpdateMeRequest): Promise<MeApiResponse> => {
+  const response = await apiClient.patch<MeApiResponse>('/api/me', request);
+  return response.data;
+};
+
+/** 회원 탈퇴 — 서버에서 모든 로그인 세션이 삭제됨 */
+export const deleteMe = async (): Promise<DeleteMeApiResponse> => {
+  const response = await apiClient.delete<DeleteMeApiResponse>('/api/me');
   return response.data;
 };
 
