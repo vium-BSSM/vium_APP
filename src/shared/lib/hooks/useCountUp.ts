@@ -8,6 +8,14 @@ const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
  */
 export const useCountUp = (target: number, duration: number = 900, resetKey?: string) => {
   const [value, setValue] = useState(0);
+  const animationKey = `${target}|${duration}|${resetKey ?? ''}`;
+  const [prevAnimationKey, setPrevAnimationKey] = useState(animationKey);
+
+  // 다시 시작할 때는 렌더 중에 0으로 되돌림 (이전 값이 한 프레임 보이지 않게)
+  if (animationKey !== prevAnimationKey) {
+    setPrevAnimationKey(animationKey);
+    setValue(0);
+  }
 
   useEffect(() => {
     let frameId: number;
@@ -21,7 +29,6 @@ export const useCountUp = (target: number, duration: number = 900, resetKey?: st
       }
     };
 
-    setValue(0);
     frameId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frameId);
   }, [target, duration, resetKey]);

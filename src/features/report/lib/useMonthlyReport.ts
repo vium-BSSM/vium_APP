@@ -42,11 +42,13 @@ export const useMonthlyReport = (year: number, month: number) => {
         setReports(response.data.reports);
         setWasteCategories(categories);
         hasLoaded.current = true;
-      } else {
+      } else if (!hasLoaded.current) {
+        // 이미 받은 리포트가 있으면 갱신 실패는 조용히 넘기고 기존 리포트를 유지
         setError(response.error?.message || '리포트를 불러오지 못했어요.');
       }
     } catch (err) {
       console.error('Failed to load waste reports:', err);
+      if (hasLoaded.current) return;
       setError(
         isAxiosError(err) && err.response
           ? err.response.data?.error?.message || '리포트를 불러오지 못했어요.'
@@ -82,7 +84,7 @@ export const useMonthlyReport = (year: number, month: number) => {
     wasteCategories,
     selectableMonths,
     isLoading,
-    error: hasLoaded.current ? null : error,
+    error,
     refresh: loadReports,
   };
 };
