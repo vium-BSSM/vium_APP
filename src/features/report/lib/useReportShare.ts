@@ -11,7 +11,8 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const useReportShare = (targetRef: RefObject<View | null>, animationKey: string) => {
   const [isSharing, setIsSharing] = useState(false);
-  const animationStartedAtRef = useRef(Date.now());
+  // 시작 시각은 아래 effect가 마운트·animationKey 변경 때마다 기록
+  const animationStartedAtRef = useRef(0);
 
   useEffect(() => {
     animationStartedAtRef.current = Date.now();

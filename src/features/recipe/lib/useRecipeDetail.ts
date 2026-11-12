@@ -15,21 +15,24 @@ export const useRecipeDetail = (recipeId: number) => {
   const [error, setError] = useState<string | null>(null);
   // 보강 전 상세를 다시 받는 중인지 — 재시도를 모두 쓰면 false
   const [isEnriching, setIsEnriching] = useState(false);
+  const [prevRecipeId, setPrevRecipeId] = useState(recipeId);
+
+  // 다른 레시피로 바뀌면 렌더 중에 캐시 기준으로 초기화 (캐시가 있으면 그대로 보여주고 뒤에서 새로 받음)
+  if (recipeId !== prevRecipeId) {
+    const cached = recipeDetailCache.peek(recipeId);
+    setPrevRecipeId(recipeId);
+    setRecipe(cached ?? null);
+    setIsLoading(!cached);
+    setError(null);
+    setIsEnriching(false);
+  }
 
   useEffect(() => {
     let active = true;
     let retryTimer: ReturnType<typeof setTimeout> | undefined;
 
     const cached = recipeDetailCache.peek(recipeId);
-    setRecipe(cached ?? null);
-    setError(null);
-    setIsEnriching(false);
-    if (cached && !recipeDetailCache.needsRefresh(recipeId)) {
-      setIsLoading(false);
-      return;
-    }
-    // 캐시가 있으면 그대로 보여주고 뒤에서 새로 받음
-    setIsLoading(!cached);
+    if (cached && !recipeDetailCache.needsRefresh(recipeId)) return;
 
     const load = async (attempt: number) => {
       const result = await recipeDetailCache.load(recipeId);

@@ -20,6 +20,19 @@ const getErrorMessage = (err: unknown, fallback: string) => {
   return fallback;
 };
 
+type HelperResult =
+  | { ok: true; responses: [Awaited<ReturnType<typeof getShoppingHelper>>, Awaited<ReturnType<typeof getShoppingList>>] }
+  | { ok: false; error: unknown };
+
+// 추천과 장보기 목록을 함께 받음 (실패도 결과로 돌려서 호출하는 쪽에서 한 번에 반영)
+const requestHelper = async (): Promise<HelperResult> => {
+  try {
+    return { ok: true, responses: await Promise.all([getShoppingHelper(), getShoppingList()]) };
+  } catch (error) {
+    return { ok: false, error };
+  }
+};
+
 export const useShoppingHelper = () => {
   const [available, setAvailable] = useState(false);
   const [unavailableReason, setUnavailableReason] = useState<string | null>(null);
@@ -39,12 +52,9 @@ export const useShoppingHelper = () => {
       return next;
     });
 
-  const load = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const [helperRes, listRes] = await Promise.all([getShoppingHelper(), getShoppingList()]);
-
+  const applyHelperResult = useCallback((result: HelperResult) => {
+    if (result.ok) {
+      const [helperRes, listRes] = result.responses;
       if (helperRes.success && helperRes.data) {
         setAvailable(helperRes.data.available);
         setUnavailableReason(helperRes.data.reason);
@@ -58,17 +68,30 @@ export const useShoppingHelper = () => {
       if (listRes.success && listRes.data) {
         setListItems(listRes.data.items.map(mapShoppingListItem));
       }
-    } catch (err) {
-      console.error('Failed to load shopping helper:', err);
-      setError(getErrorMessage(err, '서버와 연결할 수 없습니다.'));
-    } finally {
-      setIsLoading(false);
+    } else {
+      console.error('Failed to load shopping helper:', result.error);
+      setError(getErrorMessage(result.error, '서버와 연결할 수 없습니다.'));
     }
+    setIsLoading(false);
   }, []);
 
+  // 새로고침: 로딩 표시를 켜고 다시 받음
+  const load = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    applyHelperResult(await requestHelper());
+  }, [applyHelperResult]);
+
+  // 마운트 시에는 isLoading·error 초기값이 이미 true·null이라 응답만 반영
   useEffect(() => {
-    load();
-  }, [load]);
+    let active = true;
+    requestHelper().then((result) => {
+      if (active) applyHelperResult(result);
+    });
+    return () => {
+      active = false;
+    };
+  }, [applyHelperResult]);
 
   const addSuggestion = async (suggestion: ShoppingSuggestion) => {
     const key = `s-${suggestion.key}`;

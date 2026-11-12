@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRecipeCookStore } from '../lib/recipeCookStore';
@@ -15,6 +15,8 @@ export const RecipeWastePage: React.FC = () => {
   const { complete, isSubmitting } = useRecipeComplete();
   const { isLoading: isQuantityLoading } = useCookInventoryQuantities(items.length > 0);
   const isFinishingRef = useRef(false);
+  // effect는 ref로, 렌더는 state로 확인 (store 비우기와 렌더 순서가 어긋나도 리다이렉트되지 않게)
+  const [isFinishing, setIsFinishing] = useState(false);
 
   // 선택된 재료 없이 이 화면으로 바로 들어온 경우 상세 화면으로 돌려보냄
   useEffect(() => {
@@ -27,11 +29,12 @@ export const RecipeWastePage: React.FC = () => {
     const success = await complete(recipeId, items);
     if (!success) return;
     isFinishingRef.current = true;
+    setIsFinishing(true);
     reset();
     router.replace('/recipe' as any);
   };
 
-  if (items.length === 0 && !isFinishingRef.current) {
+  if (items.length === 0 && !isFinishing) {
     return <View className="flex-1" />;
   }
 

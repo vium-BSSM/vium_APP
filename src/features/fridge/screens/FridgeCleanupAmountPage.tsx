@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFridgeCleanupStore } from '../lib/fridgeCleanupStore';
@@ -11,6 +11,8 @@ export const FridgeCleanupAmountPage: React.FC = () => {
   const { items, setRemainingAmount, reset } = useFridgeCleanupStore();
   const { finish, isSubmitting } = useFridgeCleanupFinish();
   const isFinishingRef = useRef(false);
+  // effect는 ref로, 렌더는 state로 확인 (store 비우기와 렌더 순서가 어긋나도 리다이렉트되지 않게)
+  const [isFinishing, setIsFinishing] = useState(false);
 
   // 선택된 재료 없이 이 화면으로 바로 들어온 경우 선택 화면으로 돌려보냄
   // (단, 정리 종료로 인해 store가 비워진 경우는 제외)
@@ -25,11 +27,12 @@ export const FridgeCleanupAmountPage: React.FC = () => {
     if (!isSuccess) return;
 
     isFinishingRef.current = true;
+    setIsFinishing(true);
     reset();
     router.replace('/fridge' as any);
   };
 
-  if (items.length === 0 && !isFinishingRef.current) {
+  if (items.length === 0 && !isFinishing) {
     return <View className="flex-1 bg-white" />;
   }
 

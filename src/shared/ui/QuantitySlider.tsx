@@ -23,7 +23,7 @@ const formatNumber = (value: number) => Number(value.toFixed(2)).toString();
 
 export const QuantitySlider: React.FC<QuantitySliderProps> = ({ value, max, unit = '', onChange }) => {
   const [trackWidth, setTrackWidth] = useState(0);
-  const tooltipOpacity = useRef(new Animated.Value(0)).current;
+  const [tooltipOpacity] = useState(() => new Animated.Value(0));
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const step = getStep(max);
   const ratio = max > 0 ? value / max : 0;

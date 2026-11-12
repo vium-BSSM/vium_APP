@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Modal, Pressable, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Button, Check } from '@/shared/ui';
 import { canConfirmItem, ReceiptItemForm, toReceiptItemForm } from '../lib/useReceiptConfirm';
@@ -12,6 +12,16 @@ interface ReceiptConfirmModalProps {
   onConfirm: (items: ReceiptItemForm[]) => void;
 }
 
+const getInitialForms = (purchase: PurchaseDetail | null) => (purchase?.items ?? []).map(toReceiptItemForm);
+
+// 재료를 찾은 품목만 기본 선택 (못 찾은 품목은 비식품일 수 있음)
+const getInitialSelectedIds = (purchase: PurchaseDetail | null) =>
+  new Set(
+    (purchase?.items ?? [])
+      .filter((item) => item.ingredientCatalogId !== null)
+      .map((item) => item.purchaseItemId)
+  );
+
 /** 영수증 인식 품목을 확인·수정해서 등록하는 모달 */
 export const ReceiptConfirmModal: React.FC<ReceiptConfirmModalProps> = ({
   purchase,
@@ -19,17 +29,18 @@ export const ReceiptConfirmModal: React.FC<ReceiptConfirmModalProps> = ({
   onClose,
   onConfirm,
 }) => {
-  const [forms, setForms] = useState<ReceiptItemForm[]>([]);
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [forms, setForms] = useState<ReceiptItemForm[]>(() => getInitialForms(purchase));
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(() => getInitialSelectedIds(purchase));
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [prevPurchase, setPrevPurchase] = useState(purchase);
 
-  // 재료를 찾은 품목만 기본 선택 (못 찾은 품목은 비식품일 수 있음)
-  useEffect(() => {
-    const items = purchase?.items ?? [];
-    setForms(items.map(toReceiptItemForm));
-    setSelectedIds(new Set(items.filter((item) => item.ingredientCatalogId !== null).map((item) => item.purchaseItemId)));
+  // 새 영수증이 들어오면 렌더 중에 폼을 초기화 (effect로 하면 이전 품목이 한 번 그려짐)
+  if (purchase !== prevPurchase) {
+    setPrevPurchase(purchase);
+    setForms(getInitialForms(purchase));
+    setSelectedIds(getInitialSelectedIds(purchase));
     setEditingId(null);
-  }, [purchase]);
+  }
 
   const updateForm = (purchaseItemId: number, patch: Partial<ReceiptItemForm>) => {
     setForms((prev) => prev.map((form) => (form.purchaseItemId === purchaseItemId ? { ...form, ...patch } : form)));
