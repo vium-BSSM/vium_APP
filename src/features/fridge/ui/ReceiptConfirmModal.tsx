@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, Modal, Pressable, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Button, Check } from '@/shared/ui';
-import { canConfirmItem, ReceiptItemForm, toReceiptItemForm } from '../lib/useReceiptConfirm';
+import {
+  getBlockReason,
+  ReceiptItemForm,
+  requiresExpiry,
+  toPurchasedOn,
+  toReceiptItemForm,
+} from '../lib/useReceiptConfirm';
 import { ReceiptItemEditor } from './ReceiptItemEditor';
 import { PurchaseDetail } from '../types';
 
@@ -42,8 +48,16 @@ export const ReceiptConfirmModal: React.FC<ReceiptConfirmModalProps> = ({
     setEditingId(null);
   }
 
+  const purchasedOn = purchase ? toPurchasedOn(purchase.purchasedAt) : '';
+
   const updateForm = (purchaseItemId: number, patch: Partial<ReceiptItemForm>) => {
+    const target = forms.find((form) => form.purchaseItemId === purchaseItemId);
     setForms((prev) => prev.map((form) => (form.purchaseItemId === purchaseItemId ? { ...form, ...patch } : form)));
+
+    // 소비기한이 없어 막혀 있던 품목은 날짜를 정하면 바로 선택 (한 번 더 누르지 않아도 되게)
+    if (target && patch.expiresOn && target.expiresOn === null && requiresExpiry(target)) {
+      setSelectedIds((prev) => new Set(prev).add(purchaseItemId));
+    }
   };
 
   const toggleItem = (form: ReceiptItemForm) => {
@@ -59,7 +73,9 @@ export const ReceiptConfirmModal: React.FC<ReceiptConfirmModalProps> = ({
   };
 
   // 수정하다 등록 조건이 깨진 품목은 선택돼 있어도 제외
-  const selectedForms = forms.filter((form) => selectedIds.has(form.purchaseItemId) && canConfirmItem(form));
+  const selectedForms = forms.filter(
+    (form) => selectedIds.has(form.purchaseItemId) && getBlockReason(form, purchasedOn) === null
+  );
 
   return (
     <Modal visible={purchase !== null} transparent animationType="fade" onRequestClose={onClose}>
@@ -80,7 +96,8 @@ export const ReceiptConfirmModal: React.FC<ReceiptConfirmModalProps> = ({
 
             <ScrollView className="flex-grow-0" keyboardShouldPersistTaps="handled">
               {forms.map((form) => {
-                const enabled = canConfirmItem(form);
+                const blockReason = getBlockReason(form, purchasedOn);
+                const enabled = blockReason === null;
                 const selected = enabled && selectedIds.has(form.purchaseItemId);
                 const isEditing = editingId === form.purchaseItemId;
 
@@ -110,6 +127,13 @@ export const ReceiptConfirmModal: React.FC<ReceiptConfirmModalProps> = ({
                         <Text className="text-text14 font-sans text-primary-700">{isEditing ? '완료' : '수정'}</Text>
                       </Pressable>
                     </View>
+
+                    {/* 흐려진 행 밖에 둬서 이유는 선명하게 보이게 (체크 18px + 간격 12px 만큼 들여씀) */}
+                    {blockReason && (
+                      <Text className="text-text12 font-sans text-status-danger-text pl-[30px] -mt-1.5 pb-3">
+                        {blockReason}
+                      </Text>
+                    )}
 
                     {isEditing && (
                       <ReceiptItemEditor item={form} onChange={(patch) => updateForm(form.purchaseItemId, patch)} />

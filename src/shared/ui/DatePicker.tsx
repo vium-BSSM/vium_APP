@@ -4,8 +4,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 interface DatePickerProps {
   label: string;
-  value: Date;
+  // null이면 아직 고르지 않은 상태 ('날짜 선택' 표시, 선택창은 오늘부터 시작)
+  value: Date | null;
   onChange: (date: Date) => void;
+  placeholder?: string;
   style?: any;
 }
 
@@ -13,10 +15,17 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   label,
   value,
   onChange,
+  placeholder = '날짜 선택',
   style,
 }) => {
   const [show, setShow] = useState(false);
-  const [tempDate, setTempDate] = useState(value);
+  const [tempDate, setTempDate] = useState(() => value ?? new Date());
+
+  const openPicker = () => {
+    // 열 때마다 현재 값으로 맞춤 (밖에서 값이 바뀌었을 수 있음)
+    setTempDate(value ?? new Date());
+    setShow(true);
+  };
 
   const handleChange = (_: any, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
@@ -37,7 +46,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   };
 
   const handleCancel = () => {
-    setTempDate(value);
     setShow(false);
   };
 
@@ -62,18 +70,21 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       </Text>
       <Pressable
         className="bg-neutral-50 rounded-lg px-2.5 h-[27px] w-[199px] justify-center"
-        onPress={() => setShow(true)}
+        onPress={openPicker}
         hitSlop={{ top: 8, bottom: 8 }}
       >
-        <Text className="text-text15 font-sans" style={{ color: '#242529' }}>
-          {formatDate(value)}
-        </Text>
+        {value ? (
+          <Text className="text-text15 font-sans text-text-100">{formatDate(value)}</Text>
+        ) : (
+          <Text className="text-text15 font-sans text-text-300">{placeholder}</Text>
+        )}
 
         {/* 웹은 DateTimePicker가 없어 브라우저 기본 날짜 선택창을 투명하게 덮어 사용 */}
         {Platform.OS === 'web' && (
           <input
             type="date"
-            value={formatDate(value, '-')}
+            // 비어 있으면 오늘을 골라도 change가 발생함
+            value={value ? formatDate(value, '-') : ''}
             min="2020-01-01"
             max="2030-12-31"
             onChange={(e) => handleWebChange(e.target.value)}
@@ -86,7 +97,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
       {show && Platform.OS === 'android' && (
         <DateTimePicker
-          value={value}
+          value={value ?? new Date()}
           mode="date"
           display="default"
           themeVariant="light"

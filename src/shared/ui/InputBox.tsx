@@ -22,7 +22,8 @@ export const InputBox: React.FC<InputBoxProps> = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const hasValue = value && value.length > 0;
+  // boolean으로 강제: value가 ''이면 `value && ...`가 ''이 되어 View 안에 문자열로 렌더링돼 네이티브에서 크래시
+  const hasValue = !!value && value.length > 0;
   const isActive = isFocused || hasValue;
 
   const getPlaceholder = () => {
