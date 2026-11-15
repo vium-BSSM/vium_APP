@@ -17,6 +17,8 @@ export interface ReceiptItemForm {
   storageMethodId: number | null;
   amount: number | null;
   expiresOn: string | null; // 'YYYY-MM-DD'
+  // 재료는 찾았지만 소비기한 자동 계산에 실패한 품목 (날짜를 직접 정해야 서버가 받아줌)
+  needsExpiry: boolean;
 }
 
 export const toReceiptItemForm = (item: PurchaseItemDraft): ReceiptItemForm => ({
@@ -29,13 +31,49 @@ export const toReceiptItemForm = (item: PurchaseItemDraft): ReceiptItemForm => (
   storageMethodId: item.storageMethodId,
   amount: item.amount,
   expiresOn: item.expiresOn,
+  needsExpiry: item.ingredientCatalogId !== null && item.expiresOn === null,
 });
 
-// 재료를 못 찾은 품목은 소비기한이 없으면 서버가 400으로 거절
-export const canConfirmItem = (item: ReceiptItemForm) =>
-  item.name.trim() !== '' &&
-  parseFloat(item.quantity) > 0 &&
-  (item.ingredientCatalogId !== null || item.expiresOn !== null);
+/** 소비기한을 직접 정해야 하는 품목인지 (목록에 없는 재료 또는 자동 계산 실패) */
+export const requiresExpiry = (item: ReceiptItemForm) => item.ingredientCatalogId === null || item.needsExpiry;
+
+const formatMonthDay = (dateString: string) => {
+  const [, month, day] = dateString.split('-');
+  return `${Number(month)}/${Number(day)}`;
+};
+
+/**
+ * 품목을 등록할 수 없는 이유 (등록 가능하면 null)
+ * 서버가 400으로 거절하는 조건을 미리 걸러 어느 품목이 왜 막혔는지 보여줌
+ * @param purchasedOn 구매일 'YYYY-MM-DD' (소비기한은 이보다 빠를 수 없음)
+ */
+export const getBlockReason = (item: ReceiptItemForm, purchasedOn: string): string | null => {
+  if (item.name.trim() === '') return '이름을 입력해주세요.';
+  if (!(parseFloat(item.quantity) > 0)) return '수량을 입력해주세요.';
+  if (item.expiresOn === null) {
+    if (item.ingredientCatalogId === null) return '목록에 없는 재료라 소비기한을 정해주세요.';
+    if (item.needsExpiry) return '소비기한을 자동으로 계산할 수 없어요. 직접 정해주세요.';
+  }
+  if (item.expiresOn !== null && item.expiresOn < purchasedOn) {
+    return `소비기한이 구매일(${formatMonthDay(purchasedOn)})보다 빨라요.`;
+  }
+  return null;
+};
+
+/** ISO OffsetDateTime → 'YYYY-MM-DD' (서버가 준 시간대 기준 날짜) */
+export const toPurchasedOn = (purchasedAt: string) => purchasedAt.split('T')[0];
+
+// 서버의 개발자용 오류 문구를 사용자용 문구로 변환
+const SERVER_MESSAGE_MAP: [string, string][] = [
+  ['소비기한을 추정할 수 없습니다', '소비기한을 자동으로 계산할 수 없는 품목이 있어요. 소비기한을 직접 정해주세요.'],
+  ['expiresOn은 purchasedOn보다', '소비기한이 구매일보다 빠른 품목이 있어요.'],
+  ['요청 본문의 형식', '입력한 내용 중 형식이 잘못된 값이 있어요.'],
+];
+
+const toUserMessage = (serverMessage: string | undefined) => {
+  if (!serverMessage) return '재료 등록에 실패했습니다.';
+  return SERVER_MESSAGE_MAP.find(([key]) => serverMessage.includes(key))?.[1] ?? serverMessage;
+};
 
 const toConfirmItem = (item: ReceiptItemForm): PurchaseConfirmItem => ({
   purchaseItemId: item.purchaseItemId,
@@ -71,7 +109,7 @@ export const useReceiptConfirm = () => {
         return true;
       }
 
-      Alert.alert('오류', response.error?.message || '재료 등록에 실패했습니다.');
+      Alert.alert('오류', toUserMessage(response.error?.message));
       return false;
     } catch (err) {
       console.error('Failed to confirm purchase:', err);
@@ -87,7 +125,7 @@ export const useReceiptConfirm = () => {
       }
 
       const serverMessage = isAxiosError(err) ? err.response?.data?.error?.message : undefined;
-      Alert.alert('오류', serverMessage || '재료 등록에 실패했습니다.');
+      Alert.alert('오류', toUserMessage(serverMessage));
       return false;
     } finally {
       setIsConfirming(false);

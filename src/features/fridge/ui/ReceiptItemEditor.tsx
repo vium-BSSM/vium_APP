@@ -3,13 +3,20 @@ import { View, Text } from 'react-native';
 import { AppTextInput, DatePicker, LabelInputWithUnit } from '@/shared/ui';
 import { useIngredientCatalogSearch } from '../lib/useIngredientCatalogSearch';
 import { parseDateString, toDateString } from '../lib/dateUtils';
-import { ReceiptItemForm } from '../lib/useReceiptConfirm';
+import { ReceiptItemForm, requiresExpiry } from '../lib/useReceiptConfirm';
 import { CatalogSuggestions } from './CatalogSuggestions';
 
 interface ReceiptItemEditorProps {
   item: ReceiptItemForm;
   onChange: (patch: Partial<ReceiptItemForm>) => void;
 }
+
+const getExpiryHint = (item: ReceiptItemForm) => {
+  if (!requiresExpiry(item)) return '비워두면 재료 기준으로 자동 계산돼요.';
+  return item.ingredientCatalogId === null
+    ? '목록에 없는 재료는 소비기한을 꼭 정해야 해요.'
+    : '자동 계산이 안 되는 재료라 소비기한을 꼭 정해야 해요.';
+};
 
 /** 영수증 인식 품목 하나의 이름·수량·단위·소비기한 수정 */
 export const ReceiptItemEditor: React.FC<ReceiptItemEditorProps> = ({ item, onChange }) => {
@@ -32,7 +39,10 @@ export const ReceiptItemEditor: React.FC<ReceiptItemEditorProps> = ({ item, onCh
           <CatalogSuggestions
             items={catalogItems}
             isLoading={isLoading}
-            onSelect={(catalog) => onChange({ name: catalog.name, ingredientCatalogId: catalog.ingredientCatalogId })}
+            // 새로 고른 재료는 자동 계산 가능 여부를 미리 알 수 없어 필수 표시를 풂 (실패하면 등록 시 안내)
+            onSelect={(catalog) =>
+              onChange({ name: catalog.name, ingredientCatalogId: catalog.ingredientCatalogId, needsExpiry: false })
+            }
           />
         )}
       </View>
@@ -47,16 +57,12 @@ export const ReceiptItemEditor: React.FC<ReceiptItemEditorProps> = ({ item, onCh
       />
 
       <DatePicker
-        label={item.expiresOn ? '소비기한' : '소비기한 (미지정)'}
-        value={item.expiresOn ? parseDateString(item.expiresOn) : new Date()}
+        label="소비기한"
+        value={item.expiresOn ? parseDateString(item.expiresOn) : null}
         onChange={(date) => onChange({ expiresOn: toDateString(date) })}
       />
       {!item.expiresOn && (
-        <Text className="text-text12 font-sans text-text-300">
-          {item.ingredientCatalogId !== null
-            ? '비워두면 재료 기준으로 자동 계산돼요.'
-            : '목록에 없는 재료는 소비기한을 꼭 정해야 해요.'}
-        </Text>
+        <Text className="text-text12 font-sans text-text-300">{getExpiryHint(item)}</Text>
       )}
     </View>
   );
