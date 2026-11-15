@@ -4,8 +4,8 @@ import { Alert } from '@/shared/lib/alert';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useLogout } from '@/features/auth';
-import { profileStore } from '../lib/profileStore';
 import { useMyProfile } from '../lib/useMyProfile';
+import { useWithdraw } from '../lib/useWithdraw';
 import { MyPageMenuKey } from '../types';
 import { AppHeader, MenuList } from '@/shared/ui';
 
@@ -20,6 +20,7 @@ export const MyPage: React.FC = () => {
   const router = useRouter();
   const { profile } = useMyProfile();
   const { logout } = useLogout();
+  const { withdraw } = useWithdraw();
 
   const handleEditProfile = () => {
     router.push('/mypage/edit' as any);
@@ -35,11 +36,27 @@ export const MyPage: React.FC = () => {
           await logout();
           // 로그아웃되면 (tabs)가 보호 라우트라 스택에서 제거됨 → 로그인 화면으로 이동
           router.replace('/login');
-          // 다음 로그인 사용자에게 이전 프로필 수정 내용이 남지 않도록 초기화
-          profileStore.reset();
         },
       },
     ]);
+  };
+
+  const handleWithdraw = () => {
+    Alert.alert(
+      '회원 탈퇴',
+      '탈퇴하면 계정을 복구할 수 없고, 같은 이메일로 다시 가입할 수 없어요.\n정말 탈퇴하시겠어요?',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '탈퇴',
+          style: 'destructive',
+          onPress: async () => {
+            // 탈퇴되면 (tabs)가 보호 라우트라 스택에서 제거됨 → 로그인 화면으로 이동
+            if (await withdraw()) router.replace('/login');
+          },
+        },
+      ]
+    );
   };
 
   const handleMenuPress = (key: MyPageMenuKey) => {
@@ -51,7 +68,11 @@ export const MyPage: React.FC = () => {
       handleLogout();
       return;
     }
-    // TODO: 나머지 메뉴 동작 연결 (문의/회원 탈퇴)
+    if (key === 'withdraw') {
+      handleWithdraw();
+      return;
+    }
+    // TODO: 문의 메뉴 동작 연결
   };
 
   return (

@@ -7,6 +7,8 @@ export interface SessionUser {
   id: number;
   email: string;
   displayName: string;
+  // 로그인 응답에는 없고 GET /api/me 응답으로 채워짐
+  profileImageUrl?: string | null;
 }
 
 interface SessionState {

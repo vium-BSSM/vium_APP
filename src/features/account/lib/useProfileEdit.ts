@@ -2,21 +2,20 @@ import { useState } from 'react';
 import { isAxiosError } from 'axios';
 import { Alert } from '@/shared/lib/alert';
 import { PickedImage, pickImageAssetFromLibrary } from '@/shared/lib/pickImage';
-import { useSessionUser } from '@/shared/lib/sessionUser';
-import { uploadProfileImage } from '../api/accountApi';
-import { checkProfileImage, ProfileImageType, saveProfileImageUrl } from './profileImage';
-import { profileStore } from './profileStore';
+import { sessionUserStore } from '@/shared/lib/sessionUser';
+import { updateMe, uploadProfileImage } from '../api/accountApi';
+import { UpdateMeRequest } from '../types';
+import { checkProfileImage, ProfileImageType } from './profileImage';
 import { useMyProfile } from './useMyProfile';
 
 export const NICKNAME_MAX_LENGTH = 8;
 
-const toUploadErrorMessage = (err: unknown) => {
+const toSaveErrorMessage = (err: unknown) => {
   if (!isAxiosError(err) || !err.response) return '서버와 연결할 수 없습니다.';
-  return err.response.data?.error?.message || '사진을 올리지 못했어요.';
+  return err.response.data?.error?.message || '프로필을 저장하지 못했어요.';
 };
 
 export const useProfileEdit = () => {
-  const user = useSessionUser();
   const { profile: initialProfile } = useMyProfile();
   const [nickname, setNickname] = useState(initialProfile.nickname);
   // 새로 고른 사진 (저장할 때 업로드) — 고르기 전에는 기존 프로필 사진을 보여줌
@@ -40,32 +39,36 @@ export const useProfileEdit = () => {
     setPickedImage({ image, contentType: checked.contentType });
   };
 
-  /** 새 사진이 있으면 먼저 업로드하고 저장 — 업로드에 실패하면 아무것도 바꾸지 않음 */
+  /** 새 사진이 있으면 먼저 업로드한 뒤 PATCH /api/me로 바뀐 항목만 저장 — 하나라도 실패하면 프로필은 그대로 */
   const save = async (): Promise<boolean> => {
     if (!canSave) return false;
     try {
       setIsSaving(true);
-      let uploadedUrl: string | null = null;
+      const request: UpdateMeRequest = {};
 
-      if (pickedImage) {
-        const response = await uploadProfileImage(pickedImage.image, pickedImage.contentType);
-        if (!response.success || !response.data?.url) {
-          Alert.alert('오류', response.error?.message || '사진을 올리지 못했어요.');
-          return false;
-        }
-        uploadedUrl = response.data.url;
-        if (user) await saveProfileImageUrl(user.id, uploadedUrl);
+      if (trimmedNickname !== initialProfile.nickname) {
+        request.displayName = trimmedNickname;
       }
 
-      // TODO: 닉네임은 프로필 수정 API가 없어 아직 앱 메모리에만 저장
-      profileStore.updateProfile({
-        nickname: trimmedNickname,
-        ...(uploadedUrl ? { profileImageUrl: uploadedUrl } : {}),
-      });
+      if (pickedImage) {
+        const upload = await uploadProfileImage(pickedImage.image, pickedImage.contentType);
+        if (!upload.success || !upload.data) {
+          Alert.alert('오류', upload.error?.message || '사진을 올리지 못했어요.');
+          return false;
+        }
+        request.profileImageId = upload.data.imageId;
+      }
+
+      const response = await updateMe(request);
+      if (!response.success || !response.data) {
+        Alert.alert('오류', response.error?.message || '프로필을 저장하지 못했어요.');
+        return false;
+      }
+      await sessionUserStore.set(response.data);
       return true;
     } catch (err) {
-      console.error('Failed to upload profile image:', err);
-      Alert.alert('오류', toUploadErrorMessage(err));
+      console.error('Failed to save profile:', err);
+      Alert.alert('오류', toSaveErrorMessage(err));
       return false;
     } finally {
       setIsSaving(false);

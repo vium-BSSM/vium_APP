@@ -1,5 +1,4 @@
 import { PickedImage } from '@/shared/lib/pickImage';
-import { getItem, setItem } from '@/shared/lib/secureStorage';
 
 // 서버 업로드 제한 (vium_BE ImageValidator와 같은 값)
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -31,29 +30,4 @@ export const checkProfileImage = (
     return { ok: false, message: '가로·세로 4096px 이하의 사진만 올릴 수 있어요.' };
   }
   return { ok: true, contentType };
-};
-
-/**
- * 업로드한 프로필 사진 주소를 이 기기에 보관
- * TODO: 백엔드에 프로필 수정 API(PATCH /api/me + profileImageId)와 GET /api/me의 프로필 이미지가 생기면
- *       imageId를 서버에 저장하고 이 로컬 보관은 제거
- */
-// SecureStore 키는 영문·숫자·._- 만 허용
-const storageKey = (userId: number) => `profile_image_url_${userId}`;
-
-export const loadSavedProfileImageUrl = async (userId: number): Promise<string | null> => {
-  try {
-    return await getItem(storageKey(userId));
-  } catch (err) {
-    console.error('Failed to load profile image url:', err);
-    return null;
-  }
-};
-
-export const saveProfileImageUrl = async (userId: number, url: string): Promise<void> => {
-  try {
-    await setItem(storageKey(userId), url);
-  } catch (err) {
-    console.error('Failed to save profile image url:', err);
-  }
 };

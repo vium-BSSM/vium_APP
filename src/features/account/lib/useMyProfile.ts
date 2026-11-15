@@ -2,13 +2,10 @@ import { useEffect, useState } from 'react';
 import { sessionUserStore, useSessionUser } from '@/shared/lib/sessionUser';
 import { getMe } from '../api/accountApi';
 import { MyProfile } from '../types';
-import { loadSavedProfileImageUrl } from './profileImage';
-import { profileStore, useProfileStore } from './profileStore';
 
 // 저장된 로그인 사용자 정보로 먼저 보여주고, GET /api/me 응답으로 최신화합니다.
 export const useMyProfile = () => {
   const user = useSessionUser();
-  const overrides = useProfileStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,9 +17,10 @@ export const useMyProfile = () => {
         setIsLoading(true);
         setError(null);
         const response = await getMe();
+        if (!isActive) return;
         if (response.success && response.data) {
           await sessionUserStore.set(response.data);
-        } else if (isActive) {
+        } else {
           setError(response.error?.message || '내 정보를 불러올 수 없습니다.');
         }
       } catch (err) {
@@ -40,26 +38,11 @@ export const useMyProfile = () => {
     };
   }, []);
 
-  // 이 기기에 보관한 프로필 사진 주소 복원 (서버에 프로필 이미지 저장이 생기기 전까지)
-  const userId = user?.id;
-  useEffect(() => {
-    if (userId == null || profileStore.getState().profileImageUrl) return;
-    let isActive = true;
-    loadSavedProfileImageUrl(userId).then((url) => {
-      if (isActive && url && !profileStore.getState().profileImageUrl) {
-        profileStore.updateProfile({ profileImageUrl: url });
-      }
-    });
-    return () => {
-      isActive = false;
-    };
-  }, [userId]);
-
   const profile: MyProfile = {
-    nickname: overrides.nickname ?? user?.displayName ?? '',
+    nickname: user?.displayName ?? '',
     // 백엔드에 핸들 필드가 없어 이메일 앞부분을 사용
     handle: user?.email.split('@')[0] ?? '',
-    profileImageUrl: overrides.profileImageUrl,
+    profileImageUrl: user?.profileImageUrl ?? null,
   };
 
   return {
