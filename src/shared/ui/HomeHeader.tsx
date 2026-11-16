@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { AppHeader } from './AppHeader';
-import BellIcon from '@/../assets/icons/bell-icon.svg';
+import { HeaderActions } from './HeaderActions';
 
 export type HomeTab = 'recommend' | 'fridge';
 
@@ -26,25 +25,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({ activeTab, profileImageU
 
   return (
     <View className="gap-[34px]">
-      <AppHeader
-        right={
-          <View className="flex-row items-center gap-2.5">
-            {/* TODO: 알림 페이지 연결 */}
-            <Pressable hitSlop={6}>
-              <BellIcon width={31} height={31} />
-            </Pressable>
-            <Pressable
-              onPress={() => router.navigate('/mypage' as any)}
-              hitSlop={6}
-              className="w-[30px] h-[30px] rounded-full overflow-hidden bg-neutral-50"
-            >
-              {profileImageUrl && (
-                <Image source={{ uri: profileImageUrl }} contentFit="cover" className="w-full h-full" />
-              )}
-            </Pressable>
-          </View>
-        }
-      />
+      <AppHeader right={<HeaderActions profileImageUrl={profileImageUrl} />} />
 
       <View className="px-screen md:px-10 lg:px-20 flex-row items-center gap-4">
         {TABS.map((tab) => (

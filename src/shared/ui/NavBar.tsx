@@ -5,20 +5,27 @@ import HomeIcon from '@/../assets/icons/home-icon.svg';
 import ChefIcon from '@/../assets/icons/chef-icon.svg';
 import ReportIcon from '@/../assets/icons/report-icon.svg';
 import SettingsIcon from '@/../assets/icons/settings-icon.svg';
+import ChatsIcon from '@/../assets/icons/chats-icon.svg';
 
-type NavItem = 'home' | 'recipe' | 'report' | 'settings';
+type NavItem = 'home' | 'recipe' | 'report' | 'community' | 'settings';
 
 // 아이콘 전용 탭 (라벨 없음) — 라벨은 스크린리더용 accessibilityLabel로만 둔다
 // size: 40x40 viewBox 아이콘(chef/report)은 여백이 있어 조금 크게 그려야 시각 크기가 맞는다
-const navItems: { key: NavItem; label: string; route: string; Icon: any; size: number }[] = [
-  { key: 'home', label: '홈', route: '/main', Icon: HomeIcon, size: 32 },
+// 홈을 가운데 둠: 레시피 · 리포트 · 홈 · 나눔 · 계정
+// activeOn: 탭 버튼이 없는 화면에서 어느 탭을 켤지 (예: 알림은 홈 탭)
+const navItems: { key: NavItem; label: string; route: string; Icon: any; size: number; activeOn?: string[] }[] = [
   { key: 'recipe', label: '레시피', route: '/recipe', Icon: ChefIcon, size: 36 },
   { key: 'report', label: '리포트', route: '/report', Icon: ReportIcon, size: 36 },
+  { key: 'home', label: '홈', route: '/main', Icon: HomeIcon, size: 32, activeOn: ['/notifications'] },
+  { key: 'community', label: '나눔', route: '/community', Icon: ChatsIcon, size: 32 },
   { key: 'settings', label: '계정', route: '/mypage', Icon: SettingsIcon, size: 32 },
 ];
 
-const isRouteActive = (pathname: string, route: string) =>
+const matchesRoute = (pathname: string, route: string) =>
   pathname === route || pathname.startsWith(`${route}/`);
+
+const isRouteActive = (pathname: string, item: (typeof navItems)[number]) =>
+  [item.route, ...(item.activeOn ?? [])].some((route) => matchesRoute(pathname, route));
 
 export const NavBar: React.FC = () => {
   const router = useRouter();
@@ -33,7 +40,7 @@ export const NavBar: React.FC = () => {
   return (
     <View className="bg-white border-t border-neutral-50 px-3 pt-3 pb-2.5 flex-row items-center">
       {navItems.map((item) => {
-        const isActive = isRouteActive(pathname, item.route);
+        const isActive = isRouteActive(pathname, item);
         const { Icon } = item;
         return (
           <Pressable
