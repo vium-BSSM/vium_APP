@@ -187,7 +187,8 @@ export const ChatRoomPage = () => {
               );
             }}
             ItemSeparatorComponent={() => <View className="h-[14px]" />}
-            contentContainerClassName="px-screen md:px-10 lg:px-20 pt-4 pb-4"
+            // inverted 리스트는 메시지가 적으면 아래에 붙어 위가 비므로, 뒤집힌 기준의 끝(=화면 위)으로 모아 위부터 쌓이게
+            contentContainerClassName="grow justify-end px-screen md:px-10 lg:px-20 pt-4 pb-4"
           />
       </View>
 
