@@ -7,7 +7,7 @@ import { useLogout } from '@/features/auth';
 import { useMyProfile } from '../lib/useMyProfile';
 import { useWithdraw } from '../lib/useWithdraw';
 import { MyPageMenuKey } from '../types';
-import { AppHeader, MenuList } from '@/shared/ui';
+import { AppHeader, Footer, MenuList } from '@/shared/ui';
 
 const MENU_ITEMS: { key: MyPageMenuKey; label: string }[] = [
   { key: 'credit', label: '내 크레딧' },
@@ -122,6 +122,8 @@ export const MyPage: React.FC = () => {
           <MenuList
             items={MENU_ITEMS.map((item) => ({ label: item.label, onPress: () => handleMenuPress(item.key) }))}
           />
+
+          <Footer className="mt-4" />
         </View>
       </View>
     </ScrollView>
