@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader, AppTextInput, BackHeader, HeaderActions } from '@/shared/ui';
@@ -50,6 +50,7 @@ export const ChatRoomPage = () => {
   const manner = room ? (MOCK_MANNER_BY_USER[room.partner.userId] ?? null) : null;
   const trade: TradeSummary | undefined = room ? MOCK_TRADES.find((item) => item.post.postId === room.post.postId) : undefined;
   const [messages, setMessages] = useState<ChatMessage[]>(chatRoomId === 3 ? MOCK_CHAT_MESSAGES : []);
+  const inputRef = useRef<TextInput>(null);
   const [text, setText] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
@@ -196,15 +197,19 @@ export const ChatRoomPage = () => {
         <Pressable onPress={handleSendImage} disabled={isUploading} hitSlop={8} accessibilityLabel="사진 보내기">
           {isUploading ? <ActivityIndicator color="#737785" /> : <CameraLineIcon width={26} height={26} color="#737785" />}
         </Pressable>
-        <AppTextInput
-          value={text}
-          onChangeText={setText}
-          maxLength={MESSAGE_MAX_LENGTH}
-          placeholder="메시지 보내기"
-          placeholderTextColor="#A7A9B5"
-          multiline
-          className="flex-1 max-h-[100px] px-[14px] py-2.5 rounded-[20px] bg-neutral-10 text-text15 font-sans text-text-100"
-        />
+        {/* AppTextInput은 세로 패딩을 0으로 고정하므로 여백·배경은 바깥 박스가 담당 */}
+        <Pressable onPress={() => inputRef.current?.focus()} className="flex-1 px-[14px] py-2.5 rounded-[20px] bg-neutral-10">
+          <AppTextInput
+            ref={inputRef}
+            value={text}
+            onChangeText={setText}
+            maxLength={MESSAGE_MAX_LENGTH}
+            placeholder="메시지 보내기"
+            placeholderTextColor="#A7A9B5"
+            multiline
+            className="max-h-[80px] text-text15 font-sans text-text-100"
+          />
+        </Pressable>
         <Pressable
           onPress={handleSend}
           disabled={!text.trim()}

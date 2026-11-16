@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,6 +39,7 @@ export const PostWritePage = () => {
   const [isPickerVisible, setIsPickerVisible] = useState(!params.inventoryItemId);
   const selected = fridgeItems.find((item) => item.id === inventoryItemId) ?? null;
 
+  const descriptionRef = useRef<TextInput>(null);
   const form = usePostWriteForm(selected?.storageMethodId ?? null);
   const canSubmit = selected !== null && form.title.trim().length > 0;
 
@@ -162,16 +163,23 @@ export const PostWritePage = () => {
           </View>
           <View className="gap-2">
             <FieldLabel>설명</FieldLabel>
-            <AppTextInput
-              value={form.description}
-              onChangeText={form.setDescription}
-              maxLength={DESCRIPTION_MAX_LENGTH}
-              multiline
-              placeholder="상태, 거래 가능한 시간 등을 적어주세요"
-              placeholderTextColor="#A7A9B5"
-              className="min-h-[42px] px-[14px] py-2.5 rounded-lg bg-neutral-10 text-text15 font-sans text-text-100"
-              textAlignVertical="top"
-            />
+            {/* AppTextInput은 세로 패딩을 0으로 고정하므로 여백·배경은 바깥 박스가 담당 */}
+            <Pressable
+              onPress={() => descriptionRef.current?.focus()}
+              className="min-h-[42px] px-[14px] py-2.5 rounded-lg bg-neutral-10"
+            >
+              <AppTextInput
+                ref={descriptionRef}
+                value={form.description}
+                onChangeText={form.setDescription}
+                maxLength={DESCRIPTION_MAX_LENGTH}
+                multiline
+                scrollEnabled={false}
+                placeholder="상태, 거래 가능한 시간 등을 적어주세요"
+                placeholderTextColor="#A7A9B5"
+                className="text-text15 font-sans text-text-100"
+              />
+            </Pressable>
           </View>
         </View>
       </ScrollView>

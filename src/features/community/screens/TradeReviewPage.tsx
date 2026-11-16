@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader, AppTextInput, Avatar, BackHeader, Button, HeaderActions } from '@/shared/ui';
@@ -22,6 +22,7 @@ export const TradeReviewPage = () => {
   const tradeId = Number(id);
   // TODO(API): 내 거래 목록(GET /api/me/trades)에서 tradeId로 상대·게시물 정보 찾기
   const trade = MOCK_TRADES.find((item) => item.tradeId === tradeId);
+  const contentRef = useRef<TextInput>(null);
   const [score, setScore] = useState(0);
   const [content, setContent] = useState('');
 
@@ -83,16 +84,22 @@ export const TradeReviewPage = () => {
               {content.length}/{CONTENT_MAX_LENGTH}
             </Text>
           </View>
-          <AppTextInput
-            value={content}
-            onChangeText={setContent}
-            maxLength={CONTENT_MAX_LENGTH}
-            multiline
-            textAlignVertical="top"
-            placeholder="거래 후기를 남겨주세요"
-            placeholderTextColor="#A7A9B5"
-            className="h-[120px] px-[14px] pt-3 rounded-lg border border-neutral-50 text-text15 font-sans text-text-100"
-          />
+          {/* AppTextInput은 세로 패딩을 0으로 고정하므로 여백·테두리는 바깥 박스가 담당 */}
+          <Pressable
+            onPress={() => contentRef.current?.focus()}
+            className="h-[120px] px-[14px] pt-3 rounded-lg border border-neutral-50"
+          >
+            <AppTextInput
+              ref={contentRef}
+              value={content}
+              onChangeText={setContent}
+              maxLength={CONTENT_MAX_LENGTH}
+              multiline
+              placeholder="거래 후기를 남겨주세요"
+              placeholderTextColor="#A7A9B5"
+              className="max-h-[96px] text-text15 font-sans text-text-100"
+            />
+          </Pressable>
           <View className="flex-row flex-wrap gap-1.5">
             {QUICK_PHRASES.map((phrase) => (
               <Pressable key={phrase} onPress={() => appendPhrase(phrase)} className="px-2.5 py-[5px] rounded-[14px] border border-neutral-50">
