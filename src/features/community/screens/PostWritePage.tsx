@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { Image } from 'expo-image';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader, AppTextInput, BackHeader, Button, HeaderActions, SegmentedControl } from '@/shared/ui';
 import { useMyProfile } from '@/features/account';
@@ -29,7 +29,6 @@ const FieldLabel: React.FC<{ children: string }> = ({ children }) => (
 );
 
 export const PostWritePage = () => {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
   const { profile } = useMyProfile();
   const params = useLocalSearchParams<{ inventoryItemId?: string }>();
