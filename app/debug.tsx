@@ -1,12 +1,29 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { Check, StateBall, Banner, InputBox, Button, AddButton, NavBar, Card } from '@/shared/ui';
+import {
+  Check,
+  StateBall,
+  Banner,
+  InputBox,
+  Button,
+  AddButton,
+  NavBar,
+  Card,
+  Chip,
+  PillButton,
+  SegmentedControl,
+  UnderlineTabs,
+} from '@/shared/ui';
+import { ConsumptionCheckSheet } from '@/features/notification';
 
 export default function DebugPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailWithCheck, setEmailWithCheck] = useState('25_57@bssm.hs.kr');
   const [passwordWithCheck, setPasswordWithCheck] = useState('password123');
+  const [tab, setTab] = useState<'all' | 'share' | 'sale'>('all');
+  const [segment, setSegment] = useState<'1' | '2' | '3'>('1');
+  const [isSheetVisible, setIsSheetVisible] = useState(false);
 
   return (
     <View className="flex-1 bg-white">
@@ -177,6 +194,52 @@ export default function DebugPage() {
             />
             <AddButton onPress={() => console.log('Plus pressed')} />
           </View>
+        </View>
+
+        <View className="mb-8">
+          <Text className="text-heading-md font-medium mb-3 text-text-100 font-sans">
+            Community Components
+          </Text>
+          <View style={{ gap: 16 }}>
+            <UnderlineTabs
+              options={[
+                { key: 'all', label: '전체' },
+                { key: 'share', label: '나눔' },
+                { key: 'sale', label: '판매' },
+              ]}
+              value={tab}
+              onChange={setTab}
+              bordered
+            />
+            <View className="flex-row" style={{ gap: 8 }}>
+              <Chip label="가까운순" selected />
+              <Chip label="최신순" />
+              <Chip label="적립" size="sm" />
+            </View>
+            <SegmentedControl
+              options={[
+                { key: '1', label: '냉장' },
+                { key: '2', label: '냉동' },
+                { key: '3', label: '실온' },
+              ]}
+              value={segment}
+              onChange={setSegment}
+            />
+            <View className="flex-row" style={{ gap: 8 }}>
+              <PillButton label="아니요, 남았어요" variant="secondary" className="flex-1" />
+              <PillButton label="네, 다 먹었어요" className="flex-1" onPress={() => setIsSheetVisible(true)} />
+            </View>
+          </View>
+          {/* TODO: 소진 확인 시트 — GET consumption-check 응답 형식이 명세에 없어 아직 실제 화면에 연결하지 않음 */}
+          <ConsumptionCheckSheet
+            visible={isSheetVisible}
+            ingredientName="두부"
+            description="11.10 구매 · 1모 · 소비기한 D-1"
+            onClose={() => setIsSheetVisible(false)}
+            onRemaining={() => setIsSheetVisible(false)}
+            onConsumed={() => setIsSheetVisible(false)}
+            onDisposed={() => setIsSheetVisible(false)}
+          />
         </View>
 
         <View className="h-10" />
