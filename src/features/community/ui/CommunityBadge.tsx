@@ -15,11 +15,12 @@ const BADGE_CLASS: Record<BadgeKind, { box: string; text: string }> = {
 };
 
 /** Figma badge — 거래 status · 게시물 type/status */
-export const CommunityBadge: React.FC<{ kind: BadgeKind }> = ({ kind }) => {
+// sm: 목록·카드(11px), md: 채팅방 상단 게시물 띠(12px)
+export const CommunityBadge: React.FC<{ kind: BadgeKind; size?: 'sm' | 'md' }> = ({ kind, size = 'sm' }) => {
   const { box, text } = BADGE_CLASS[kind];
   return (
     <View className={`px-2 py-[3px] rounded ${box}`}>
-      <Text className={`text-text11 font-medium font-sans ${text}`}>{BADGE_LABEL[kind]}</Text>
+      <Text className={`${size === 'md' ? 'text-text12' : 'text-text11'} font-medium font-sans ${text}`}>{BADGE_LABEL[kind]}</Text>
     </View>
   );
 };

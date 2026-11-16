@@ -144,13 +144,13 @@ export const ChatRoomPage = () => {
         >
           <View className="flex-1 gap-1">
             <View className="flex-row items-center gap-1.5">
-              {badge && <CommunityBadge kind={badge} />}
-              <Text className="shrink text-text14 font-medium font-sans text-text-100" numberOfLines={1}>
+              {badge && <CommunityBadge kind={badge} size="md" />}
+              <Text className="shrink text-text16 font-medium font-sans text-text-100" numberOfLines={1}>
                 {room.post.title}
               </Text>
             </View>
             {trade && (
-              <Text className="text-text14 font-bold font-sans text-text-100">
+              <Text className="text-text16 font-bold font-sans text-text-100">
                 {formatPrice(trade.price, trade.post.type, '무료 나눔')}
               </Text>
             )}
@@ -162,7 +162,7 @@ export const ChatRoomPage = () => {
               
               className={`px-3 py-[7px] rounded-lg ${item.primary ? 'bg-primary-500' : 'bg-neutral-10'} `}
             >
-              <Text className={`text-text13 font-medium font-sans ${item.primary ? 'text-text-100' : 'text-text-200'}`}>
+              <Text className={`text-text15 font-medium font-sans ${item.primary ? 'text-text-100' : 'text-text-200'}`}>
                 {item.label}
               </Text>
             </Pressable>
