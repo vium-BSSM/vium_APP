@@ -17,7 +17,8 @@ interface BackHeaderProps {
 }
 
 /**
- * Figma app-bar/back — 뒤로가기(24) + 제목(20 Medium) + 선택 액션, 높이 52
+ * 뒤로가기(30) + 제목(24 Medium) + 선택 액션, 높이 52
+ * 크기는 기존 BackTitle(레시피·프로필 수정)과 맞춤 (Figma app-bar/back은 24·20)
  * 화면 좌우 마진(px-screen)을 포함
  */
 export const BackHeader: React.FC<BackHeaderProps> = ({
@@ -35,11 +36,11 @@ export const BackHeader: React.FC<BackHeaderProps> = ({
   return (
     <View className={`h-[52px] flex-row items-center gap-2 px-screen md:px-10 lg:px-20 ${className}`}>
       <Pressable onPress={handleBack} hitSlop={10} accessibilityRole="button" accessibilityLabel="뒤로 가기">
-        <BackIcon width={24} height={24} color="#242529" />
+        <BackIcon width={30} height={30} color="#242529" />
       </Pressable>
       <View className="flex-1 flex-row items-center">
         {title !== undefined && (
-          <Text className="flex-1 text-heading-md font-medium font-sans text-text-100" numberOfLines={1}>
+          <Text className="flex-1 text-heading-lg font-medium font-sans text-text-100" numberOfLines={1}>
             {title}
           </Text>
         )}
