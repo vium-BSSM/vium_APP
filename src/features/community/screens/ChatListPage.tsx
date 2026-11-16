@@ -14,10 +14,11 @@ export const ChatListPage = () => {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="mb-2">
+      {/* 홈 헤더와 같은 간격: 로고 헤더 아래 34px */}
+      <View className="mb-[34px]">
         <AppHeader right={<HeaderActions profileImageUrl={profile.profileImageUrl} />} />
       </View>
-      <View className="px-screen md:px-10 lg:px-20 pt-1.5 pb-[14px]">
+      <View className="px-screen md:px-10 lg:px-20 pb-[14px]">
         <Text className="text-text22 font-medium font-sans text-text-100">채팅</Text>
       </View>
 

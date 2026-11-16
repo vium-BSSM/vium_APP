@@ -20,7 +20,8 @@ export const NotificationsPage = () => {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="mb-2">
+      {/* BackHeader(높이 52)가 위쪽에 약 14px 여백을 품고 있어 +20px이면 홈과 같은 34px */}
+      <View className="mb-5">
         <AppHeader right={<HeaderActions profileImageUrl={profile.profileImageUrl} />} />
       </View>
       <BackHeader

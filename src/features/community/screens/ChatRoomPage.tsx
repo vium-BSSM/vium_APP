@@ -115,7 +115,8 @@ export const ChatRoomPage = () => {
   return (
     <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <AppHeader right={<HeaderActions profileImageUrl={profile.profileImageUrl} />} />
-      <View className="mt-2">
+      {/* BackHeader(높이 52)가 위쪽에 약 14px 여백을 품고 있어 +20px이면 홈과 같은 34px */}
+      <View className="mt-5">
         <BackHeader
           right={
             <Pressable onPress={handleMore} hitSlop={10} accessibilityLabel="더보기">
