@@ -14,7 +14,6 @@ const MENU_ITEMS: { key: MyPageMenuKey; label: string }[] = [
   { key: 'trades', label: '거래 내역' },
   { key: 'logout', label: '로그아웃' },
   { key: 'settings', label: '설정' },
-  { key: 'inquiry', label: '문의' },
   { key: 'withdraw', label: '회원 탈퇴' },
 ];
 
@@ -83,7 +82,6 @@ export const MyPage: React.FC = () => {
       handleWithdraw();
       return;
     }
-    // TODO: 문의 메뉴 동작 연결
   };
 
   return (
