@@ -1,7 +1,8 @@
 # 🍅 Vium 
 1인 가구들을 위한 식재료 폐기 도우미 서비스, 비움입니다.
 소중한 식재료를 낭비하지 않도록 비움이 도와줄게요!
-https://vium.vercel.app/
+<br>
+비움 웹 바로가기 >> https://vium.vercel.app
 
 ---
 
