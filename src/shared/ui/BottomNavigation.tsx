@@ -12,6 +12,10 @@ const VISIBLE_PATTERNS = [
   /^\/fridge\/\d+$/,
   /^\/recipe$/,
   /^\/mypage$/,
+  /^\/mypage\/credit$/,
+  /^\/notifications$/,
+  /^\/community$/,
+  /^\/community\/chat$/,
 ];
 
 /**

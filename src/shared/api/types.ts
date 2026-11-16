@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 
 // 백엔드 공통 응답 형태 { success, data, error }
 export interface ApiError {
@@ -28,7 +28,7 @@ export const unwrap = <T>(response: ApiResponse<T>, fallback = '요청을 처리
 
 /** axios 에러면 서버가 보낸 error.message, 아니면 기본 문구 */
 export const getErrorMessage = (err: unknown, fallback = '서버와 연결할 수 없어요.') => {
-  if (axios.isAxiosError(err)) {
+  if (isAxiosError(err)) {
     const message = (err.response?.data as ApiResponse<unknown> | undefined)?.error?.message;
     return message ?? fallback;
   }
@@ -38,6 +38,6 @@ export const getErrorMessage = (err: unknown, fallback = '서버와 연결할 �
 
 /** axios 에러의 서버 error.code (예: 'DAILY_REWARD_ALREADY_CLAIMED') */
 export const getErrorCode = (err: unknown): string | null => {
-  if (!axios.isAxiosError(err)) return null;
+  if (!isAxiosError(err)) return null;
   return (err.response?.data as ApiResponse<unknown> | undefined)?.error?.code ?? null;
 };
