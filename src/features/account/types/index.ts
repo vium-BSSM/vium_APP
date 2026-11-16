@@ -4,7 +4,7 @@ export interface MyProfile {
   profileImageUrl: string | null;
 }
 
-export type MyPageMenuKey = 'trades' | 'logout' | 'settings' | 'inquiry' | 'withdraw';
+export type MyPageMenuKey = 'credit' | 'trades' | 'logout' | 'settings' | 'inquiry' | 'withdraw';
 
 // GET /api/me, PATCH /api/me 응답
 export interface MeApiResponse {
