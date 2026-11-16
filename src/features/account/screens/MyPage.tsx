@@ -10,6 +10,8 @@ import { MyPageMenuKey } from '../types';
 import { AppHeader, MenuList } from '@/shared/ui';
 
 const MENU_ITEMS: { key: MyPageMenuKey; label: string }[] = [
+  { key: 'credit', label: '내 크레딧' },
+  { key: 'trades', label: '거래 내역' },
   { key: 'logout', label: '로그아웃' },
   { key: 'settings', label: '설정' },
   { key: 'inquiry', label: '문의' },
@@ -60,6 +62,15 @@ export const MyPage: React.FC = () => {
   };
 
   const handleMenuPress = (key: MyPageMenuKey) => {
+    if (key === 'credit') {
+      router.push('/mypage/credit' as any);
+      return;
+    }
+    if (key === 'trades') {
+      // 나눔 탭 스택의 화면이라 navigate로 이동
+      router.navigate('/community/trades' as any);
+      return;
+    }
     if (key === 'settings') {
       router.push('/debug');
       return;
