@@ -12,6 +12,7 @@ import StarIcon from '@/../assets/icons/star-icon.svg';
 import { formatPrice, postStatusBadge, postTypeBadge } from '../lib/communityFormat';
 import { CommunityBadge } from '../ui/CommunityBadge';
 import { PostDetail } from '../types';
+import { getMockPostDetail } from '../lib/mockData';
 
 const IMAGE_HEIGHT = 320;
 
@@ -29,7 +30,7 @@ export const PostDetailPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const postId = Number(id);
   // TODO(API): GET /api/posts/{postId} 연결 (feature/community-api 브랜치)
-  const [post, setPost] = useState<PostDetail | null>(null);
+  const [post, setPost] = useState<PostDetail | null>(() => getMockPostDetail(postId));
   const [imageIndex, setImageIndex] = useState(0);
 
   const handleBack = () => (router.canGoBack() ? router.back() : router.replace('/community' as any));

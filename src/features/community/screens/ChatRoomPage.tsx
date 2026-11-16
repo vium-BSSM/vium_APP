@@ -13,7 +13,8 @@ import SendIcon from '@/../assets/icons/send-icon.svg';
 import { formatPrice, postStatusBadge, tradeStatusBadge } from '../lib/communityFormat';
 import { ChatMessageItem } from '../ui/ChatMessageItem';
 import { CommunityBadge } from '../ui/CommunityBadge';
-import { ChatMessage, ChatRoomSummary, TradeAction, TradeSummary } from '../types';
+import { ChatMessage, TradeAction, TradeSummary } from '../types';
+import { MOCK_CHAT_MESSAGES, MOCK_CHAT_ROOMS, MOCK_MANNER_BY_USER, MOCK_TRADES } from '../lib/mockData';
 
 const MESSAGE_MAX_LENGTH = 1000;
 
@@ -45,10 +46,10 @@ export const ChatRoomPage = () => {
   const chatRoomId = Number(id);
   // TODO(API): 채팅방 정보(GET /api/me/chat-rooms), 상대 매너(GET /api/users/{id}/reviews),
   // 거래 상태(GET /api/me/trades), 메시지(GET/POST .../messages) 연결 — feature/community-api 브랜치
-  const room = undefined as ChatRoomSummary | undefined;
-  const manner = null as number | null;
-  const trade = undefined as TradeSummary | undefined;
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const room = MOCK_CHAT_ROOMS.find((item) => item.chatRoomId === chatRoomId);
+  const manner = room ? (MOCK_MANNER_BY_USER[room.partner.userId] ?? null) : null;
+  const trade: TradeSummary | undefined = room ? MOCK_TRADES.find((item) => item.post.postId === room.post.postId) : undefined;
+  const [messages, setMessages] = useState<ChatMessage[]>(chatRoomId === 3 ? MOCK_CHAT_MESSAGES : []);
   const [text, setText] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 

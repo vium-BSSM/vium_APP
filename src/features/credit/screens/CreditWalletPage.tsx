@@ -4,6 +4,7 @@ import { AppHeader, BackHeader, Chip, HeaderActions } from '@/shared/ui';
 import { useMyProfile } from '@/features/account';
 import { Alert } from '@/shared/lib/alert';
 import { CreditTxRow } from '../ui/CreditTxRow';
+import { MOCK_CREDIT_BALANCE, MOCK_CREDIT_TRANSACTIONS } from '../lib/mockData';
 import { CreditBalance, CreditFilter, CreditTransaction, CreditTransactionType } from '../types';
 
 const FILTER_TYPES: Record<Exclude<CreditFilter, 'all'>, CreditTransactionType[]> = {
@@ -23,8 +24,8 @@ export const CreditWalletPage = () => {
   const { profile } = useMyProfile();
   const [filter, setFilter] = useState<CreditFilter>('all');
   // TODO(API): GET /api/me/credits, GET /api/me/credits/transactions 연결 (feature/community-api 브랜치)
-  const balance = null as CreditBalance | null;
-  const allTransactions: CreditTransaction[] = [];
+  const balance: CreditBalance | null = MOCK_CREDIT_BALANCE;
+  const allTransactions: CreditTransaction[] = MOCK_CREDIT_TRANSACTIONS;
   const transactions =
     filter === 'all' ? allTransactions : allTransactions.filter((tx) => FILTER_TYPES[filter].includes(tx.type));
 

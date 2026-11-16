@@ -4,13 +4,13 @@ import { useRouter } from 'expo-router';
 import { AppHeader, HeaderActions } from '@/shared/ui';
 import { useMyProfile } from '@/features/account';
 import { ChatRoomRow } from '../ui/ChatRoomRow';
-import { ChatRoomSummary } from '../types';
+import { MOCK_CHAT_ROOMS } from '../lib/mockData';
 
 export const ChatListPage = () => {
   const router = useRouter();
   const { profile } = useMyProfile();
   // TODO(API): GET /api/me/chat-rooms 연결 (feature/community-api 브랜치)
-  const rooms: ChatRoomSummary[] = [];
+  const rooms = MOCK_CHAT_ROOMS;
 
   return (
     <View className="flex-1 bg-white">

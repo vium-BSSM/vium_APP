@@ -4,12 +4,13 @@ import { AppHeader, BackHeader, Chip, HeaderActions } from '@/shared/ui';
 import { useMyProfile } from '@/features/account';
 import { NotificationRow } from '../ui/NotificationRow';
 import { NotificationFilter, NotificationItem } from '../types';
+import { MOCK_NOTIFICATIONS } from '../lib/mockData';
 
 export const NotificationsPage = () => {
   const { profile } = useMyProfile();
   const [filter, setFilter] = useState<NotificationFilter>('all');
-  // TODO(API): GET /api/me/notifications 연결 (feature/community-api 브랜치)
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  // TODO(API): GET /api/me/notifications 연결 (feature/community-api 브랜치) — 지금은 목업
+  const [notifications, setNotifications] = useState<NotificationItem[]>(MOCK_NOTIFICATIONS);
   const unreadCount = notifications.filter((item) => item.unread).length;
   const items = filter === 'unread' ? notifications.filter((item) => item.unread) : notifications;
 

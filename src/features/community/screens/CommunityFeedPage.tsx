@@ -11,6 +11,7 @@ import SearchIcon from '@/../assets/icons/search-icon.svg';
 import ChatBubbleIcon from '@/../assets/icons/chat-bubble-icon.svg';
 import PlusLineIcon from '@/../assets/icons/plus-line-icon.svg';
 import { PostCard } from '../ui/PostCard';
+import { MOCK_POSTS } from '../lib/mockData';
 import { FeedSort, FeedTypeFilter, PostDistance, PostSummary } from '../types';
 
 const TYPE_TABS: { key: FeedTypeFilter; label: string }[] = [
@@ -41,7 +42,19 @@ export const CommunityFeedPage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [keyword, setKeyword] = useState('');
   // TODO(API): GET /api/posts 연결 — 위치(expo-location)·거리·정렬·유형 필터 (feature/community-api 브랜치)
-  const posts: PostSummary[] = [];
+  // 목업: 서버가 할 반경·유형·정렬·검색을 화면에서 흉내냄
+  const posts: PostSummary[] = MOCK_POSTS.filter(
+    (post) =>
+      post.distanceMeters <= distance &&
+      (type === 'ALL' || post.type === type) &&
+      (!keyword.trim() || post.title.includes(keyword.trim()) || post.ingredientName.includes(keyword.trim()))
+  ).sort((a, b) =>
+    sort === 'DISTANCE'
+      ? a.distanceMeters - b.distanceMeters
+      : sort === 'LATEST'
+        ? b.createdAt.localeCompare(a.createdAt)
+        : a.expiresOn.localeCompare(b.expiresOn)
+  );
 
   const pickDistance = () => {
     Alert.alert('검색 반경', undefined, [

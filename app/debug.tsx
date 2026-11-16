@@ -14,7 +14,7 @@ import {
   SegmentedControl,
   UnderlineTabs,
 } from '@/shared/ui';
-import { ConsumptionCheckSheet, ExpiryPopupModal } from '@/features/notification';
+import { ConsumptionCheckSheet, ExpiryPopupModal, MOCK_EXPIRY_POPUP_ITEMS } from '@/features/notification';
 
 export default function DebugPage() {
   const [email, setEmail] = useState('');
@@ -234,7 +234,7 @@ export default function DebugPage() {
           {/* TODO(API): 팝업은 GET expiry-popup, 시트는 GET consumption-check 연결 후 실제 화면에 띄움 */}
           <ExpiryPopupModal
             visible={isPopupVisible}
-            items={[]}
+            items={MOCK_EXPIRY_POPUP_ITEMS}
             onClose={() => setIsPopupVisible(false)}
             onHideToday={() => setIsPopupVisible(false)}
             onShare={() => setIsPopupVisible(false)}

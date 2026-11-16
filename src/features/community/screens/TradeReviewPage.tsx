@@ -7,7 +7,7 @@ import { useMyProfile } from '@/features/account';
 import { Alert } from '@/shared/lib/alert';
 import StarIcon from '@/../assets/icons/star-icon.svg';
 import { formatPrice } from '../lib/communityFormat';
-import { TradeSummary } from '../types';
+import { MOCK_TRADES } from '../lib/mockData';
 
 const SCORE_LABELS = ['', '별로예요', '아쉬워요', '보통이에요', '좋았어요', '최고예요'];
 const QUICK_PHRASES = ['시간 약속을 잘 지켜요', '친절해요', '상태가 좋아요'];
@@ -21,7 +21,7 @@ export const TradeReviewPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const tradeId = Number(id);
   // TODO(API): 내 거래 목록(GET /api/me/trades)에서 tradeId로 상대·게시물 정보 찾기
-  const trade: TradeSummary | undefined = undefined as TradeSummary | undefined;
+  const trade = MOCK_TRADES.find((item) => item.tradeId === tradeId);
   const [score, setScore] = useState(0);
   const [content, setContent] = useState('');
 

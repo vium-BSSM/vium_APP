@@ -5,6 +5,7 @@ import { AppHeader, BackHeader, HeaderActions, UnderlineTabs } from '@/shared/ui
 import { useMyProfile } from '@/features/account';
 import { Alert } from '@/shared/lib/alert';
 import { TradeCard } from '../ui/TradeCard';
+import { MOCK_TRADES } from '../lib/mockData';
 import { TradeAction, TradeRoleFilter, TradeSummary } from '../types';
 
 const ROLE_TABS: { key: TradeRoleFilter; label: string }[] = [
@@ -25,7 +26,7 @@ export const TradeListPage = () => {
   const { profile } = useMyProfile();
   const [role, setRole] = useState<TradeRoleFilter>('ALL');
   // TODO(API): GET /api/me/trades?role= 연결 (feature/community-api 브랜치)
-  const allTrades: TradeSummary[] = [];
+  const allTrades: TradeSummary[] = MOCK_TRADES;
   const trades = role === 'ALL' ? allTrades : allTrades.filter((trade) => trade.role === role);
 
   const handleAction = (trade: TradeSummary, action: TradeAction) => {
