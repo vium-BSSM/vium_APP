@@ -26,18 +26,18 @@ export const Footer: React.FC<FooterProps> = ({ links = DEFAULT_LINKS, className
       <View className="flex-row items-center gap-2">
         {links.map((link, index) => (
           <React.Fragment key={link.label}>
-            {index > 0 && <Text className="text-text12 font-sans text-text-300">·</Text>}
+            {index > 0 && <Text className="text-text14 font-sans text-text-300">·</Text>}
             <Pressable
               onPress={link.onPress ?? (() => Alert.alert('준비 중', `${link.label}은(는) 곧 준비돼요.`))}
               hitSlop={8}
               accessibilityRole="link"
             >
-              <Text className="text-text12 font-sans text-text-200 underline">{link.label}</Text>
+              <Text className="text-text14 font-sans text-text-200 underline">{link.label}</Text>
             </Pressable>
           </React.Fragment>
         ))}
       </View>
-      <Text className="text-text12 font-sans text-text-300">ViUM{version ? ` v${version}` : ''}</Text>
+      <Text className="text-text14 font-sans text-text-300">ViUM{version ? ` v${version}` : ''}</Text>
     </View>
   );
 };
