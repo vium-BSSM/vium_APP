@@ -1,0 +1,123 @@
+import React, { useState } from 'react';
+import { FlatList, Pressable, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AppHeader, AppTextInput, Chip, HeaderActions, UnderlineTabs } from '@/shared/ui';
+import { useMyProfile } from '@/features/account';
+import { Alert } from '@/shared/lib/alert';
+import { formatDistance } from '@/shared/lib/dateFormat';
+import ChevronDownIcon from '@/../assets/icons/chevron-down-icon.svg';
+import SearchIcon from '@/../assets/icons/search-icon.svg';
+import ChatBubbleIcon from '@/../assets/icons/chat-bubble-icon.svg';
+import PlusLineIcon from '@/../assets/icons/plus-line-icon.svg';
+import { PostCard } from '../ui/PostCard';
+import { FeedSort, FeedTypeFilter, PostDistance, PostSummary } from '../types';
+
+const TYPE_TABS: { key: FeedTypeFilter; label: string }[] = [
+  { key: 'ALL', label: '전체' },
+  { key: 'SHARE', label: '나눔' },
+  { key: 'SALE', label: '판매' },
+];
+
+const SORT_OPTIONS: { key: FeedSort; label: string }[] = [
+  { key: 'DISTANCE', label: '가까운순' },
+  { key: 'LATEST', label: '최신순' },
+  { key: 'EXPIRING', label: '소비기한 임박순' },
+];
+
+const DISTANCE_OPTIONS: PostDistance[] = [1000, 3000, 5000, 10000];
+
+// 하단 탭 위로 띄우는 글쓰기 버튼 (Figma: 탭바 위 19px, 오른쪽 22px)
+const NAV_BAR_HEIGHT = 59;
+const FAB_GAP = 19;
+
+export const CommunityFeedPage = () => {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { profile } = useMyProfile();
+  const [distance, setDistance] = useState<PostDistance>(1000);
+  const [sort, setSort] = useState<FeedSort>('DISTANCE');
+  const [type, setType] = useState<FeedTypeFilter>('ALL');
+  const [isSearching, setIsSearching] = useState(false);
+  const [keyword, setKeyword] = useState('');
+  // TODO(API): GET /api/posts 연결 — 위치(expo-location)·거리·정렬·유형 필터 (feature/community-api 브랜치)
+  const posts: PostSummary[] = [];
+
+  const pickDistance = () => {
+    Alert.alert('검색 반경', undefined, [
+      ...DISTANCE_OPTIONS.map((option) => ({ text: `내 주변 ${formatDistance(option)}`, onPress: () => setDistance(option) })),
+      { text: '취소', style: 'cancel' as const },
+    ]);
+  };
+
+  const emptyMessage = keyword ? '검색 결과가 없어요' : '주변에 올라온 글이 없어요';
+
+  return (
+    <View className="flex-1 bg-white">
+      <View className="mb-2">
+        <AppHeader right={<HeaderActions profileImageUrl={profile.profileImageUrl} />} />
+      </View>
+
+      <View className="flex-row items-center px-screen md:px-10 lg:px-20 pt-1.5 pb-2.5">
+        <Pressable onPress={pickDistance} className="flex-1 flex-row items-center gap-1" hitSlop={6}>
+          <Text className="text-text22 font-medium font-sans text-text-100">내 주변 {formatDistance(distance)}</Text>
+          <ChevronDownIcon width={20} height={20} color="#242529" />
+        </Pressable>
+        <View className="flex-row gap-4">
+          <Pressable onPress={() => setIsSearching((prev) => !prev)} hitSlop={8} accessibilityLabel="검색">
+            <SearchIcon width={24} height={24} color="#242529" />
+          </Pressable>
+          <Pressable onPress={() => router.push('/community/chat' as any)} hitSlop={8} accessibilityLabel="채팅">
+            <ChatBubbleIcon width={24} height={24} color="#242529" />
+          </Pressable>
+        </View>
+      </View>
+
+      {isSearching && (
+        <View className="px-screen md:px-10 lg:px-20 pb-2.5">
+          <AppTextInput
+            value={keyword}
+            onChangeText={setKeyword}
+            placeholder="재료나 제목으로 검색"
+            placeholderTextColor="#A7A9B5"
+            autoFocus
+            className="h-10 px-[14px] rounded-lg bg-neutral-10 text-text15 font-sans text-text-100"
+          />
+        </View>
+      )}
+
+      <UnderlineTabs options={TYPE_TABS} value={type} onChange={setType} bordered />
+
+      <FlatList
+        data={posts}
+        keyExtractor={(post) => String(post.postId)}
+        renderItem={({ item }) => (
+          <View className="px-screen md:px-10 lg:px-20">
+            <PostCard post={item} onPress={() => router.push(`/community/${item.postId}` as any)} />
+          </View>
+        )}
+        ListHeaderComponent={
+          <View className="flex-row gap-2 px-5 pt-9 pb-[26px]">
+            {SORT_OPTIONS.map((option) => (
+              <Chip key={option.key} label={option.label} selected={sort === option.key} onPress={() => setSort(option.key)} />
+            ))}
+          </View>
+        }
+        ListEmptyComponent={
+          <Text className="text-text14 font-sans text-text-300 text-center mt-10 px-screen">{emptyMessage}</Text>
+        }
+        contentContainerClassName="pb-[140px]"
+      />
+
+      <Pressable
+        onPress={() => router.push('/community/write' as any)}
+        className="absolute right-[22px] flex-row items-center gap-1.5 pl-[18px] pr-5 py-3 rounded-3xl bg-neutral-500"
+        style={{ bottom: insets.bottom + NAV_BAR_HEIGHT + FAB_GAP }}
+        accessibilityRole="button"
+      >
+        <PlusLineIcon width={18} height={18} color="#FFFFFF" />
+        <Text className="text-text15 font-sans text-white">글쓰기</Text>
+      </Pressable>
+    </View>
+  );
+};

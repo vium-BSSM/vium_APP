@@ -13,3 +13,5 @@ export { getInventoryQuantities } from './lib/inventoryQuantities';
 export type { InventoryQuantity } from './lib/inventoryQuantities';
 export { useExpiringIngredients } from './lib/expiringIngredients';
 export type { ExpiringIngredient } from './types';
+export { useIngredientsList } from './lib/useIngredientsList';
+export type { FridgeItem } from './types';
