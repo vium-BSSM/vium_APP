@@ -40,26 +40,26 @@ const getButtons = (trade: TradeSummary, onAction: TradeCardProps['onAction'], o
   }
 };
 
-/** Figma trade-card */
+/** Figma trade-card (글자·버튼은 Figma보다 한 단계 크게) */
 export const TradeCard: React.FC<TradeCardProps> = ({ trade, onAction, onReview, pendingAction = null }) => {
   const buttons = getButtons(trade, onAction, onReview);
 
   return (
-    <View className="bg-white border border-neutral-50 rounded-lg p-4 gap-4">
+    <View className="bg-white border border-neutral-50 rounded-lg p-5 gap-5">
       <View className="flex-row items-center gap-3">
-        <View className="flex-1 gap-[3px]">
+        <View className="flex-1 gap-1">
           <View className="flex-row items-center gap-1.5">
-            <Text className="text-text12 font-sans text-text-200">{trade.role === 'SELLER' ? '판매' : '구매'}</Text>
-            <CommunityBadge kind={tradeStatusBadge(trade.status)} />
+            <Text className="text-text14 font-sans text-text-200">{trade.role === 'SELLER' ? '판매' : '구매'}</Text>
+            <CommunityBadge kind={tradeStatusBadge(trade.status)} size="md" />
           </View>
-          <Text className="text-text15 font-sans text-text-100" numberOfLines={1}>
+          <Text className="text-text18 font-sans text-text-100" numberOfLines={1}>
             {trade.post.title}
           </Text>
-          <Text className="text-text12 font-sans text-text-300">
+          <Text className="text-text14 font-sans text-text-300">
             {trade.partner.displayName} · {formatMonthDayTime(trade.requestedAt)}
           </Text>
         </View>
-        <Text className="text-text15 font-sans text-text-100">{formatPrice(trade.price, trade.post.type, '무료')}</Text>
+        <Text className="text-text18 font-sans text-text-100">{formatPrice(trade.price, trade.post.type, '무료')}</Text>
       </View>
 
       {buttons.length > 0 && (
@@ -69,7 +69,7 @@ export const TradeCard: React.FC<TradeCardProps> = ({ trade, onAction, onReview,
               key={button.label}
               label={button.label}
               variant={button.variant}
-              size="sm"
+              size="md"
               onPress={button.onPress}
               loading={button.action !== undefined && pendingAction === button.action}
               disabled={pendingAction !== null}
