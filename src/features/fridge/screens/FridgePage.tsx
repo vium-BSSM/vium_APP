@@ -15,6 +15,7 @@ import { FridgeCleanupModal } from '../ui/FridgeCleanupModal';
 import { ReceiptConfirmModal } from '../ui/ReceiptConfirmModal';
 import { FridgeStorageFilter, PurchaseDetail } from '../types';
 import { useMyProfile } from '@/features/account';
+import { ExpiryPopup } from '@/features/notification';
 import { AddButton, Card, HomeHeader } from '@/shared/ui';
 
 export const FridgePage = () => {
@@ -252,6 +253,8 @@ export const FridgePage = () => {
           <Text className="mt-4 text-text14 text-text-200 font-sans">영수증을 인식하는 중...</Text>
         </View>
       )}
+      {/* 소비기한 임박 재료 팝업 (하루 한 번, '오늘은 그만 보기' 가능) */}
+      <ExpiryPopup />
     </View>
   );
 };
