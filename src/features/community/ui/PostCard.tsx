@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { formatDday, formatDistance, getDaysLeft } from '@/shared/lib/dateFormat';
 import HeartIcon from '@/../assets/icons/heart-icon.svg';
+import HeartFilledIcon from '@/../assets/icons/heart-filled-icon.svg';
 import { formatPrice, postStatusBadge, postTypeBadge } from '../lib/communityFormat';
 import { PostSummary } from '../types';
 import { CommunityBadge } from './CommunityBadge';
@@ -33,7 +34,12 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onPress }) => {
         <Text className="text-text16 font-sans text-text-100">{formatPrice(post.price, post.type)}</Text>
       </View>
       <View className="flex-row items-center gap-[3px]">
-        <HeartIcon width={16} height={16} color="#A7A9B5" />
+        {/* 좋아요한 글은 채운 하트 (status-danger #FF7171) */}
+        {post.likedByMe ? (
+          <HeartFilledIcon width={16} height={16} color="#FF7171" />
+        ) : (
+          <HeartIcon width={16} height={16} color="#A7A9B5" />
+        )}
         <Text className="text-text12 font-sans text-text-300">{post.likeCount}</Text>
       </View>
     </Pressable>
