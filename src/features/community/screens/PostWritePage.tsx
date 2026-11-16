@@ -37,6 +37,15 @@ export const PostWritePage = () => {
     params.inventoryItemId ? Number(params.inventoryItemId) : null
   );
   const [isPickerVisible, setIsPickerVisible] = useState(!params.inventoryItemId);
+  // 식재료 상세·소비기한 팝업에서 다른 재료로 다시 들어오면 그 재료로 바꿈 (화면이 이미 열려 있어도)
+  const [prevParamId, setPrevParamId] = useState(params.inventoryItemId);
+  if (prevParamId !== params.inventoryItemId) {
+    setPrevParamId(params.inventoryItemId);
+    if (params.inventoryItemId) {
+      setInventoryItemId(Number(params.inventoryItemId));
+      setIsPickerVisible(false);
+    }
+  }
   const selected = fridgeItems.find((item) => item.id === inventoryItemId) ?? null;
 
   const descriptionRef = useRef<TextInput>(null);
