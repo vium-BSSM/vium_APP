@@ -45,7 +45,7 @@ export interface PostAuthor {
 
 export interface PostIngredient {
   inventoryItemId: number;
-  ingredientCatalogId: number;
+  ingredientCatalogId: number | null;
   name: string;
   categoryName: string | null;
   quantity: number;

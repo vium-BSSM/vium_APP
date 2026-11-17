@@ -13,12 +13,12 @@ const ICON_BY_TYPE: Record<string, string> = {
 const getIconLabel = (notification: NotificationApi) => {
   if (notification.type.startsWith('expiry')) {
     // '우유의 소비기한이 2일 남았습니다.' → 'D-2'
-    const days = notification.body.match(/(\d+)일 남/)?.[1];
+    const days = notification.body?.match(/(\d+)일 남/)?.[1];
     return days ? `D-${days}` : '임박';
   }
   if (notification.type.startsWith('credit')) {
     // '출석 보상 1 크레딧이 적립됐어요.' → '+1'
-    const amount = notification.body.match(/(\d+)\s*크레딧/)?.[1];
+    const amount = notification.body?.match(/(\d+)\s*크레딧/)?.[1];
     return amount ? `+${amount}` : '+';
   }
   return ICON_BY_TYPE[notification.type] ?? '알림';
@@ -28,7 +28,7 @@ export const mapNotification = (notification: NotificationApi): NotificationItem
   id: notification.notificationId,
   iconLabel: getIconLabel(notification),
   title: notification.title,
-  body: notification.body,
+  body: notification.body ?? '',
   timeLabel: formatRelativeTime(notification.sentAt ?? notification.scheduledAt),
   unread: notification.readAt === null,
 });
