@@ -18,7 +18,7 @@ export const ProfilePage = () => {
   // TODO: 프로필 이미지는 백엔드 필드가 없어 아직 저장하지 않음
   const handleNext = async () => {
     const result = await register(nickname);
-    if (result === 'success') router.replace('/onboarding');
+    if (result === 'success') router.replace('/main');
     else if (result === 'needsCredentials') router.replace('/signUp');
     else if (result === 'needsLogin') router.replace('/login');
   };
