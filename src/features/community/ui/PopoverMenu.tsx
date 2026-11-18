@@ -18,10 +18,12 @@ interface PopoverMenuProps {
   anchor: PopoverAnchor | null;
   items: PopoverMenuItem[];
   onClose: () => void;
+  /** 메뉴를 기준 버튼의 어느 쪽 끝에 맞출지 (기본: 오른쪽) */
+  align?: 'left' | 'right';
 }
 
-/** 버튼 아래 오른쪽 정렬로 뜨는 작은 메뉴 (냉장고 + 버튼 메뉴와 같은 모양) */
-export const PopoverMenu: React.FC<PopoverMenuProps> = ({ anchor, items, onClose }) => {
+/** 버튼 아래에 뜨는 작은 메뉴 (냉장고 + 버튼 메뉴와 같은 모양) */
+export const PopoverMenu: React.FC<PopoverMenuProps> = ({ anchor, items, onClose, align = 'right' }) => {
   const { width: windowWidth } = useWindowDimensions();
 
   return (
@@ -30,7 +32,12 @@ export const PopoverMenu: React.FC<PopoverMenuProps> = ({ anchor, items, onClose
         {anchor && (
           <View
             className="absolute bg-white border border-neutral-50 rounded-lg p-2.5 gap-2 w-[153px] md:w-[180px]"
-            style={{ top: anchor.y + anchor.height + 6, right: Math.max(windowWidth - (anchor.x + anchor.width), 8) }}
+            style={{
+              top: anchor.y + anchor.height + 6,
+              ...(align === 'left'
+                ? { left: Math.max(anchor.x, 8) }
+                : { right: Math.max(windowWidth - (anchor.x + anchor.width), 8) }),
+            }}
           >
             {items.map((item) => (
               <Pressable

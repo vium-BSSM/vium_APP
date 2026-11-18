@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader, AppTextInput, Chip, HeaderActions, UnderlineTabs } from '@/shared/ui';
 import { useMyProfile } from '@/features/account';
-import { Alert } from '@/shared/lib/alert';
 import { useCurrentLocation } from '@/shared/lib/useCurrentLocation';
 import { formatDistance } from '@/shared/lib/dateFormat';
 import ChevronDownIcon from '@/../assets/icons/chevron-down-icon.svg';
@@ -13,6 +12,7 @@ import ChatBubbleIcon from '@/../assets/icons/chat-bubble-icon.svg';
 import PlusLineIcon from '@/../assets/icons/plus-line-icon.svg';
 import { usePostFeed } from '../lib/usePosts';
 import { PostCard } from '../ui/PostCard';
+import { PopoverAnchor, PopoverMenu } from '../ui/PopoverMenu';
 import { FeedSort, FeedTypeFilter, PostDistance } from '../types';
 
 const TYPE_TABS: { key: FeedTypeFilter; label: string }[] = [
@@ -45,12 +45,19 @@ export const CommunityFeedPage = () => {
   const [keyword, setKeyword] = useState('');
   const feed = usePostFeed({ coords, distance, sort, type, keyword });
 
-  const pickDistance = () => {
-    Alert.alert('검색 반경', undefined, [
-      ...DISTANCE_OPTIONS.map((option) => ({ text: `내 주변 ${formatDistance(option)}`, onPress: () => setDistance(option) })),
-      { text: '취소', style: 'cancel' as const },
-    ]);
-  };
+  const distanceButtonRef = useRef<View>(null);
+  const [distanceAnchor, setDistanceAnchor] = useState<PopoverAnchor | null>(null);
+
+  const openDistanceMenu = () =>
+    distanceButtonRef.current?.measureInWindow((x, y, width, height) => setDistanceAnchor({ x, y, width, height }));
+
+  const distanceItems = DISTANCE_OPTIONS.map((option) => ({
+    label: `내 주변 ${formatDistance(option)}`,
+    onPress: () => {
+      setDistanceAnchor(null);
+      setDistance(option);
+    },
+  }));
 
   const emptyMessage = locationError
     ? locationError
@@ -68,10 +75,19 @@ export const CommunityFeedPage = () => {
       </View>
 
       <View className="flex-row items-center px-screen md:px-10 lg:px-20 pb-2.5">
-        <Pressable onPress={pickDistance} className="flex-1 flex-row items-center gap-1" hitSlop={6}>
-          <Text className="text-text22 font-medium font-sans text-text-100">내 주변 {formatDistance(distance)}</Text>
-          <ChevronDownIcon width={20} height={20} color="#242529" />
-        </Pressable>
+        {/* 드롭다운이 글자 바로 아래 왼쪽 끝에 붙도록 버튼은 내용 너비만 차지 */}
+        <View className="flex-1 flex-row">
+          <Pressable
+            ref={distanceButtonRef}
+            onPress={openDistanceMenu}
+            className="flex-row items-center gap-1"
+            hitSlop={6}
+            accessibilityLabel="검색 반경 선택"
+          >
+            <Text className="text-text22 font-medium font-sans text-text-100">내 주변 {formatDistance(distance)}</Text>
+            <ChevronDownIcon width={20} height={20} color="#242529" />
+          </Pressable>
+        </View>
         <View className="flex-row gap-4">
           <Pressable onPress={() => setIsSearching((prev) => !prev)} hitSlop={8} accessibilityLabel="검색">
             <SearchIcon width={24} height={24} color="#242529" />
@@ -142,6 +158,7 @@ export const CommunityFeedPage = () => {
         <PlusLineIcon width={18} height={18} color="#FFFFFF" />
         <Text className="text-text15 font-sans text-white">글쓰기</Text>
       </Pressable>
+      <PopoverMenu anchor={distanceAnchor} items={distanceItems} onClose={() => setDistanceAnchor(null)} align="left" />
     </View>
   );
 };
