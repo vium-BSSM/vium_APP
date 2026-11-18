@@ -124,7 +124,7 @@ export const CommunityFeedPage = () => {
           </View>
         )}
         ListHeaderComponent={
-          <View className="flex-row gap-2 px-5 pt-9 pb-[26px]">
+          <View className="flex-row gap-2 px-screen md:px-10 lg:px-20 pt-9 pb-[26px]">
             {SORT_OPTIONS.map((option) => (
               <Chip key={option.key} label={option.label} selected={sort === option.key} onPress={() => setSort(option.key)} />
             ))}

@@ -2,6 +2,7 @@ import React from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { Alert } from '@/shared/lib/alert';
 import { Image } from 'expo-image';
+import ChefIcon from '@/../assets/icons/chef-icon.svg';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRecipeDetail } from '../lib/useRecipeDetail';
 import { recipeCookStore } from '../lib/recipeCookStore';
@@ -56,9 +57,12 @@ export const RecipeDetailPage: React.FC = () => {
               <View className="gap-8">
                 <BackTitle title={recipe.title} />
 
-                <View className="w-full h-[241px] rounded-lg bg-neutral-50 overflow-hidden">
-                  {recipe.image && (
+                <View className="w-full h-[241px] rounded-lg bg-neutral-10 overflow-hidden items-center justify-center">
+                  {recipe.image ? (
                     <Image source={{ uri: recipe.image }} contentFit="cover" className="w-full h-full" />
+                  ) : (
+                    // 사진 검색 실패(imageUrl null) 시 빈 박스 대신 셰프 모자 아이콘
+                    <ChefIcon width={56} height={56} color="#C0C0C0" />
                   )}
                 </View>
               </View>
