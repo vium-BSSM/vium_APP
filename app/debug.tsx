@@ -16,6 +16,7 @@ import {
   Footer,
 } from '@/shared/ui';
 import { ConsumptionCheckSheet } from '@/features/notification';
+import { TomatoEvolutionLoader } from '@/features/recipe';
 
 export default function DebugPage() {
   const [email, setEmail] = useState('');
@@ -25,7 +26,6 @@ export default function DebugPage() {
   const [tab, setTab] = useState<'all' | 'share' | 'sale'>('all');
   const [segment, setSegment] = useState<'1' | '2' | '3'>('1');
   const [isSheetVisible, setIsSheetVisible] = useState(false);
-
   return (
     <View className="flex-1 bg-white">
       <ScrollView className="flex-1 p-4">
@@ -241,6 +241,15 @@ export default function DebugPage() {
             onConsumed={() => setIsSheetVisible(false)}
             onDisposed={() => setIsSheetVisible(false)}
           />
+        </View>
+
+        <View className="mb-8">
+          <Text className="text-heading-md font-medium mb-3 text-text-100 font-sans">
+            TomatoEvolutionLoader (레시피 상세 로딩)
+          </Text>
+          <View className="h-[440px] border border-neutral-100 rounded-lg overflow-hidden">
+            <TomatoEvolutionLoader />
+          </View>
         </View>
 
         <View className="mb-8">
