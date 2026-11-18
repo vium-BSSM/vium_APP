@@ -1,21 +1,26 @@
 import { Tabs } from 'expo-router';
 import { BottomNavigation } from '@/shared/ui';
+import { UnreadNotificationsWatcher } from '@/features/notification';
 
 export default function TabsLayout() {
   return (
-    <Tabs
-      tabBar={() => <BottomNavigation />}
-      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: '#FFFFFF' } }}
-    >
-      <Tabs.Screen name="main" />
-      <Tabs.Screen name="fridge" />
-      <Tabs.Screen name="recipe" />
-      <Tabs.Screen name="community" />
-      <Tabs.Screen name="mypage" />
-      {/* 탭 버튼은 없지만 하단 탭을 유지한 채 홈에서 이동하는 화면 */}
-      <Tabs.Screen name="report" options={{ href: null }} />
-      <Tabs.Screen name="shopping" options={{ href: null }} />
-      <Tabs.Screen name="notifications" options={{ href: null }} />
-    </Tabs>
+    <>
+      {/* 로그인 후 어느 탭에서든 헤더 종 아이콘의 빨간 점을 맞춤 */}
+      <UnreadNotificationsWatcher />
+      <Tabs
+        tabBar={() => <BottomNavigation />}
+        screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: '#FFFFFF' } }}
+      >
+        <Tabs.Screen name="main" />
+        <Tabs.Screen name="fridge" />
+        <Tabs.Screen name="recipe" />
+        <Tabs.Screen name="community" />
+        <Tabs.Screen name="mypage" />
+        {/* 탭 버튼은 없지만 하단 탭을 유지한 채 홈에서 이동하는 화면 */}
+        <Tabs.Screen name="report" options={{ href: null }} />
+        <Tabs.Screen name="shopping" options={{ href: null }} />
+        <Tabs.Screen name="notifications" options={{ href: null }} />
+      </Tabs>
+    </>
   );
 }

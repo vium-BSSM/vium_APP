@@ -11,10 +11,11 @@ export const notificationKeys = {
 };
 
 /** 알림 목록 — '안 읽음' 개수도 필요해서 전체를 받아 화면에서 거름 */
-export const useNotifications = (filter: NotificationFilter) => {
+export const useNotifications = (filter: NotificationFilter, options?: { refetchInterval?: number }) => {
   const query = useQuery({
     queryKey: notificationKeys.all,
     queryFn: async () => unwrap(await getNotifications()).notifications.map(mapNotification),
+    refetchInterval: options?.refetchInterval,
   });
 
   const all = useMemo(() => query.data ?? [], [query.data]);
