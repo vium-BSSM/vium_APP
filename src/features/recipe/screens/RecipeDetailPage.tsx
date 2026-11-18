@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { Alert } from '@/shared/lib/alert';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -8,6 +8,7 @@ import { recipeCookStore } from '../lib/recipeCookStore';
 import { RecipeIngredientCircle } from '../ui/RecipeIngredientCircle';
 import { RecipeSeasoningList } from '../ui/RecipeSeasoningList';
 import { RecipeStepList } from '../ui/RecipeStepList';
+import { TomatoEvolutionLoader } from '../ui/TomatoEvolutionLoader';
 import { AppHeader, BackTitle, Button } from '@/shared/ui';
 
 export const RecipeDetailPage: React.FC = () => {
@@ -17,11 +18,7 @@ export const RecipeDetailPage: React.FC = () => {
   const { recipe, isLoading, error, isEnriching } = useRecipeDetail(recipeId);
 
   if (isLoading) {
-    return (
-      <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator size="large" color="#A2CD87" />
-      </View>
-    );
+    return <TomatoEvolutionLoader />;
   }
 
   if (error || !recipe) {
