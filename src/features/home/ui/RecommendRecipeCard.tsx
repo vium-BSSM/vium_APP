@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Image } from 'expo-image';
+import ChefIcon from '@/../assets/icons/chef-icon.svg';
 
 const MAX_CHIPS = 3;
 
@@ -22,8 +23,13 @@ export const RecommendRecipeCard: React.FC<RecommendRecipeCardProps> = ({
 }) => {
   return (
     <Pressable onPress={onPress} className="bg-text-400 rounded-lg p-2.5 w-[114px] h-[156px] overflow-hidden gap-2">
-      <View className="h-[49px] w-full rounded bg-neutral-10 overflow-hidden">
-        {image && <Image source={{ uri: image }} contentFit="cover" className="w-full h-full" />}
+      <View className="h-[49px] w-full rounded bg-neutral-10 overflow-hidden items-center justify-center">
+        {image ? (
+          <Image source={{ uri: image }} contentFit="cover" className="w-full h-full" />
+        ) : (
+          // 사진 검색 실패(imageUrl null) 시 빈 박스 대신 셰프 모자 아이콘
+          <ChefIcon width={24} height={24} color="#C0C0C0" />
+        )}
       </View>
 
       <View className="h-[79px] justify-between">
