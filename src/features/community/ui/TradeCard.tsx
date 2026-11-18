@@ -55,7 +55,7 @@ export const TradeCard: React.FC<TradeCardProps> = ({ trade, onAction, onReview,
       accessibilityLabel={`${trade.post.title} 채팅방 열기`}
     >
       <View className="flex-row items-center gap-3">
-        <View className="flex-1 gap-1">
+        <View className="flex-1 gap-2">
           <View className="flex-row items-center gap-1.5">
             <Text className="text-text14 font-sans text-text-200">{trade.role === 'SELLER' ? '판매' : '구매'}</Text>
             <CommunityBadge kind={tradeStatusBadge(trade.status)} size="md" />
