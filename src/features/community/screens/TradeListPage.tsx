@@ -6,6 +6,7 @@ import { useMyProfile } from '@/features/account';
 import { Alert } from '@/shared/lib/alert';
 import { getErrorMessage } from '@/shared/api/types';
 import { useMyTrades, useTradeAction } from '../lib/useTrades';
+import { useChatRooms, useOpenChatRoom } from '../lib/useChat';
 import { TradeCard } from '../ui/TradeCard';
 import { TradeAction, TradeRoleFilter, TradeSummary } from '../types';
 
@@ -28,6 +29,8 @@ export const TradeListPage = () => {
   const [role, setRole] = useState<TradeRoleFilter>('ALL');
   const { trades, isLoading, error, hasNextPage, fetchNextPage, refetch, isRefetching } = useMyTrades(role);
   const tradeAction = useTradeAction();
+  const { rooms } = useChatRooms();
+  const openChat = useOpenChatRoom();
   const pendingTradeId = tradeAction.isPending ? tradeAction.variables?.tradeId : undefined;
 
   const handleAction = (trade: TradeSummary, action: TradeAction) => {
@@ -44,6 +47,28 @@ export const TradeListPage = () => {
           ),
       },
     ]);
+  };
+
+  /** 거래 상대와의 채팅방으로 이동 — 목록에 있으면 그 방, 구매자면 서버가 기존 방을 찾아주거나 만들어 줌 */
+  const goToChat = async (trade: TradeSummary) => {
+    const room = rooms.find(
+      (item) => item.post.postId === trade.post.postId && item.partner.userId === trade.partner.userId
+    );
+    if (room) {
+      router.push(`/community/chat/${room.chatRoomId}` as any);
+      return;
+    }
+    if (trade.role === 'SELLER') {
+      // 판매자는 내 게시물에 채팅방을 만들 수 없어, 목록에서 못 찾으면 안내만 함
+      Alert.alert('채팅방 없음', '이 거래의 채팅방을 찾을 수 없어요.');
+      return;
+    }
+    try {
+      const chatRoomId = await openChat.mutateAsync(trade.post.postId);
+      router.push(`/community/chat/${chatRoomId}` as any);
+    } catch (err) {
+      Alert.alert('채팅방 열기 실패', getErrorMessage(err, '채팅방을 열지 못했어요.'));
+    }
   };
 
   return (
@@ -63,10 +88,11 @@ export const TradeListPage = () => {
             trade={item}
             onAction={(action) => handleAction(item, action)}
             onReview={() => router.push(`/community/trades/${item.tradeId}/review` as any)}
+            onPress={() => goToChat(item)}
             pendingAction={pendingTradeId === item.tradeId ? (tradeAction.variables?.action ?? null) : null}
           />
         )}
-        ItemSeparatorComponent={() => <View className="h-4" />}
+        ItemSeparatorComponent={() => <View className="h-6" />}
         ListEmptyComponent={
           isLoading ? (
             <ActivityIndicator className="mt-10" color="#A2CD87" />
