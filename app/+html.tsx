@@ -21,7 +21,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="ViUM" />
+        <meta name="apple-mobile-web-app-title" content="vium" />
 
         <ScrollViewStyleReset />
         <style dangerouslySetInnerHTML={{ __html: phoneFrameStyle }} />

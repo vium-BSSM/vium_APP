@@ -30,8 +30,8 @@
     "web": {
       "output": "static",
       "favicon": "./public/favicon.png",
-      "name": "ViUM",
-      "shortName": "ViUM",
+      "name": "vium",
+      "shortName": "vium",
       "themeColor": "#ffffff",
       "backgroundColor": "#ffffff"
     },
