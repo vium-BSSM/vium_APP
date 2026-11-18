@@ -138,7 +138,8 @@ export const PostDetailPage = () => {
     <View className="flex-1 bg-white">
       <ScrollView contentContainerClassName="pb-[120px]">
         <View className="bg-neutral-10" style={{ height: IMAGE_HEIGHT + insets.top }}>
-          {post.images.length > 0 ? (
+          {/* 사진이 없으면 회색 칸만 둠 */}
+          {post.images.length > 0 && (
             <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={handleImageScroll}>
               {post.images.map((image) => (
                 <Image
@@ -149,10 +150,6 @@ export const PostDetailPage = () => {
                 />
               ))}
             </ScrollView>
-          ) : (
-            <View className="flex-1 items-center justify-center" style={{ paddingTop: insets.top }}>
-              <Text className="text-text28 font-medium font-sans text-text-300">{ingredient.name}</Text>
-            </View>
           )}
 
           <Pressable
