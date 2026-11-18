@@ -1,9 +1,10 @@
 {
   "expo": {
-    "name": "vium_app",
+    "name": "vium",
     "slug": "vium_app",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
     "scheme": "viumapp",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
@@ -16,7 +17,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#B2E194"
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
