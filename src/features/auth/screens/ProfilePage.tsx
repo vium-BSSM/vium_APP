@@ -46,7 +46,7 @@ export const ProfilePage = () => {
           <View className="items-center">
             <View className="items-center">
               <View className="relative w-[117px] h-[117px] md:w-[140px] md:h-[140px] mb-[42px]">
-                <View className="w-full h-full bg-neutral-50 rounded-full border-[3px] border-secondary-400 overflow-hidden">
+                <View className="w-full h-full bg-neutral-50 rounded-full overflow-hidden">
                   {profileImageUri && (
                     <Image
                       source={{ uri: profileImageUri }}
