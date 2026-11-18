@@ -10,4 +10,5 @@ export const communityKeys = {
   userReviews: (userId: number) => ['userReviews', userId] as const,
   chatRooms: ['chatRooms'] as const,
   chatMessages: (chatRoomId: number) => ['chatMessages', chatRoomId] as const,
+  blocks: ['blocks'] as const,
 };

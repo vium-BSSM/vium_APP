@@ -14,12 +14,21 @@ import SendIcon from '@/../assets/icons/send-icon.svg';
 import { uploadImage } from '../api/postApi';
 import { useChatMessages, useChatRooms, useLeaveChatRoom, useSendMessage } from '../lib/useChat';
 import { useMyTrades, useTradeAction, useUserManner } from '../lib/useTrades';
+import { useReport, useToggleBlock } from '../lib/useSafety';
 import { formatPrice, postStatusBadge, tradeStatusBadge } from '../lib/communityFormat';
 import { ChatMessageItem } from '../ui/ChatMessageItem';
 import { CommunityBadge } from '../ui/CommunityBadge';
-import { TradeAction, TradeSummary } from '../types';
+import { ReportReason, TradeAction, TradeSummary } from '../types';
 
 const MESSAGE_MAX_LENGTH = 1000;
+
+// ETC는 상세 사유 입력이 필수라 입력 화면이 생기기 전까지 제외
+const REPORT_REASONS: { reason: ReportReason; label: string }[] = [
+  { reason: 'SPAM', label: '스팸·광고' },
+  { reason: 'FRAUD', label: '사기 의심' },
+  { reason: 'PROHIBITED_ITEM', label: '거래 금지 물품' },
+  { reason: 'ABUSIVE', label: '욕설·비매너' },
+];
 
 /** 상단 게시물 띠의 거래 버튼 — 판매자: 거절/수락, 구매자: 취소/받았어요 */
 const getStripActions = (trade: TradeSummary | undefined): { label: string; action: TradeAction; primary: boolean }[] => {
@@ -58,6 +67,8 @@ export const ChatRoomPage = () => {
   const sendMessage = useSendMessage(chatRoomId);
   const tradeAction = useTradeAction();
   const leaveRoom = useLeaveChatRoom();
+  const report = useReport();
+  const toggleBlock = useToggleBlock();
   const [text, setText] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
@@ -115,9 +126,49 @@ export const ChatRoomPage = () => {
             onError: (err) => Alert.alert('나가기 실패', getErrorMessage(err, '채팅방을 나가지 못했어요.')),
           }),
       },
-      // TODO: 신고(POST /api/me/reports)·차단(PUT /api/me/blocks/{userId}) 화면 디자인 필요
+      // TODO: 신고·차단 전용 화면 디자인이 나오면 교체 (지금은 시스템 알림창으로 연결)
+      ...(room
+        ? [
+            { text: '신고하기', onPress: handleReport },
+            { text: '차단하기', style: 'destructive' as const, onPress: handleBlock },
+          ]
+        : []),
       { text: '닫기', style: 'cancel' as const },
     ]);
+
+  const handleReport = () => {
+    if (!room) return;
+    Alert.alert('신고 사유', `${room.partner.displayName}님을 신고하는 이유를 골라주세요.`, [
+      ...REPORT_REASONS.map(({ reason, label }) => ({
+        text: label,
+        onPress: () =>
+          report.mutate(
+            { targetType: 'USER', targetId: room.partner.userId, reason },
+            {
+              onSuccess: () => Alert.alert('신고 완료', '신고가 접수됐어요.'),
+              onError: (err) => Alert.alert('신고 실패', getErrorMessage(err, '신고하지 못했어요.')),
+            }
+          ),
+      })),
+      { text: '취소', style: 'cancel' as const },
+    ]);
+  };
+
+  const handleBlock = () => {
+    if (!room) return;
+    Alert.alert('차단하기', `${room.partner.displayName}님을 차단할까요?\n서로의 게시물이 숨겨지고 채팅·거래 요청이 막혀요.`, [
+      { text: '취소', style: 'cancel' as const },
+      {
+        text: '차단',
+        style: 'destructive' as const,
+        onPress: () =>
+          toggleBlock.mutate(
+            { userId: room.partner.userId, block: true },
+            { onError: (err) => Alert.alert('차단 실패', getErrorMessage(err, '차단하지 못했어요.')) }
+          ),
+      },
+    ]);
+  };
 
   return (
     <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>

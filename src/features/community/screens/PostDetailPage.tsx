@@ -214,7 +214,7 @@ export const PostDetailPage = () => {
           <Text className="text-text12 font-sans text-text-300">{post.type === 'SALE' ? '판매가' : '나눔'}</Text>
         </View>
         {post.isMine ? (
-          // TODO: 내 게시물 수정·삭제(PATCH/DELETE /api/me/posts/{postId}) 화면 디자인 필요
+          // TODO: 내 게시물 수정·삭제 버튼 디자인 필요 (API·훅은 usePosts의 useUpdatePost·useDeletePost로 연결됨)
           <PillButton label="거래 내역" size="xs" onPress={() => router.push('/community/trades' as any)} className="w-[104px]" />
         ) : (
           <View className="flex-row gap-3">

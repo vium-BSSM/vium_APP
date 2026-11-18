@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { unwrap } from '@/shared/api/types';
 import { Coordinates } from '@/shared/lib/useCurrentLocation';
-import { getPost, getPosts, likePost, unlikePost } from '../api/postApi';
+import { deletePost, getPost, getPosts, likePost, unlikePost, updatePost } from '../api/postApi';
 import { communityKeys } from './queryKeys';
-import { FeedSort, FeedTypeFilter, PostDetail, PostDistance, PostSummary } from '../types';
+import { FeedSort, FeedTypeFilter, PostDetail, PostDistance, PostSummary, UpdatePostRequest } from '../types';
 
 interface FeedOptions {
   coords: Coordinates | null;
@@ -92,6 +92,33 @@ export const useToggleLike = (postId: number) => {
         old ? { ...old, likedByMe: result.liked, likeCount: result.likeCount } : old
       );
       // 피드 카드의 좋아요 수도 맞춤
+      queryClient.invalidateQueries({ queryKey: communityKeys.postsAll });
+    },
+  });
+};
+
+/** 내 게시물 수정 — 상세 캐시를 응답으로 바꾸고 피드를 새로 받음 */
+export const useUpdatePost = (postId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (request: UpdatePostRequest) => unwrap(await updatePost(postId, request)),
+    onSuccess: (post) => {
+      queryClient.setQueryData(communityKeys.post(postId), post);
+      queryClient.invalidateQueries({ queryKey: communityKeys.postsAll });
+    },
+  });
+};
+
+/** 내 게시물 삭제 */
+export const useDeletePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (postId: number) => {
+      const response = await deletePost(postId);
+      if (!response.success) throw new Error(response.error?.message ?? '게시물을 삭제하지 못했어요.');
+    },
+    onSuccess: (_result, postId) => {
+      queryClient.removeQueries({ queryKey: communityKeys.post(postId) });
       queryClient.invalidateQueries({ queryKey: communityKeys.postsAll });
     },
   });

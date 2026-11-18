@@ -116,6 +116,13 @@ export interface CreatePostRequest {
   longitude: number;
 }
 
+export interface UpdatePostRequest {
+  title?: string;
+  description?: string;
+  price?: number;
+  imageIds?: number[];
+}
+
 export interface CreatePostResult {
   postId: number;
   status: PostStatus;
@@ -210,6 +217,33 @@ export interface SendMessageRequest {
   type: 'TEXT' | 'IMAGE';
   content?: string;
   imageId?: number;
+}
+
+// ---------- 신고·차단 ----------
+export type ReportTargetType = 'USER' | 'POST';
+export type ReportReason = 'SPAM' | 'FRAUD' | 'PROHIBITED_ITEM' | 'ABUSIVE' | 'ETC';
+
+export interface ReportRequest {
+  targetType: ReportTargetType;
+  targetId: number;
+  reason: ReportReason;
+  // reason=ETC면 필수 (최대 500자)
+  detail?: string | null;
+}
+
+export interface BlockedUser {
+  userId: number;
+  displayName: string;
+  blockedAt: string;
+}
+
+export interface BlockedUsersData {
+  blockedUsers: BlockedUser[];
+}
+
+export interface BlockResult {
+  userId: number;
+  blocked: boolean;
 }
 
 // ---------- 화면용 ----------

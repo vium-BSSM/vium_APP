@@ -10,6 +10,7 @@ import {
   PostPreview,
   PostsPage,
   PostsQuery,
+  UpdatePostRequest,
   UploadedImage,
 } from '../types';
 
@@ -49,6 +50,18 @@ export const getPostPreview = async (inventoryItemId: number): Promise<ApiRespon
 
 export const createPost = async (request: CreatePostRequest): Promise<ApiResponse<CreatePostResult>> => {
   const response = await apiClient.post<ApiResponse<CreatePostResult>>('/api/me/posts', request);
+  return response.data;
+};
+
+/** 내 게시물 수정 — 거래 요청 중이면 409 */
+export const updatePost = async (postId: number, request: UpdatePostRequest): Promise<ApiResponse<PostDetail>> => {
+  const response = await apiClient.patch<ApiResponse<PostDetail>>(`/api/me/posts/${postId}`, request);
+  return response.data;
+};
+
+/** 내 게시물 삭제 — 진행 중·완료된 거래가 있으면 409, 삭제하면 재고 잠금이 풀림 */
+export const deletePost = async (postId: number): Promise<ApiResponse<null>> => {
+  const response = await apiClient.delete<ApiResponse<null>>(`/api/me/posts/${postId}`);
   return response.data;
 };
 
