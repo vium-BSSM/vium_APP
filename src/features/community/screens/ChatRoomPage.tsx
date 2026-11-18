@@ -17,6 +17,7 @@ import { useMyTrades, useTradeAction, useUserManner } from '../lib/useTrades';
 import { useReport, useToggleBlock } from '../lib/useSafety';
 import { formatPrice, postStatusBadge, tradeStatusBadge } from '../lib/communityFormat';
 import { ChatMessageItem } from '../ui/ChatMessageItem';
+import { PopoverAnchor, PopoverMenu, PopoverMenuItem } from '../ui/PopoverMenu';
 import { CommunityBadge } from '../ui/CommunityBadge';
 import { ReportReason, TradeAction, TradeSummary } from '../types';
 
@@ -115,45 +116,54 @@ export const ChatRoomPage = () => {
     );
   };
 
-  const handleMore = () =>
-    Alert.alert(room?.partner.displayName ?? '채팅방', undefined, [
-      ...(room ? [{ text: '게시물 보기', onPress: () => router.push(`/community/${room.post.postId}` as any) }] : []),
-      {
-        text: '채팅방 나가기',
-        style: 'destructive' as const,
-        onPress: () =>
-          leaveRoom.mutate(chatRoomId, {
-            onSuccess: () => router.back(),
-            onError: (err) => Alert.alert('나가기 실패', getErrorMessage(err, '채팅방을 나가지 못했어요.')),
-          }),
-      },
-      // TODO: 신고·차단 전용 화면 디자인이 나오면 교체 (지금은 시스템 알림창으로 연결)
-      ...(room
-        ? [
-            { text: '신고하기', onPress: handleReport },
-            { text: '차단하기', style: 'destructive' as const, onPress: handleBlock },
-          ]
-        : []),
-      { text: '닫기', style: 'cancel' as const },
-    ]);
+  const moreButtonRef = useRef<View>(null);
+  const [menuAnchor, setMenuAnchor] = useState<PopoverAnchor | null>(null);
+  const [menuMode, setMenuMode] = useState<'main' | 'report'>('main');
 
-  const handleReport = () => {
-    if (!room) return;
-    Alert.alert('신고 사유', `${room.partner.displayName}님을 신고하는 이유를 골라주세요.`, [
-      ...REPORT_REASONS.map(({ reason, label }) => ({
-        text: label,
-        onPress: () =>
-          report.mutate(
-            { targetType: 'USER', targetId: room.partner.userId, reason },
-            {
-              onSuccess: () => Alert.alert('신고 완료', '신고가 접수됐어요.'),
-              onError: (err) => Alert.alert('신고 실패', getErrorMessage(err, '신고하지 못했어요.')),
-            }
-          ),
-      })),
-      { text: '취소', style: 'cancel' as const },
-    ]);
+  const openMenu = () =>
+    moreButtonRef.current?.measureInWindow((x, y, width, height) => {
+      setMenuMode('main');
+      setMenuAnchor({ x, y, width, height });
+    });
+  const closeMenu = () => setMenuAnchor(null);
+  const runAndClose = (action: () => void) => () => {
+    closeMenu();
+    action();
   };
+
+  const handleLeave = () =>
+    leaveRoom.mutate(chatRoomId, {
+      onSuccess: () => router.back(),
+      onError: (err) => Alert.alert('나가기 실패', getErrorMessage(err, '채팅방을 나가지 못했어요.')),
+    });
+
+  const submitReport = (reason: ReportReason) => {
+    if (!room) return;
+    report.mutate(
+      { targetType: 'USER', targetId: room.partner.userId, reason },
+      {
+        onSuccess: () => Alert.alert('신고 완료', '신고가 접수됐어요.'),
+        onError: (err) => Alert.alert('신고 실패', getErrorMessage(err, '신고하지 못했어요.')),
+      }
+    );
+  };
+
+  const menuItems: PopoverMenuItem[] =
+    menuMode === 'report'
+      ? REPORT_REASONS.map(({ reason, label }) => ({ label, onPress: runAndClose(() => submitReport(reason)) }))
+      : [
+          ...(room
+            ? [{ label: '게시물 보기', onPress: runAndClose(() => router.push(`/community/${room.post.postId}` as any)) }]
+            : []),
+          { label: '채팅방 나가기', onPress: runAndClose(handleLeave) },
+          // 신고는 같은 메뉴 자리에서 사유 목록으로 바뀜
+          ...(room
+            ? [
+                { label: '신고하기', onPress: () => setMenuMode('report') },
+                { label: '차단하기', onPress: runAndClose(() => handleBlock()) },
+              ]
+            : []),
+        ];
 
   const handleBlock = () => {
     if (!room) return;
@@ -178,7 +188,7 @@ export const ChatRoomPage = () => {
       <View className="mt-5">
         <BackHeader
           right={
-            <Pressable onPress={handleMore} hitSlop={10} accessibilityLabel="더보기">
+            <Pressable ref={moreButtonRef} onPress={openMenu} hitSlop={10} accessibilityLabel="더보기">
               <MoreIcon width={24} height={24} color="#242529" />
             </Pressable>
           }
@@ -288,6 +298,7 @@ export const ChatRoomPage = () => {
           <SendIcon width={20} height={20} color="#242529" />
         </Pressable>
       </View>
+      <PopoverMenu anchor={menuAnchor} items={menuItems} onClose={closeMenu} />
     </KeyboardAvoidingView>
   );
 };
