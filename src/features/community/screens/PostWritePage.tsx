@@ -1,15 +1,16 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader, AppTextInput, BackHeader, Button, HeaderActions, SegmentedControl } from '@/shared/ui';
 import { useMyProfile } from '@/features/account';
 import { useIngredientsList } from '@/features/fridge';
 import { Alert } from '@/shared/lib/alert';
+import { useCurrentLocation } from '@/shared/lib/useCurrentLocation';
 import { formatDday, formatDotDate, getDaysLeft } from '@/shared/lib/dateFormat';
 import CameraLineIcon from '@/../assets/icons/camera-line-icon.svg';
-import { DESCRIPTION_MAX_LENGTH, MAX_POST_IMAGES, TITLE_MAX_LENGTH, usePostWriteForm } from '../lib/usePostWriteForm';
+import { DESCRIPTION_MAX_LENGTH, MAX_POST_IMAGES, TITLE_MAX_LENGTH, usePostWrite } from '../lib/usePostWrite';
 import { STORAGE_METHOD_OPTIONS } from '../lib/communityFormat';
 import { IngredientPickerSheet } from '../ui/IngredientPickerSheet';
 import { PostType } from '../types';
@@ -29,9 +30,11 @@ const FieldLabel: React.FC<{ children: string }> = ({ children }) => (
 );
 
 export const PostWritePage = () => {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const { profile } = useMyProfile();
   const params = useLocalSearchParams<{ inventoryItemId?: string }>();
+  const { coords } = useCurrentLocation();
   const { items: fridgeItems, isLoading: isFridgeLoading } = useIngredientsList();
   const [inventoryItemId, setInventoryItemId] = useState<number | null>(
     params.inventoryItemId ? Number(params.inventoryItemId) : null
@@ -49,17 +52,29 @@ export const PostWritePage = () => {
   const selected = fridgeItems.find((item) => item.id === inventoryItemId) ?? null;
 
   const descriptionRef = useRef<TextInput>(null);
-  const form = usePostWriteForm(selected?.storageMethodId ?? null);
-  const canSubmit = selected !== null && form.title.trim().length > 0;
+  const form = usePostWrite({ inventoryItemId, defaultStorageMethodId: selected?.storageMethodId ?? null });
 
-  // TODO(API): post-preview(게시 가능 여부·추천가) 조회, 사진 업로드 후 POST /api/me/posts (feature/community-api 브랜치)
-  const handleSubmit = () => Alert.alert('준비 중', '등록 API 연결 전이에요.');
+  // 게시할 수 없는 재료면 이유를 알려주고 다른 재료를 고르게 함
+  useEffect(() => {
+    if (form.ineligibleMessage) {
+      Alert.alert('올릴 수 없는 재료예요', form.ineligibleMessage, [
+        { text: '다른 재료 고르기', onPress: () => setIsPickerVisible(true) },
+      ]);
+    }
+  }, [form.ineligibleMessage]);
+
+  const handleSubmit = async () => {
+    const postId = await form.submit(coords);
+    if (postId !== null) router.replace(`/community/${postId}` as any);
+  };
 
   const handleRemoveImage = (index: number) =>
     Alert.alert('사진 삭제', '이 사진을 뺄까요?', [
       { text: '취소', style: 'cancel' },
       { text: '삭제', style: 'destructive', onPress: () => form.removeImage(index) },
     ]);
+
+  const saleDisabled = form.preview !== null && !form.preview.saleAllowed;
 
   return (
     <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -119,6 +134,7 @@ export const PostWritePage = () => {
               options={TYPE_OPTIONS}
               value={form.type}
               onChange={form.setType}
+              disabledKeys={saleDisabled ? ['SALE'] : []}
             />
           </View>
 
@@ -130,12 +146,13 @@ export const PostWritePage = () => {
                   value={form.price}
                   onChangeText={(text) => form.setPrice(text.replace(/[^0-9]/g, ''))}
                   keyboardType="number-pad"
-                  placeholder="0"
+                  placeholder={form.preview?.creditEstimate ? String(form.preview.creditEstimate.recommendedPrice) : '0'}
                   placeholderTextColor="#A7A9B5"
                   className="flex-1 text-text16 font-sans text-text-100"
                 />
                 <Text className="text-text15 font-sans text-text-200">크레딧</Text>
               </View>
+              {form.priceError && <Text className="text-text12 font-sans text-status-danger-text">{form.priceError}</Text>}
             </View>
           )}
 
@@ -195,7 +212,7 @@ export const PostWritePage = () => {
       </ScrollView>
 
       <View className="px-screen md:px-10 lg:px-20 pt-3 bg-white" style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
-        <Button fullWidth onPress={handleSubmit} disabled={!canSubmit}>
+        <Button fullWidth onPress={handleSubmit} disabled={!form.canSubmit} loading={form.isSubmitting}>
           등록하기
         </Button>
       </View>

@@ -12,7 +12,6 @@ Code is grouped by **feature (domain)**. Routing lives in `app/` (Expo Router), 
 app/                              # Expo Router routes ONLY (render a screen, nothing else)
 ├── _layout.tsx                   # Root Stack + Stack.Protected (login guard)
 ├── index.tsx                     # Redirect: logged in → /main, else → /splash
-├── onboarding.tsx                # Logged-in only (right after sign-up)
 ├── debug.tsx                     # Component showcase (/debug)
 ├── (auth)/                       # Logged-out only: splash, login, signUp, profile
 └── (tabs)/                       # Logged-in only, bottom tab bar

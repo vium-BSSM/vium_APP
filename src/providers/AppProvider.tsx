@@ -4,6 +4,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { Image } from 'expo-image';
 import { cssInterop } from 'nativewind';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/shared/lib/queryClient';
 
 // expo-image는 NativeWind 기본 지원 컴포넌트가 아니라 className을 style로 연결해야 적용됨
 cssInterop(Image, { className: 'style' });
@@ -35,5 +37,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }
 
   // 스와이프 등 제스처 컴포넌트가 동작하려면 앱 최상단에 필요
-  return <GestureHandlerRootView style={{ flex: 1 }}>{children}</GestureHandlerRootView>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <GestureHandlerRootView style={{ flex: 1 }}>{children}</GestureHandlerRootView>
+    </QueryClientProvider>
+  );
 }

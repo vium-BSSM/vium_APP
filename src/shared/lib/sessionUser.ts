@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { create } from 'zustand';
 import { getItem, removeItem, setItem } from './secureStorage';
+import { queryClient } from './queryClient';
 
 
 export interface SessionUser {
@@ -63,6 +64,8 @@ export const sessionUserStore = {
   },
   clear: async () => {
     replaceUser(null);
+    // 다른 계정으로 로그인했을 때 이전 사용자의 서버 데이터가 보이지 않도록 캐시 비움
+    queryClient.clear();
     await removeItem(SESSION_USER_KEY);
   },
 };

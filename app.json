@@ -77,7 +77,13 @@
       "@react-native-community/datetimepicker",
       "expo-image",
       "expo-sharing",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "내 주변 나눔·판매 글을 보여주기 위해 위치를 사용해요."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

@@ -1,3 +1,5 @@
+import { CursorPage } from '@/shared/api/types';
+
 // ---------- 게시물 ----------
 export type PostType = 'SHARE' | 'SALE';
 export type PostStatus = 'OPEN' | 'RESERVED' | 'COMPLETED' | 'EXPIRED';
@@ -21,6 +23,10 @@ export interface PostSummary {
   createdAt: string;
 }
 
+export interface PostsPage extends CursorPage {
+  posts: PostSummary[];
+}
+
 export interface PostsQuery {
   latitude: number;
   longitude: number;
@@ -39,7 +45,7 @@ export interface PostAuthor {
 
 export interface PostIngredient {
   inventoryItemId: number;
-  ingredientCatalogId: number;
+  ingredientCatalogId: number | null;
   name: string;
   categoryName: string | null;
   quantity: number;
@@ -110,6 +116,13 @@ export interface CreatePostRequest {
   longitude: number;
 }
 
+export interface UpdatePostRequest {
+  title?: string;
+  description?: string;
+  price?: number;
+  imageIds?: number[];
+}
+
 export interface CreatePostResult {
   postId: number;
   status: PostStatus;
@@ -145,6 +158,10 @@ export interface TradeSummary {
   reviewWritten: boolean;
 }
 
+export interface TradesPage extends CursorPage {
+  trades: TradeSummary[];
+}
+
 export interface TradeResult {
   tradeId: number;
   postId: number;
@@ -176,6 +193,10 @@ export interface ChatRoomSummary {
   unreadCount: number;
 }
 
+export interface ChatRoomsPage extends CursorPage {
+  chatRooms: ChatRoomSummary[];
+}
+
 export interface ChatMessage {
   messageId: number;
   chatRoomId: number;
@@ -188,10 +209,41 @@ export interface ChatMessage {
   isMine: boolean;
 }
 
+export interface ChatMessagesPage extends CursorPage {
+  messages: ChatMessage[];
+}
+
 export interface SendMessageRequest {
   type: 'TEXT' | 'IMAGE';
   content?: string;
   imageId?: number;
+}
+
+// ---------- 신고·차단 ----------
+export type ReportTargetType = 'USER' | 'POST';
+export type ReportReason = 'SPAM' | 'FRAUD' | 'PROHIBITED_ITEM' | 'ABUSIVE' | 'ETC';
+
+export interface ReportRequest {
+  targetType: ReportTargetType;
+  targetId: number;
+  reason: ReportReason;
+  // reason=ETC면 필수 (최대 500자)
+  detail?: string | null;
+}
+
+export interface BlockedUser {
+  userId: number;
+  displayName: string;
+  blockedAt: string;
+}
+
+export interface BlockedUsersData {
+  blockedUsers: BlockedUser[];
+}
+
+export interface BlockResult {
+  userId: number;
+  blocked: boolean;
 }
 
 // ---------- 화면용 ----------

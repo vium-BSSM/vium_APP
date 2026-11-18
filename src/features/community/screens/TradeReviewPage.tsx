@@ -5,9 +5,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader, AppTextInput, Avatar, BackHeader, Button, HeaderActions } from '@/shared/ui';
 import { useMyProfile } from '@/features/account';
 import { Alert } from '@/shared/lib/alert';
+import { getErrorMessage } from '@/shared/api/types';
 import StarIcon from '@/../assets/icons/star-icon.svg';
+import { useMyTrades, useWriteReview } from '../lib/useTrades';
 import { formatPrice } from '../lib/communityFormat';
-import { MOCK_TRADES } from '../lib/mockData';
 
 const SCORE_LABELS = ['', '별로예요', '아쉬워요', '보통이에요', '좋았어요', '최고예요'];
 const QUICK_PHRASES = ['시간 약속을 잘 지켜요', '친절해요', '상태가 좋아요'];
@@ -20,18 +21,26 @@ export const TradeReviewPage = () => {
   const { profile } = useMyProfile();
   const { id } = useLocalSearchParams<{ id: string }>();
   const tradeId = Number(id);
-  // TODO(API): 내 거래 목록(GET /api/me/trades)에서 tradeId로 상대·게시물 정보 찾기
-  const trade = MOCK_TRADES.find((item) => item.tradeId === tradeId);
+  // TODO: 거래 단건 조회 API가 없어 내 거래 목록에서 찾음
+  const { trades } = useMyTrades('ALL');
+  const trade = trades.find((item) => item.tradeId === tradeId);
   const contentRef = useRef<TextInput>(null);
   const [score, setScore] = useState(0);
   const [content, setContent] = useState('');
+  const writeReview = useWriteReview(tradeId);
 
   const appendPhrase = (phrase: string) =>
     setContent((prev) => (prev.includes(phrase) ? prev : `${prev.trim() ? `${prev.trim()} ` : ''}${phrase}`).slice(0, CONTENT_MAX_LENGTH));
 
-  // TODO(API): POST /api/me/trades/{tradeId}/review { mannerScore, content }
   const handleSubmit = () =>
-    Alert.alert('후기를 보냈어요', `거래 ${tradeId} · ${score}점`, [{ text: '확인', onPress: () => router.back() }]);
+    writeReview.mutate(
+      { mannerScore: score, content: content.trim() || null },
+      {
+        onSuccess: () =>
+          Alert.alert('후기를 보냈어요', '소중한 후기 고마워요!', [{ text: '확인', onPress: () => router.back() }]),
+        onError: (err) => Alert.alert('후기 전송 실패', getErrorMessage(err, '후기를 보내지 못했어요.')),
+      }
+    );
 
   return (
     <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -113,7 +122,7 @@ export const TradeReviewPage = () => {
 
       <View className="px-screen md:px-10 lg:px-20 pt-3 gap-2 items-center" style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
         <Text className="text-text12 font-sans text-text-300">후기는 거래당 한 번만 남길 수 있고, 수정할 수 없어요</Text>
-        <Button fullWidth onPress={handleSubmit} disabled={score === 0}>
+        <Button fullWidth onPress={handleSubmit} disabled={score === 0} loading={writeReview.isPending}>
           후기 보내기
         </Button>
       </View>

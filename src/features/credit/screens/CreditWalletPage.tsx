@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { AppHeader, BackHeader, Chip, HeaderActions } from '@/shared/ui';
 import { useMyProfile } from '@/features/account';
 import { Alert } from '@/shared/lib/alert';
+import { getErrorCode, getErrorMessage } from '@/shared/api/types';
+import { useCreditBalance, useCreditTransactions, useDailyReward } from '../lib/useCredits';
 import { CreditTxRow } from '../ui/CreditTxRow';
-import { MOCK_CREDIT_BALANCE, MOCK_CREDIT_TRANSACTIONS } from '../lib/mockData';
-import { CreditBalance, CreditFilter, CreditTransaction, CreditTransactionType } from '../types';
-
-const FILTER_TYPES: Record<Exclude<CreditFilter, 'all'>, CreditTransactionType[]> = {
-  earn: ['SIGNUP_REWARD', 'AD_REWARD', 'DAILY_REWARD', 'SAVING_BONUS', 'TRADE_INCOME'],
-  use: ['AI_REPORT'],
-  hold: ['TRADE_HOLD', 'TRADE_REFUND'],
-};
+import { CreditFilter } from '../types';
 
 const FILTERS: { key: CreditFilter; label: string }[] = [
   { key: 'all', label: '전체' },
@@ -23,14 +18,19 @@ const FILTERS: { key: CreditFilter; label: string }[] = [
 export const CreditWalletPage = () => {
   const { profile } = useMyProfile();
   const [filter, setFilter] = useState<CreditFilter>('all');
-  // TODO(API): GET /api/me/credits, GET /api/me/credits/transactions 연결 (feature/community-api 브랜치)
-  const balance: CreditBalance | null = MOCK_CREDIT_BALANCE;
-  const allTransactions: CreditTransaction[] = MOCK_CREDIT_TRANSACTIONS;
-  const transactions =
-    filter === 'all' ? allTransactions : allTransactions.filter((tx) => FILTER_TYPES[filter].includes(tx.type));
+  const { balance } = useCreditBalance();
+  const { transactions, isLoading, error, hasNextPage, fetchNextPage } = useCreditTransactions(filter);
+  const dailyReward = useDailyReward();
 
-  // TODO(API): POST /api/me/credits/daily-reward
-  const handleDailyReward = () => Alert.alert('준비 중', '출석 체크 API 연결 전이에요.');
+  const handleDailyReward = () =>
+    dailyReward.mutate(undefined, {
+      onSuccess: (result) => Alert.alert('출석 완료', `${result.amount} 크레딧을 받았어요!`),
+      onError: (err) =>
+        Alert.alert(
+          getErrorCode(err) === 'DAILY_REWARD_ALREADY_CLAIMED' ? '이미 받았어요' : '출석 실패',
+          getErrorMessage(err, '출석 보상을 받지 못했어요.')
+        ),
+    });
 
   // TODO: 광고 보상은 오퍼월 SDK 연동 필요 (서버는 /api/credits/offerwall/callback으로 지급)
   const handleAdReward = () => Alert.alert('준비 중', '광고 보고 크레딧 받기는 곧 열려요.');
@@ -56,6 +56,7 @@ export const CreditWalletPage = () => {
         <View className="flex-row gap-2.5">
           <Pressable
             onPress={handleDailyReward}
+            disabled={dailyReward.isPending}
             className="flex-1 bg-secondary-200 rounded-lg px-4 py-[14px] gap-1.5"
           >
             <Text className="text-text15 font-sans text-text-100">출석 체크</Text>
@@ -98,7 +99,15 @@ export const CreditWalletPage = () => {
         keyExtractor={(tx) => String(tx.transactionId)}
         renderItem={({ item }) => <CreditTxRow tx={item} />}
         ListHeaderComponent={header}
-        ListEmptyComponent={<Text className="text-text14 font-sans text-text-300 text-center mt-6">내역이 없어요</Text>}
+        ListEmptyComponent={
+          isLoading ? (
+            <ActivityIndicator className="mt-6" color="#A2CD87" />
+          ) : (
+            <Text className="text-text14 font-sans text-text-300 text-center mt-6">{error ?? '내역이 없어요'}</Text>
+          )
+        }
+        onEndReached={() => hasNextPage && fetchNextPage()}
+        onEndReachedThreshold={0.5}
         contentContainerClassName="px-screen md:px-10 lg:px-20 pb-[140px]"
       />
     </View>

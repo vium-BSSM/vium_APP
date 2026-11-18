@@ -1,3 +1,5 @@
+import { CursorPage } from '@/shared/api/types';
+
 export type CreditTransactionType =
   | 'SIGNUP_REWARD'
   | 'AD_REWARD'
@@ -20,6 +22,10 @@ export interface CreditTransaction {
   amount: number;
   tradeId: number | null;
   createdAt: string;
+}
+
+export interface CreditTransactionsPage extends CursorPage {
+  transactions: CreditTransaction[];
 }
 
 export interface DailyRewardResult {

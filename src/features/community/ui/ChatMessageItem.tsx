@@ -41,9 +41,10 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, partn
       )}
 
       {message.type === 'SYSTEM' ? (
-        <View className="items-center">
-          <View className="px-3 py-[5px] rounded-[14px] bg-primary-200">
-            <Text className="text-text12 font-medium font-sans text-primary-700">{message.content}</Text>
+        // 위 메시지와 붙어 보이지 않도록 간격을 두고, 일반 메시지보다 살짝 작은 14px
+        <View className="items-center mt-3">
+          <View className="px-4 py-2 rounded-[16px] bg-primary-200">
+            <Text className="text-text14 font-medium font-sans text-primary-700">{message.content}</Text>
           </View>
         </View>
       ) : message.isMine ? (

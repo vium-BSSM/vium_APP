@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
-import { NativeScrollEvent, NativeSyntheticEvent, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { ActivityIndicator, NativeScrollEvent, NativeSyntheticEvent, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Avatar, PillButton } from '@/shared/ui';
 import { Alert } from '@/shared/lib/alert';
+import { getErrorMessage } from '@/shared/api/types';
+import { useCurrentLocation } from '@/shared/lib/useCurrentLocation';
 import { formatDday, formatDistance, formatDotDate, formatRelativeTime, getDaysLeft } from '@/shared/lib/dateFormat';
 import BackIcon from '@/../assets/icons/back-icon.svg';
+import MoreIcon from '@/../assets/icons/more-icon.svg';
 import HeartIcon from '@/../assets/icons/heart-icon.svg';
 import HeartFilledIcon from '@/../assets/icons/heart-filled-icon.svg';
 import StarIcon from '@/../assets/icons/star-icon.svg';
+import { usePostDetail, useToggleLike } from '../lib/usePosts';
+import { useRequestTrade } from '../lib/useTrades';
+import { useOpenChatRoom } from '../lib/useChat';
+import { useReport } from '../lib/useSafety';
+import { REPORT_REASONS } from '../lib/reportReasons';
+import { PopoverAnchor, PopoverMenu, PopoverMenuItem } from '../ui/PopoverMenu';
 import { formatPrice, postStatusBadge, postTypeBadge } from '../lib/communityFormat';
 import { CommunityBadge } from '../ui/CommunityBadge';
-import { PostDetail } from '../types';
-import { getMockPostDetail } from '../lib/mockData';
 
 const IMAGE_HEIGHT = 320;
 
@@ -30,19 +37,32 @@ export const PostDetailPage = () => {
   const { width } = useWindowDimensions();
   const { id } = useLocalSearchParams<{ id: string }>();
   const postId = Number(id);
-  // TODO(API): GET /api/posts/{postId} 연결 (feature/community-api 브랜치)
-  const [post, setPost] = useState<PostDetail | null>(() => getMockPostDetail(postId));
+  const { coords } = useCurrentLocation();
+  const { post, isLoading, error } = usePostDetail(postId, coords);
+  const { mutate: toggleLike } = useToggleLike(postId);
+  const requestTrade = useRequestTrade();
+  const openChat = useOpenChatRoom();
   const [imageIndex, setImageIndex] = useState(0);
+  const report = useReport();
+  const moreButtonRef = useRef<View>(null);
+  const [menuAnchor, setMenuAnchor] = useState<PopoverAnchor | null>(null);
+  const [showReasons, setShowReasons] = useState(false);
 
   const handleBack = () => (router.canGoBack() ? router.back() : router.replace('/community' as any));
 
   if (!post) {
     return (
       <View className="flex-1 bg-white items-center justify-center gap-4">
-        <Text className="text-text14 font-sans text-text-300">게시물을 찾을 수 없어요 (postId {postId})</Text>
-        <Pressable onPress={handleBack}>
-          <Text className="text-text14 font-sans text-primary-700">돌아가기</Text>
-        </Pressable>
+        {isLoading ? (
+          <ActivityIndicator color="#A2CD87" />
+        ) : (
+          <>
+            <Text className="text-text14 font-sans text-text-300">{error ?? '게시물을 찾을 수 없어요'}</Text>
+            <Pressable onPress={handleBack}>
+              <Text className="text-text14 font-sans text-primary-700">돌아가기</Text>
+            </Pressable>
+          </>
+        )}
       </View>
     );
   }
@@ -59,10 +79,15 @@ export const PostDetailPage = () => {
     .join(' · ');
   const canRequest = !post.isMine && post.status === 'OPEN' && post.activeTradeId === null;
 
-  // TODO(API): POST /api/posts/{postId}/chat-rooms 후 채팅방으로 이동
-  const goToChat = () => router.push('/community/chat' as any);
+  const goToChat = async () => {
+    try {
+      const chatRoomId = await openChat.mutateAsync(postId);
+      router.push(`/community/chat/${chatRoomId}` as any);
+    } catch (err) {
+      Alert.alert('채팅 시작 실패', getErrorMessage(err, '채팅방을 열지 못했어요.'));
+    }
+  };
 
-  // TODO(API): POST /api/posts/{postId}/trades
   const handleRequestTrade = () => {
     const message =
       post.type === 'SALE'
@@ -70,13 +95,41 @@ export const PostDetailPage = () => {
         : '작성자에게 나눔을 요청할까요?';
     Alert.alert('거래 요청', message, [
       { text: '취소', style: 'cancel' },
-      { text: '요청하기', onPress: goToChat },
+      {
+        text: '요청하기',
+        onPress: async () => {
+          try {
+            await requestTrade.mutateAsync(postId);
+            await goToChat();
+          } catch (err) {
+            Alert.alert('거래 요청 실패', getErrorMessage(err, '거래를 요청하지 못했어요.'));
+          }
+        },
+      },
     ]);
   };
 
-  // TODO(API): PUT/DELETE /api/posts/{postId}/like — 지금은 화면에서만 토글
-  const toggleLike = () =>
-    setPost({ ...post, likedByMe: !post.likedByMe, likeCount: post.likeCount + (post.likedByMe ? -1 : 1) });
+  const openMenu = () =>
+    moreButtonRef.current?.measureInWindow((x, y, w, h) => {
+      setShowReasons(false);
+      setMenuAnchor({ x, y, width: w, height: h });
+    });
+  const closeMenu = () => setMenuAnchor(null);
+
+  const submitReport = (reason: (typeof REPORT_REASONS)[number]['reason']) => {
+    closeMenu();
+    report.mutate(
+      { targetType: 'POST', targetId: postId, reason },
+      {
+        onSuccess: () => Alert.alert('신고 완료', '신고가 접수됐어요.'),
+        onError: (err) => Alert.alert('신고 실패', getErrorMessage(err, '신고하지 못했어요.')),
+      }
+    );
+  };
+
+  const menuItems: PopoverMenuItem[] = showReasons
+    ? REPORT_REASONS.map(({ reason, label }) => ({ label, onPress: () => submitReport(reason) }))
+    : [{ label: '게시물 신고하기', onPress: () => setShowReasons(true) }];
 
   const handleImageScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) =>
     setImageIndex(Math.round(event.nativeEvent.contentOffset.x / width));
@@ -85,7 +138,8 @@ export const PostDetailPage = () => {
     <View className="flex-1 bg-white">
       <ScrollView contentContainerClassName="pb-[120px]">
         <View className="bg-neutral-10" style={{ height: IMAGE_HEIGHT + insets.top }}>
-          {post.images.length > 0 ? (
+          {/* 사진이 없으면 회색 칸만 둠 */}
+          {post.images.length > 0 && (
             <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={handleImageScroll}>
               {post.images.map((image) => (
                 <Image
@@ -96,10 +150,6 @@ export const PostDetailPage = () => {
                 />
               ))}
             </ScrollView>
-          ) : (
-            <View className="flex-1 items-center justify-center" style={{ paddingTop: insets.top }}>
-              <Text className="text-text28 font-medium font-sans text-text-300">{ingredient.name}</Text>
-            </View>
           )}
 
           <Pressable
@@ -111,6 +161,18 @@ export const PostDetailPage = () => {
           >
             <BackIcon width={28} height={28} color="#242529" />
           </Pressable>
+          {!post.isMine && (
+            <Pressable
+              ref={moreButtonRef}
+              onPress={openMenu}
+              hitSlop={10}
+              className="absolute right-[14px]"
+              style={{ top: insets.top + 6 }}
+              accessibilityLabel="더보기"
+            >
+              <MoreIcon width={24} height={24} color="#242529" />
+            </Pressable>
+          )}
 
           {post.images.length > 1 && (
             <View className="absolute bottom-[18px] left-0 right-0 flex-row justify-center gap-1.5">
@@ -179,7 +241,7 @@ export const PostDetailPage = () => {
         style={{ paddingBottom: Math.max(insets.bottom, 12) }}
       >
         <Pressable
-          onPress={toggleLike}
+          onPress={() => toggleLike(post.likedByMe)}
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={post.likedByMe ? '좋아요 취소' : '좋아요'}
@@ -197,7 +259,7 @@ export const PostDetailPage = () => {
           <Text className="text-text12 font-sans text-text-300">{post.type === 'SALE' ? '판매가' : '나눔'}</Text>
         </View>
         {post.isMine ? (
-          // TODO: 내 게시물 수정·삭제(PATCH/DELETE /api/me/posts/{postId}) 화면 디자인 필요
+          // TODO: 내 게시물 수정·삭제 버튼 디자인 필요 (API·훅은 usePosts의 useUpdatePost·useDeletePost로 연결됨)
           <PillButton label="거래 내역" size="xs" onPress={() => router.push('/community/trades' as any)} className="w-[104px]" />
         ) : (
           <View className="flex-row gap-3">
@@ -206,6 +268,7 @@ export const PostDetailPage = () => {
               variant="secondary"
               size="xs"
               onPress={goToChat}
+              loading={openChat.isPending && !requestTrade.isPending}
               className="w-[96px]"
             />
             <PillButton
@@ -213,11 +276,13 @@ export const PostDetailPage = () => {
               size="xs"
               onPress={handleRequestTrade}
               disabled={!canRequest}
+              loading={requestTrade.isPending}
               className="w-[104px]"
             />
           </View>
         )}
       </View>
+      <PopoverMenu anchor={menuAnchor} items={menuItems} onClose={closeMenu} />
     </View>
   );
 };

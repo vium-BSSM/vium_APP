@@ -18,7 +18,6 @@ const RootNavigator = () => {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={isLoggedIn}>
         <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
-        <Stack.Screen name="onboarding" />
       </Stack.Protected>
 
       <Stack.Protected guard={!isLoggedIn}>

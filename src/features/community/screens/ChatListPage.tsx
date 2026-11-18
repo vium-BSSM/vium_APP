@@ -1,16 +1,17 @@
 import React from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AppHeader, BackHeader, HeaderActions } from '@/shared/ui';
+import { usePullToRefresh } from '@/shared/lib/usePullToRefresh';
 import { useMyProfile } from '@/features/account';
+import { useChatRooms } from '../lib/useChat';
 import { ChatRoomRow } from '../ui/ChatRoomRow';
-import { MOCK_CHAT_ROOMS } from '../lib/mockData';
 
 export const ChatListPage = () => {
   const router = useRouter();
   const { profile } = useMyProfile();
-  // TODO(API): GET /api/me/chat-rooms 연결 (feature/community-api 브랜치)
-  const rooms = MOCK_CHAT_ROOMS;
+  const { rooms, isLoading, error, hasNextPage, fetchNextPage, refetch } = useChatRooms();
+  const pull = usePullToRefresh(refetch);
 
   return (
     <View className="flex-1 bg-white">
@@ -34,10 +35,18 @@ export const ChatListPage = () => {
         )}
         ItemSeparatorComponent={() => <View className="h-1.5" />}
         ListEmptyComponent={
-          <Text className="text-text14 font-sans text-text-300 text-center mt-10">
-            아직 대화가 없어요. 나눔 글에서 채팅을 시작해보세요
-          </Text>
+          isLoading ? (
+            <ActivityIndicator className="mt-10" color="#A2CD87" />
+          ) : (
+            <Text className="text-text14 font-sans text-text-300 text-center mt-10">
+              {error ?? '아직 대화가 없어요. 나눔 글에서 채팅을 시작해보세요'}
+            </Text>
+          )
         }
+        onEndReached={() => hasNextPage && fetchNextPage()}
+        onEndReachedThreshold={0.5}
+        onRefresh={pull.onRefresh}
+        refreshing={pull.refreshing}
         contentContainerClassName="px-screen md:px-10 lg:px-20 pt-2.5 pb-[140px]"
       />
     </View>

@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AppHeader, BackHeader, HeaderActions, UnderlineTabs } from '@/shared/ui';
+import { usePullToRefresh } from '@/shared/lib/usePullToRefresh';
 import { useMyProfile } from '@/features/account';
 import { Alert } from '@/shared/lib/alert';
+import { getErrorMessage } from '@/shared/api/types';
+import { useMyTrades, useTradeAction } from '../lib/useTrades';
+import { useChatRooms, useOpenChatRoom } from '../lib/useChat';
 import { TradeCard } from '../ui/TradeCard';
-import { MOCK_TRADES } from '../lib/mockData';
 import { TradeAction, TradeRoleFilter, TradeSummary } from '../types';
 
 const ROLE_TABS: { key: TradeRoleFilter; label: string }[] = [
@@ -25,9 +28,12 @@ export const TradeListPage = () => {
   const router = useRouter();
   const { profile } = useMyProfile();
   const [role, setRole] = useState<TradeRoleFilter>('ALL');
-  // TODO(API): GET /api/me/trades?role= 연결 (feature/community-api 브랜치)
-  const allTrades: TradeSummary[] = MOCK_TRADES;
-  const trades = role === 'ALL' ? allTrades : allTrades.filter((trade) => trade.role === role);
+  const { trades, isLoading, error, hasNextPage, fetchNextPage, refetch } = useMyTrades(role);
+  const pull = usePullToRefresh(refetch);
+  const tradeAction = useTradeAction();
+  const { rooms } = useChatRooms();
+  const openChat = useOpenChatRoom();
+  const pendingTradeId = tradeAction.isPending ? tradeAction.variables?.tradeId : undefined;
 
   const handleAction = (trade: TradeSummary, action: TradeAction) => {
     const confirm = CONFIRM[action];
@@ -36,10 +42,35 @@ export const TradeListPage = () => {
       {
         text: confirm.button,
         style: action === 'reject' || action === 'cancel' ? 'destructive' : 'default',
-        // TODO(API): POST /api/me/trades/{tradeId}/{accept|reject|cancel|complete}
-        onPress: () => Alert.alert('준비 중', `거래 ${trade.tradeId} 처리 API 연결 전이에요.`),
+        onPress: () =>
+          tradeAction.mutate(
+            { tradeId: trade.tradeId, action },
+            { onError: (err) => Alert.alert('처리 실패', getErrorMessage(err, '거래 상태를 바꾸지 못했어요.')) }
+          ),
       },
     ]);
+  };
+
+  /** 거래 상대와의 채팅방으로 이동 — 목록에 있으면 그 방, 구매자면 서버가 기존 방을 찾아주거나 만들어 줌 */
+  const goToChat = async (trade: TradeSummary) => {
+    const room = rooms.find(
+      (item) => item.post.postId === trade.post.postId && item.partner.userId === trade.partner.userId
+    );
+    if (room) {
+      router.push(`/community/chat/${room.chatRoomId}` as any);
+      return;
+    }
+    if (trade.role === 'SELLER') {
+      // 판매자는 내 게시물에 채팅방을 만들 수 없어, 목록에서 못 찾으면 안내만 함
+      Alert.alert('채팅방 없음', '이 거래의 채팅방을 찾을 수 없어요.');
+      return;
+    }
+    try {
+      const chatRoomId = await openChat.mutateAsync(trade.post.postId);
+      router.push(`/community/chat/${chatRoomId}` as any);
+    } catch (err) {
+      Alert.alert('채팅방 열기 실패', getErrorMessage(err, '채팅방을 열지 못했어요.'));
+    }
   };
 
   return (
@@ -59,10 +90,22 @@ export const TradeListPage = () => {
             trade={item}
             onAction={(action) => handleAction(item, action)}
             onReview={() => router.push(`/community/trades/${item.tradeId}/review` as any)}
+            onPress={() => goToChat(item)}
+            pendingAction={pendingTradeId === item.tradeId ? (tradeAction.variables?.action ?? null) : null}
           />
         )}
-        ItemSeparatorComponent={() => <View className="h-4" />}
-        ListEmptyComponent={<Text className="text-text14 font-sans text-text-300 text-center mt-10">아직 거래 내역이 없어요</Text>}
+        ItemSeparatorComponent={() => <View className="h-6" />}
+        ListEmptyComponent={
+          isLoading ? (
+            <ActivityIndicator className="mt-10" color="#A2CD87" />
+          ) : (
+            <Text className="text-text14 font-sans text-text-300 text-center mt-10">{error ?? '아직 거래 내역이 없어요'}</Text>
+          )
+        }
+        onEndReached={() => hasNextPage && fetchNextPage()}
+        onEndReachedThreshold={0.5}
+        onRefresh={pull.onRefresh}
+        refreshing={pull.refreshing}
         contentContainerClassName="px-screen md:px-10 lg:px-20 pt-6 pb-10"
       />
     </View>

@@ -43,7 +43,7 @@ export const ProfileEditPage: React.FC = () => {
         <View className="flex-1 items-center px-screen pt-[55px]">
           <View className="w-full max-w-[271px] items-center gap-[42px]">
             <View className="w-[117px] h-[117px]">
-              <View className="w-full h-full rounded-full border-[3px] border-secondary-400 overflow-hidden bg-neutral-50">
+              <View className="w-full h-full rounded-full overflow-hidden bg-neutral-50">
                 {profileImageUrl && (
                   <Image source={{ uri: profileImageUrl }} contentFit="cover" className="w-full h-full" />
                 )}

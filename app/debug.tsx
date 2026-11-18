@@ -15,7 +15,7 @@ import {
   UnderlineTabs,
   Footer,
 } from '@/shared/ui';
-import { ConsumptionCheckSheet, ExpiryPopupModal, MOCK_EXPIRY_POPUP_ITEMS } from '@/features/notification';
+import { ConsumptionCheckSheet } from '@/features/notification';
 
 export default function DebugPage() {
   const [email, setEmail] = useState('');
@@ -25,7 +25,6 @@ export default function DebugPage() {
   const [tab, setTab] = useState<'all' | 'share' | 'sale'>('all');
   const [segment, setSegment] = useState<'1' | '2' | '3'>('1');
   const [isSheetVisible, setIsSheetVisible] = useState(false);
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
 
   return (
     <View className="flex-1 bg-white">
@@ -228,19 +227,11 @@ export default function DebugPage() {
               onChange={setSegment}
             />
             <View className="flex-row" style={{ gap: 8 }}>
-              <PillButton label="소비기한 팝업" variant="secondary" className="flex-1" onPress={() => setIsPopupVisible(true)} />
-              <PillButton label="소진 확인 시트" className="flex-1" onPress={() => setIsSheetVisible(true)} />
+              <PillButton label="아니요, 남았어요" variant="secondary" className="flex-1" />
+              <PillButton label="네, 다 먹었어요" className="flex-1" onPress={() => setIsSheetVisible(true)} />
             </View>
           </View>
-          {/* TODO(API): 팝업은 GET expiry-popup, 시트는 GET consumption-check 연결 후 실제 화면에 띄움 */}
-          <ExpiryPopupModal
-            visible={isPopupVisible}
-            items={MOCK_EXPIRY_POPUP_ITEMS}
-            onClose={() => setIsPopupVisible(false)}
-            onHideToday={() => setIsPopupVisible(false)}
-            onShare={() => setIsPopupVisible(false)}
-            onSeeRecipes={() => setIsPopupVisible(false)}
-          />
+          {/* TODO: 소진 확인 시트 — GET consumption-check 응답 형식이 명세에 없어 아직 실제 화면에 연결하지 않음 */}
           <ConsumptionCheckSheet
             visible={isSheetVisible}
             ingredientName="두부"

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { PillButton } from '@/shared/ui';
 import { formatMonthDayTime } from '@/shared/lib/dateFormat';
 import { formatPrice, tradeStatusBadge } from '../lib/communityFormat';
@@ -10,6 +10,8 @@ interface TradeCardProps {
   trade: TradeSummary;
   onAction: (action: TradeAction) => void;
   onReview: () => void;
+  /** 카드(버튼 밖)를 누르면 — 거래 상대와의 채팅방으로 이동 */
+  onPress?: () => void;
   pendingAction?: TradeAction | null;
 }
 
@@ -41,13 +43,19 @@ const getButtons = (trade: TradeSummary, onAction: TradeCardProps['onAction'], o
 };
 
 /** Figma trade-card (글자·버튼은 Figma보다 한 단계 크게) */
-export const TradeCard: React.FC<TradeCardProps> = ({ trade, onAction, onReview, pendingAction = null }) => {
+export const TradeCard: React.FC<TradeCardProps> = ({ trade, onAction, onReview, onPress, pendingAction = null }) => {
   const buttons = getButtons(trade, onAction, onReview);
 
   return (
-    <View className="bg-white border border-neutral-50 rounded-lg p-5 gap-5">
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      className="bg-white border border-neutral-50 rounded-lg p-5 gap-5 active:bg-neutral-10"
+      accessibilityRole="button"
+      accessibilityLabel={`${trade.post.title} 채팅방 열기`}
+    >
       <View className="flex-row items-center gap-3">
-        <View className="flex-1 gap-1">
+        <View className="flex-1 gap-2">
           <View className="flex-row items-center gap-1.5">
             <Text className="text-text14 font-sans text-text-200">{trade.role === 'SELLER' ? '판매' : '구매'}</Text>
             <CommunityBadge kind={tradeStatusBadge(trade.status)} size="md" />
@@ -78,6 +86,6 @@ export const TradeCard: React.FC<TradeCardProps> = ({ trade, onAction, onReview,
           ))}
         </View>
       )}
-    </View>
+    </Pressable>
   );
 };

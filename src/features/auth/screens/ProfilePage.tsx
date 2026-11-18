@@ -18,7 +18,7 @@ export const ProfilePage = () => {
   // TODO: 프로필 이미지는 백엔드 필드가 없어 아직 저장하지 않음
   const handleNext = async () => {
     const result = await register(nickname);
-    if (result === 'success') router.replace('/onboarding');
+    if (result === 'success') router.replace('/main');
     else if (result === 'needsCredentials') router.replace('/signUp');
     else if (result === 'needsLogin') router.replace('/login');
   };
@@ -46,7 +46,7 @@ export const ProfilePage = () => {
           <View className="items-center">
             <View className="items-center">
               <View className="relative w-[117px] h-[117px] md:w-[140px] md:h-[140px] mb-[42px]">
-                <View className="w-full h-full bg-neutral-50 rounded-full border-[3px] border-secondary-400 overflow-hidden">
+                <View className="w-full h-full bg-neutral-50 rounded-full overflow-hidden">
                   {profileImageUri && (
                     <Image
                       source={{ uri: profileImageUri }}

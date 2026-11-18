@@ -17,7 +17,8 @@ export const RecipePage: React.FC = () => {
       {/* 헤더(로고·제목·카테고리)는 고정하고 레시피 목록만 스크롤 */}
       <AppHeader />
 
-      <View className="px-screen md:px-10 lg:px-20 pt-10 gap-[26px]">
+      {/* 아래 패딩: 스크롤된 카드가 필터 바로 밑에 붙어 잘려 보이지 않게 */}
+      <View className="px-screen md:px-10 lg:px-20 pt-10 pb-4 gap-[26px]">
         <BackTitle
           title="맞춤 레시피"
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/main'))}
@@ -27,7 +28,7 @@ export const RecipePage: React.FC = () => {
       </View>
 
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 140 }}>
-        <View className="px-screen md:px-10 lg:px-20 pt-[52px]">
+        <View className="px-screen md:px-10 lg:px-20 pt-9">
           {isLoading ? (
             <View className="items-center py-10 gap-4">
               <ActivityIndicator size="large" color="#A2CD87" />

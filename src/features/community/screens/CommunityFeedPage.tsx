@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader, AppTextInput, Chip, HeaderActions, UnderlineTabs } from '@/shared/ui';
+import { usePullToRefresh } from '@/shared/lib/usePullToRefresh';
 import { useMyProfile } from '@/features/account';
-import { Alert } from '@/shared/lib/alert';
+import { useCurrentLocation } from '@/shared/lib/useCurrentLocation';
 import { formatDistance } from '@/shared/lib/dateFormat';
 import ChevronDownIcon from '@/../assets/icons/chevron-down-icon.svg';
 import SearchIcon from '@/../assets/icons/search-icon.svg';
 import ChatBubbleIcon from '@/../assets/icons/chat-bubble-icon.svg';
 import PlusLineIcon from '@/../assets/icons/plus-line-icon.svg';
+import { usePostFeed } from '../lib/usePosts';
 import { PostCard } from '../ui/PostCard';
-import { MOCK_POSTS } from '../lib/mockData';
-import { FeedSort, FeedTypeFilter, PostDistance, PostSummary } from '../types';
+import { PopoverAnchor, PopoverMenu } from '../ui/PopoverMenu';
+import { FeedSort, FeedTypeFilter, PostDistance } from '../types';
 
 const TYPE_TABS: { key: FeedTypeFilter; label: string }[] = [
   { key: 'ALL', label: '전체' },
@@ -36,34 +38,36 @@ export const CommunityFeedPage = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { profile } = useMyProfile();
+  const { coords, error: locationError, refetch: retryLocation } = useCurrentLocation();
   const [distance, setDistance] = useState<PostDistance>(1000);
   const [sort, setSort] = useState<FeedSort>('DISTANCE');
   const [type, setType] = useState<FeedTypeFilter>('ALL');
   const [isSearching, setIsSearching] = useState(false);
   const [keyword, setKeyword] = useState('');
-  // TODO(API): GET /api/posts 연결 — 위치(expo-location)·거리·정렬·유형 필터 (feature/community-api 브랜치)
-  // 목업: 서버가 할 반경·유형·정렬·검색을 화면에서 흉내냄
-  const posts: PostSummary[] = MOCK_POSTS.filter(
-    (post) =>
-      post.distanceMeters <= distance &&
-      (type === 'ALL' || post.type === type) &&
-      (!keyword.trim() || post.title.includes(keyword.trim()) || post.ingredientName.includes(keyword.trim()))
-  ).sort((a, b) =>
-    sort === 'DISTANCE'
-      ? a.distanceMeters - b.distanceMeters
-      : sort === 'LATEST'
-        ? b.createdAt.localeCompare(a.createdAt)
-        : a.expiresOn.localeCompare(b.expiresOn)
-  );
+  const feed = usePostFeed({ coords, distance, sort, type, keyword });
+  const pull = usePullToRefresh(feed.refetch);
 
-  const pickDistance = () => {
-    Alert.alert('검색 반경', undefined, [
-      ...DISTANCE_OPTIONS.map((option) => ({ text: `내 주변 ${formatDistance(option)}`, onPress: () => setDistance(option) })),
-      { text: '취소', style: 'cancel' as const },
-    ]);
-  };
+  const distanceButtonRef = useRef<View>(null);
+  const [distanceAnchor, setDistanceAnchor] = useState<PopoverAnchor | null>(null);
 
-  const emptyMessage = keyword ? '검색 결과가 없어요' : '주변에 올라온 글이 없어요';
+  const openDistanceMenu = () =>
+    distanceButtonRef.current?.measureInWindow((x, y, width, height) => setDistanceAnchor({ x, y, width, height }));
+
+  const distanceItems = DISTANCE_OPTIONS.map((option) => ({
+    label: `내 주변 ${formatDistance(option)}`,
+    onPress: () => {
+      setDistanceAnchor(null);
+      setDistance(option);
+    },
+  }));
+
+  const emptyMessage = locationError
+    ? locationError
+    : feed.error
+      ? feed.error
+      : keyword
+        ? '검색 결과가 없어요'
+        : '주변에 올라온 글이 없어요';
 
   return (
     <View className="flex-1 bg-white">
@@ -73,10 +77,19 @@ export const CommunityFeedPage = () => {
       </View>
 
       <View className="flex-row items-center px-screen md:px-10 lg:px-20 pb-2.5">
-        <Pressable onPress={pickDistance} className="flex-1 flex-row items-center gap-1" hitSlop={6}>
-          <Text className="text-text22 font-medium font-sans text-text-100">내 주변 {formatDistance(distance)}</Text>
-          <ChevronDownIcon width={20} height={20} color="#242529" />
-        </Pressable>
+        {/* 드롭다운이 글자 바로 아래 왼쪽 끝에 붙도록 버튼은 내용 너비만 차지 */}
+        <View className="flex-1 flex-row">
+          <Pressable
+            ref={distanceButtonRef}
+            onPress={openDistanceMenu}
+            className="flex-row items-center gap-1"
+            hitSlop={6}
+            accessibilityLabel="검색 반경 선택"
+          >
+            <Text className="text-text22 font-medium font-sans text-text-100">내 주변 {formatDistance(distance)}</Text>
+            <ChevronDownIcon width={20} height={20} color="#242529" />
+          </Pressable>
+        </View>
         <View className="flex-row gap-4">
           <Pressable onPress={() => setIsSearching((prev) => !prev)} hitSlop={8} accessibilityLabel="검색">
             <SearchIcon width={24} height={24} color="#242529" />
@@ -103,7 +116,7 @@ export const CommunityFeedPage = () => {
       <UnderlineTabs options={TYPE_TABS} value={type} onChange={setType} bordered />
 
       <FlatList
-        data={posts}
+        data={feed.posts}
         keyExtractor={(post) => String(post.postId)}
         renderItem={({ item }) => (
           <View className="px-screen md:px-10 lg:px-20">
@@ -118,8 +131,23 @@ export const CommunityFeedPage = () => {
           </View>
         }
         ListEmptyComponent={
-          <Text className="text-text14 font-sans text-text-300 text-center mt-10 px-screen">{emptyMessage}</Text>
+          feed.isLoading || (!coords && !locationError) ? (
+            <ActivityIndicator className="mt-10" color="#A2CD87" />
+          ) : (
+            <View className="items-center mt-10 gap-3">
+              <Text className="text-text14 font-sans text-text-300 text-center px-screen">{emptyMessage}</Text>
+              {locationError && (
+                <Pressable onPress={() => retryLocation()}>
+                  <Text className="text-text14 font-sans text-primary-700">다시 시도</Text>
+                </Pressable>
+              )}
+            </View>
+          )
         }
+        onEndReached={() => feed.hasNextPage && !feed.isFetchingNextPage && feed.fetchNextPage()}
+        onEndReachedThreshold={0.5}
+        onRefresh={pull.onRefresh}
+        refreshing={pull.refreshing}
         contentContainerClassName="pb-[140px]"
       />
 
@@ -132,6 +160,7 @@ export const CommunityFeedPage = () => {
         <PlusLineIcon width={18} height={18} color="#FFFFFF" />
         <Text className="text-text15 font-sans text-white">글쓰기</Text>
       </Pressable>
+      <PopoverMenu anchor={distanceAnchor} items={distanceItems} onClose={() => setDistanceAnchor(null)} align="left" />
     </View>
   );
 };

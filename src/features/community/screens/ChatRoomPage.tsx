@@ -5,18 +5,25 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader, AppTextInput, BackHeader, HeaderActions } from '@/shared/ui';
 import { checkProfileImage, useMyProfile } from '@/features/account';
 import { Alert } from '@/shared/lib/alert';
+import { getErrorMessage, unwrap } from '@/shared/api/types';
 import { pickImageAssetFromLibrary } from '@/shared/lib/pickImage';
 import { isSameDay } from '@/shared/lib/dateFormat';
 import MoreIcon from '@/../assets/icons/more-icon.svg';
 import CameraLineIcon from '@/../assets/icons/camera-line-icon.svg';
 import SendIcon from '@/../assets/icons/send-icon.svg';
+import { uploadImage } from '../api/postApi';
+import { useChatMessages, useChatRooms, useLeaveChatRoom, useSendMessage } from '../lib/useChat';
+import { useMyTrades, useTradeAction, useUserManner } from '../lib/useTrades';
+import { useReport, useToggleBlock } from '../lib/useSafety';
+import { REPORT_REASONS } from '../lib/reportReasons';
 import { formatPrice, postStatusBadge, tradeStatusBadge } from '../lib/communityFormat';
 import { ChatMessageItem } from '../ui/ChatMessageItem';
+import { PopoverAnchor, PopoverMenu, PopoverMenuItem } from '../ui/PopoverMenu';
 import { CommunityBadge } from '../ui/CommunityBadge';
-import { ChatMessage, TradeAction, TradeSummary } from '../types';
-import { MOCK_CHAT_MESSAGES, MOCK_CHAT_ROOMS, MOCK_MANNER_BY_USER, MOCK_TRADES } from '../lib/mockData';
+import { ReportReason, ReportTargetType, TradeAction, TradeSummary } from '../types';
 
 const MESSAGE_MAX_LENGTH = 1000;
+
 
 /** 상단 게시물 띠의 거래 버튼 — 판매자: 거절/수락, 구매자: 취소/받았어요 */
 const getStripActions = (trade: TradeSummary | undefined): { label: string; action: TradeAction; primary: boolean }[] => {
@@ -44,12 +51,19 @@ export const ChatRoomPage = () => {
   const { profile } = useMyProfile();
   const { id } = useLocalSearchParams<{ id: string }>();
   const chatRoomId = Number(id);
-  // TODO(API): 채팅방 정보(GET /api/me/chat-rooms), 상대 매너(GET /api/users/{id}/reviews),
-  // 거래 상태(GET /api/me/trades), 메시지(GET/POST .../messages) 연결 — feature/community-api 브랜치
-  const room = MOCK_CHAT_ROOMS.find((item) => item.chatRoomId === chatRoomId);
-  const manner = room ? (MOCK_MANNER_BY_USER[room.partner.userId] ?? null) : null;
-  const trade: TradeSummary | undefined = room ? MOCK_TRADES.find((item) => item.post.postId === room.post.postId) : undefined;
-  const [messages, setMessages] = useState<ChatMessage[]>(chatRoomId === 3 ? MOCK_CHAT_MESSAGES : []);
+  // TODO: 채팅방 단건 조회 API가 없어 목록에서 상대·게시물 정보를 찾음
+  const { rooms } = useChatRooms();
+  const room = rooms.find((item) => item.chatRoomId === chatRoomId);
+  const manner = useUserManner(room?.partner.userId);
+  const { trades } = useMyTrades('ALL');
+  // 이 게시물에서 진행 중이거나 가장 최근의 거래
+  const trade = room ? trades.find((item) => item.post.postId === room.post.postId) : undefined;
+  const { messages, isLoading, hasNextPage, fetchNextPage } = useChatMessages(chatRoomId);
+  const sendMessage = useSendMessage(chatRoomId);
+  const tradeAction = useTradeAction();
+  const leaveRoom = useLeaveChatRoom();
+  const report = useReport();
+  const toggleBlock = useToggleBlock();
   const inputRef = useRef<TextInput>(null);
   const [text, setText] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -57,19 +71,18 @@ export const ChatRoomPage = () => {
   const badge = trade ? tradeStatusBadge(trade.status) : room ? postStatusBadge(room.post.status) : null;
   const stripActions = getStripActions(trade);
 
-  // TODO(API): POST /api/me/chat-rooms/{chatRoomId}/messages — 지금은 화면에만 추가
   const handleSend = () => {
     const content = text.trim();
-    if (!content) return;
-    const now = new Date().toISOString();
-    setMessages((prev) => [
-      { messageId: Date.now(), chatRoomId, senderId: null, type: 'TEXT', content, imageUrl: null, systemEvent: null, sentAt: now, isMine: true },
-      ...prev,
-    ]);
-    setText('');
+    if (!content || sendMessage.isPending) return;
+    sendMessage.mutate(
+      { type: 'TEXT', content },
+      {
+        onSuccess: () => setText(''),
+        onError: (err) => Alert.alert('전송 실패', getErrorMessage(err, '메시지를 보내지 못했어요.')),
+      }
+    );
   };
 
-  // TODO(API): 사진 업로드(purpose=CHAT) 후 IMAGE 메시지 전송
   const handleSendImage = async () => {
     const image = await pickImageAssetFromLibrary({ quality: 0.8, allowsEditing: false });
     if (!image) return;
@@ -78,39 +91,91 @@ export const ChatRoomPage = () => {
       Alert.alert('알림', checked.message);
       return;
     }
-    setIsUploading(true);
-    setMessages((prev) => [
-      {
-        messageId: Date.now(),
-        chatRoomId,
-        senderId: null,
-        type: 'IMAGE',
-        content: null,
-        imageUrl: image.uri,
-        systemEvent: null,
-        sentAt: new Date().toISOString(),
-        isMine: true,
-      },
-      ...prev,
-    ]);
-    setIsUploading(false);
+    try {
+      setIsUploading(true);
+      const uploaded = unwrap(await uploadImage(image, checked.contentType, 'CHAT'));
+      await sendMessage.mutateAsync({ type: 'IMAGE', imageId: uploaded.imageId });
+    } catch (err) {
+      Alert.alert('전송 실패', getErrorMessage(err, '사진을 보내지 못했어요.'));
+    } finally {
+      setIsUploading(false);
+    }
   };
 
-  // TODO(API): POST /api/me/trades/{tradeId}/{action}
-  const handleTradeAction = (action: TradeAction) => Alert.alert('준비 중', `${action} API 연결 전이에요.`);
+  const handleTradeAction = (action: TradeAction) => {
+    if (!trade) return;
+    tradeAction.mutate(
+      { tradeId: trade.tradeId, action },
+      { onError: (err) => Alert.alert('처리 실패', getErrorMessage(err, '거래 상태를 바꾸지 못했어요.')) }
+    );
+  };
 
-  const handleMore = () =>
-    Alert.alert(room?.partner.displayName ?? '채팅방', undefined, [
-      ...(room ? [{ text: '게시물 보기', onPress: () => router.push(`/community/${room.post.postId}` as any) }] : []),
+  const moreButtonRef = useRef<View>(null);
+  const [menuAnchor, setMenuAnchor] = useState<PopoverAnchor | null>(null);
+  // main: 기본 메뉴, USER/POST: 해당 대상의 신고 사유 목록
+  const [menuMode, setMenuMode] = useState<'main' | ReportTargetType>('main');
+
+  const openMenu = () =>
+    moreButtonRef.current?.measureInWindow((x, y, width, height) => {
+      setMenuMode('main');
+      setMenuAnchor({ x, y, width, height });
+    });
+  const closeMenu = () => setMenuAnchor(null);
+  const runAndClose = (action: () => void) => () => {
+    closeMenu();
+    action();
+  };
+
+  const handleLeave = () =>
+    leaveRoom.mutate(chatRoomId, {
+      onSuccess: () => router.back(),
+      onError: (err) => Alert.alert('나가기 실패', getErrorMessage(err, '채팅방을 나가지 못했어요.')),
+    });
+
+  const submitReport = (targetType: ReportTargetType, reason: ReportReason) => {
+    if (!room) return;
+    report.mutate(
+      { targetType, targetId: targetType === 'USER' ? room.partner.userId : room.post.postId, reason },
       {
-        text: '채팅방 나가기',
+        onSuccess: () => Alert.alert('신고 완료', '신고가 접수됐어요.'),
+        onError: (err) => Alert.alert('신고 실패', getErrorMessage(err, '신고하지 못했어요.')),
+      }
+    );
+  };
+
+  const menuItems: PopoverMenuItem[] =
+    menuMode !== 'main'
+      ? REPORT_REASONS.map(({ reason, label }) => ({ label, onPress: runAndClose(() => submitReport(menuMode, reason)) }))
+      : [
+          ...(room
+            ? [{ label: '게시물 보기', onPress: runAndClose(() => router.push(`/community/${room.post.postId}` as any)) }]
+            : []),
+          { label: '채팅방 나가기', onPress: runAndClose(handleLeave) },
+          // 신고는 같은 메뉴 자리에서 사유 목록으로 바뀜
+          ...(room
+            ? [
+                { label: '게시물 신고하기', onPress: () => setMenuMode('POST') },
+                { label: '사용자 신고하기', onPress: () => setMenuMode('USER') },
+                { label: '차단하기', onPress: runAndClose(() => handleBlock()) },
+              ]
+            : []),
+        ];
+
+  const handleBlock = () => {
+    if (!room) return;
+    Alert.alert('차단하기', `${room.partner.displayName}님을 차단할까요?\n서로의 게시물이 숨겨지고 채팅·거래 요청이 막혀요.`, [
+      { text: '취소', style: 'cancel' as const },
+      {
+        text: '차단',
         style: 'destructive' as const,
-        // TODO(API): DELETE /api/me/chat-rooms/{chatRoomId}
-        onPress: () => router.back(),
+        onPress: () =>
+          toggleBlock.mutate(
+            { userId: room.partner.userId, block: true },
+            { onError: (err) => Alert.alert('차단 실패', getErrorMessage(err, '차단하지 못했어요.')) }
+          ),
       },
-      // TODO: 신고(POST /api/me/reports)·차단(PUT /api/me/blocks/{userId}) 화면 디자인 필요
-      { text: '닫기', style: 'cancel' as const },
     ]);
+  };
 
   return (
     <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -119,7 +184,7 @@ export const ChatRoomPage = () => {
       <View className="mt-5">
         <BackHeader
           right={
-            <Pressable onPress={handleMore} hitSlop={10} accessibilityLabel="더보기">
+            <Pressable ref={moreButtonRef} onPress={openMenu} hitSlop={10} accessibilityLabel="더보기">
               <MoreIcon width={24} height={24} color="#242529" />
             </Pressable>
           }
@@ -159,8 +224,10 @@ export const ChatRoomPage = () => {
             <Pressable
               key={item.action}
               onPress={() => handleTradeAction(item.action)}
-              
-              className={`px-3 py-[7px] rounded-lg ${item.primary ? 'bg-primary-500' : 'bg-neutral-10'} `}
+              disabled={tradeAction.isPending}
+              className={`px-3 py-[7px] rounded-lg ${item.primary ? 'bg-primary-500' : 'bg-neutral-10'} ${
+                tradeAction.isPending ? 'opacity-50' : ''
+              }`}
             >
               <Text className={`text-text15 font-medium font-sans ${item.primary ? 'text-text-100' : 'text-text-200'}`}>
                 {item.label}
@@ -171,7 +238,10 @@ export const ChatRoomPage = () => {
       )}
 
       <View className="flex-1 bg-primary-100">
-        <FlatList
+        {isLoading ? (
+          <ActivityIndicator className="mt-10" color="#A2CD87" />
+        ) : (
+          <FlatList
             data={messages}
             inverted
             keyExtractor={(message) => String(message.messageId)}
@@ -187,9 +257,12 @@ export const ChatRoomPage = () => {
               );
             }}
             ItemSeparatorComponent={() => <View className="h-[14px]" />}
+            onEndReached={() => hasNextPage && fetchNextPage()}
+            onEndReachedThreshold={0.3}
             // inverted 리스트는 메시지가 적으면 아래에 붙어 위가 비므로, 뒤집힌 기준의 끝(=화면 위)으로 모아 위부터 쌓이게
             contentContainerClassName="grow justify-end px-screen md:px-10 lg:px-20 pt-4 pb-4"
           />
+        )}
       </View>
 
       <View
@@ -214,13 +287,14 @@ export const ChatRoomPage = () => {
         </Pressable>
         <Pressable
           onPress={handleSend}
-          disabled={!text.trim()}
+          disabled={!text.trim() || sendMessage.isPending}
           className={`w-10 h-10 rounded-full bg-primary-500 items-center justify-center ${!text.trim() ? 'opacity-60' : ''}`}
           accessibilityLabel="보내기"
         >
           <SendIcon width={20} height={20} color="#242529" />
         </Pressable>
       </View>
+      <PopoverMenu anchor={menuAnchor} items={menuItems} onClose={closeMenu} />
     </KeyboardAvoidingView>
   );
 };

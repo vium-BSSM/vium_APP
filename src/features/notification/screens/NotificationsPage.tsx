@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { AppHeader, BackHeader, Chip, HeaderActions } from '@/shared/ui';
 import { useMyProfile } from '@/features/account';
+import { useMarkNotificationsRead, useNotifications } from '../lib/useNotifications';
 import { NotificationRow } from '../ui/NotificationRow';
 import { NotificationFilter, NotificationItem } from '../types';
-import { MOCK_NOTIFICATIONS } from '../lib/mockData';
 
 export const NotificationsPage = () => {
   const { profile } = useMyProfile();
   const [filter, setFilter] = useState<NotificationFilter>('all');
-  // TODO(API): GET /api/me/notifications 연결 (feature/community-api 브랜치) — 지금은 목업
-  const [notifications, setNotifications] = useState<NotificationItem[]>(MOCK_NOTIFICATIONS);
-  const unreadCount = notifications.filter((item) => item.unread).length;
-  const items = filter === 'unread' ? notifications.filter((item) => item.unread) : notifications;
+  const { items, unreadCount, isLoading, error } = useNotifications(filter);
+  const { mutate: markRead } = useMarkNotificationsRead();
 
-  // TODO(API): PATCH /api/me/notifications/{id}/read
-  const markRead = (ids: number[]) =>
-    setNotifications((prev) => prev.map((item) => (ids.includes(item.id) ? { ...item, unread: false } : item)));
+  const handleMarkAllRead = () => {
+    const unreadIds = items.filter((item) => item.unread).map((item) => item.id);
+    if (unreadIds.length > 0) markRead(unreadIds);
+  };
+
+  const handlePress = (item: NotificationItem) => {
+    if (item.unread) markRead([item.id]);
+    // TODO: 알림 응답에 대상 id(게시물·거래·채팅방·재고)가 없어 해당 화면으로 이동하지 못함 — BE에 필드 추가 요청
+  };
 
   return (
     <View className="flex-1 bg-white">
@@ -24,16 +28,12 @@ export const NotificationsPage = () => {
       <View className="mb-5">
         <AppHeader right={<HeaderActions profileImageUrl={profile.profileImageUrl} />} />
       </View>
-      <BackHeader
-        title="알림"
-        actionLabel="모두 읽음"
-        onActionPress={() => markRead(notifications.filter((item) => item.unread).map((item) => item.id))}
-      />
+      <BackHeader title="알림" actionLabel="모두 읽음" onActionPress={handleMarkAllRead} />
 
       <FlatList
         data={items}
         keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => <NotificationRow item={item} onPress={() => item.unread && markRead([item.id])} />}
+        renderItem={({ item }) => <NotificationRow item={item} onPress={() => handlePress(item)} />}
         // 하단 탭(약 140)에 가리지 않도록 아래 여백 확보
         contentContainerClassName="px-screen md:px-10 lg:px-20 pt-[9px] pb-[140px]"
         ListHeaderComponent={
@@ -47,9 +47,13 @@ export const NotificationsPage = () => {
           </View>
         }
         ListEmptyComponent={
-          <Text className="text-text14 font-sans text-text-300 text-center mt-10">
-            {filter === 'unread' ? '안 읽은 알림이 없어요' : '받은 알림이 없어요'}
-          </Text>
+          isLoading ? (
+            <ActivityIndicator className="mt-10" color="#A2CD87" />
+          ) : (
+            <Text className="text-text14 font-sans text-text-300 text-center mt-10">
+              {error ?? (filter === 'unread' ? '안 읽은 알림이 없어요' : '받은 알림이 없어요')}
+            </Text>
+          )
         }
       />
     </View>

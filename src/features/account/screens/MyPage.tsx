@@ -12,8 +12,8 @@ import { AppHeader, Footer, MenuList } from '@/shared/ui';
 const MENU_ITEMS: { key: MyPageMenuKey; label: string }[] = [
   { key: 'credit', label: '내 크레딧' },
   { key: 'trades', label: '거래 내역' },
-  { key: 'logout', label: '로그아웃' },
   { key: 'settings', label: '설정' },
+  { key: 'logout', label: '로그아웃' },
   { key: 'withdraw', label: '회원 탈퇴' },
 ];
 
@@ -92,7 +92,7 @@ export const MyPage: React.FC = () => {
         <View className="w-full max-w-[338px] items-center gap-[78px]">
           <View className="w-full max-w-[256px] items-center gap-[26px]">
             <View className="items-center gap-6">
-              <View className="w-[117px] h-[117px] rounded-full border-[3px] border-status-danger overflow-hidden bg-neutral-50">
+              <View className="w-[117px] h-[117px] rounded-full overflow-hidden bg-neutral-50">
                 {profile.profileImageUrl && (
                   <Image
                     source={{ uri: profile.profileImageUrl }}

@@ -4,7 +4,7 @@ export interface NotificationApi {
   notificationId: number;
   type: string;
   title: string;
-  body: string;
+  body: string | null;
   scheduledAt: string;
   sentAt: string | null;
   readAt: string | null;
