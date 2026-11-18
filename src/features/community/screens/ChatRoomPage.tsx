@@ -15,21 +15,15 @@ import { uploadImage } from '../api/postApi';
 import { useChatMessages, useChatRooms, useLeaveChatRoom, useSendMessage } from '../lib/useChat';
 import { useMyTrades, useTradeAction, useUserManner } from '../lib/useTrades';
 import { useReport, useToggleBlock } from '../lib/useSafety';
+import { REPORT_REASONS } from '../lib/reportReasons';
 import { formatPrice, postStatusBadge, tradeStatusBadge } from '../lib/communityFormat';
 import { ChatMessageItem } from '../ui/ChatMessageItem';
 import { PopoverAnchor, PopoverMenu, PopoverMenuItem } from '../ui/PopoverMenu';
 import { CommunityBadge } from '../ui/CommunityBadge';
-import { ReportReason, TradeAction, TradeSummary } from '../types';
+import { ReportReason, ReportTargetType, TradeAction, TradeSummary } from '../types';
 
 const MESSAGE_MAX_LENGTH = 1000;
 
-// ETC는 상세 사유 입력이 필수라 입력 화면이 생기기 전까지 제외
-const REPORT_REASONS: { reason: ReportReason; label: string }[] = [
-  { reason: 'SPAM', label: '스팸·광고' },
-  { reason: 'FRAUD', label: '사기 의심' },
-  { reason: 'PROHIBITED_ITEM', label: '거래 금지 물품' },
-  { reason: 'ABUSIVE', label: '욕설·비매너' },
-];
 
 /** 상단 게시물 띠의 거래 버튼 — 판매자: 거절/수락, 구매자: 취소/받았어요 */
 const getStripActions = (trade: TradeSummary | undefined): { label: string; action: TradeAction; primary: boolean }[] => {
@@ -118,7 +112,8 @@ export const ChatRoomPage = () => {
 
   const moreButtonRef = useRef<View>(null);
   const [menuAnchor, setMenuAnchor] = useState<PopoverAnchor | null>(null);
-  const [menuMode, setMenuMode] = useState<'main' | 'report'>('main');
+  // main: 기본 메뉴, USER/POST: 해당 대상의 신고 사유 목록
+  const [menuMode, setMenuMode] = useState<'main' | ReportTargetType>('main');
 
   const openMenu = () =>
     moreButtonRef.current?.measureInWindow((x, y, width, height) => {
@@ -137,10 +132,10 @@ export const ChatRoomPage = () => {
       onError: (err) => Alert.alert('나가기 실패', getErrorMessage(err, '채팅방을 나가지 못했어요.')),
     });
 
-  const submitReport = (reason: ReportReason) => {
+  const submitReport = (targetType: ReportTargetType, reason: ReportReason) => {
     if (!room) return;
     report.mutate(
-      { targetType: 'USER', targetId: room.partner.userId, reason },
+      { targetType, targetId: targetType === 'USER' ? room.partner.userId : room.post.postId, reason },
       {
         onSuccess: () => Alert.alert('신고 완료', '신고가 접수됐어요.'),
         onError: (err) => Alert.alert('신고 실패', getErrorMessage(err, '신고하지 못했어요.')),
@@ -149,8 +144,8 @@ export const ChatRoomPage = () => {
   };
 
   const menuItems: PopoverMenuItem[] =
-    menuMode === 'report'
-      ? REPORT_REASONS.map(({ reason, label }) => ({ label, onPress: runAndClose(() => submitReport(reason)) }))
+    menuMode !== 'main'
+      ? REPORT_REASONS.map(({ reason, label }) => ({ label, onPress: runAndClose(() => submitReport(menuMode, reason)) }))
       : [
           ...(room
             ? [{ label: '게시물 보기', onPress: runAndClose(() => router.push(`/community/${room.post.postId}` as any)) }]
@@ -159,7 +154,8 @@ export const ChatRoomPage = () => {
           // 신고는 같은 메뉴 자리에서 사유 목록으로 바뀜
           ...(room
             ? [
-                { label: '신고하기', onPress: () => setMenuMode('report') },
+                { label: '게시물 신고하기', onPress: () => setMenuMode('POST') },
+                { label: '사용자 신고하기', onPress: () => setMenuMode('USER') },
                 { label: '차단하기', onPress: runAndClose(() => handleBlock()) },
               ]
             : []),

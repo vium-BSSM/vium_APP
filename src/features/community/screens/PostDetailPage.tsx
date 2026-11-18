@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ActivityIndicator, NativeScrollEvent, NativeSyntheticEvent, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -9,12 +9,16 @@ import { getErrorMessage } from '@/shared/api/types';
 import { useCurrentLocation } from '@/shared/lib/useCurrentLocation';
 import { formatDday, formatDistance, formatDotDate, formatRelativeTime, getDaysLeft } from '@/shared/lib/dateFormat';
 import BackIcon from '@/../assets/icons/back-icon.svg';
+import MoreIcon from '@/../assets/icons/more-icon.svg';
 import HeartIcon from '@/../assets/icons/heart-icon.svg';
 import HeartFilledIcon from '@/../assets/icons/heart-filled-icon.svg';
 import StarIcon from '@/../assets/icons/star-icon.svg';
 import { usePostDetail, useToggleLike } from '../lib/usePosts';
 import { useRequestTrade } from '../lib/useTrades';
 import { useOpenChatRoom } from '../lib/useChat';
+import { useReport } from '../lib/useSafety';
+import { REPORT_REASONS } from '../lib/reportReasons';
+import { PopoverAnchor, PopoverMenu, PopoverMenuItem } from '../ui/PopoverMenu';
 import { formatPrice, postStatusBadge, postTypeBadge } from '../lib/communityFormat';
 import { CommunityBadge } from '../ui/CommunityBadge';
 
@@ -39,6 +43,10 @@ export const PostDetailPage = () => {
   const requestTrade = useRequestTrade();
   const openChat = useOpenChatRoom();
   const [imageIndex, setImageIndex] = useState(0);
+  const report = useReport();
+  const moreButtonRef = useRef<View>(null);
+  const [menuAnchor, setMenuAnchor] = useState<PopoverAnchor | null>(null);
+  const [showReasons, setShowReasons] = useState(false);
 
   const handleBack = () => (router.canGoBack() ? router.back() : router.replace('/community' as any));
 
@@ -101,6 +109,28 @@ export const PostDetailPage = () => {
     ]);
   };
 
+  const openMenu = () =>
+    moreButtonRef.current?.measureInWindow((x, y, w, h) => {
+      setShowReasons(false);
+      setMenuAnchor({ x, y, width: w, height: h });
+    });
+  const closeMenu = () => setMenuAnchor(null);
+
+  const submitReport = (reason: (typeof REPORT_REASONS)[number]['reason']) => {
+    closeMenu();
+    report.mutate(
+      { targetType: 'POST', targetId: postId, reason },
+      {
+        onSuccess: () => Alert.alert('신고 완료', '신고가 접수됐어요.'),
+        onError: (err) => Alert.alert('신고 실패', getErrorMessage(err, '신고하지 못했어요.')),
+      }
+    );
+  };
+
+  const menuItems: PopoverMenuItem[] = showReasons
+    ? REPORT_REASONS.map(({ reason, label }) => ({ label, onPress: () => submitReport(reason) }))
+    : [{ label: '게시물 신고하기', onPress: () => setShowReasons(true) }];
+
   const handleImageScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) =>
     setImageIndex(Math.round(event.nativeEvent.contentOffset.x / width));
 
@@ -134,6 +164,18 @@ export const PostDetailPage = () => {
           >
             <BackIcon width={28} height={28} color="#242529" />
           </Pressable>
+          {!post.isMine && (
+            <Pressable
+              ref={moreButtonRef}
+              onPress={openMenu}
+              hitSlop={10}
+              className="absolute right-[14px]"
+              style={{ top: insets.top + 6 }}
+              accessibilityLabel="더보기"
+            >
+              <MoreIcon width={24} height={24} color="#242529" />
+            </Pressable>
+          )}
 
           {post.images.length > 1 && (
             <View className="absolute bottom-[18px] left-0 right-0 flex-row justify-center gap-1.5">
@@ -243,6 +285,7 @@ export const PostDetailPage = () => {
           </View>
         )}
       </View>
+      <PopoverMenu anchor={menuAnchor} items={menuItems} onClose={closeMenu} />
     </View>
   );
 };
