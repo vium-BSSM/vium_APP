@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AppHeader, BackHeader, HeaderActions, UnderlineTabs } from '@/shared/ui';
+import { usePullToRefresh } from '@/shared/lib/usePullToRefresh';
 import { useMyProfile } from '@/features/account';
 import { Alert } from '@/shared/lib/alert';
 import { getErrorMessage } from '@/shared/api/types';
@@ -27,7 +28,8 @@ export const TradeListPage = () => {
   const router = useRouter();
   const { profile } = useMyProfile();
   const [role, setRole] = useState<TradeRoleFilter>('ALL');
-  const { trades, isLoading, error, hasNextPage, fetchNextPage, refetch, isRefetching } = useMyTrades(role);
+  const { trades, isLoading, error, hasNextPage, fetchNextPage, refetch } = useMyTrades(role);
+  const pull = usePullToRefresh(refetch);
   const tradeAction = useTradeAction();
   const { rooms } = useChatRooms();
   const openChat = useOpenChatRoom();
@@ -102,8 +104,8 @@ export const TradeListPage = () => {
         }
         onEndReached={() => hasNextPage && fetchNextPage()}
         onEndReachedThreshold={0.5}
-        onRefresh={() => refetch()}
-        refreshing={isRefetching}
+        onRefresh={pull.onRefresh}
+        refreshing={pull.refreshing}
         contentContainerClassName="px-screen md:px-10 lg:px-20 pt-6 pb-10"
       />
     </View>

@@ -3,6 +3,7 @@ import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader, AppTextInput, Chip, HeaderActions, UnderlineTabs } from '@/shared/ui';
+import { usePullToRefresh } from '@/shared/lib/usePullToRefresh';
 import { useMyProfile } from '@/features/account';
 import { useCurrentLocation } from '@/shared/lib/useCurrentLocation';
 import { formatDistance } from '@/shared/lib/dateFormat';
@@ -44,6 +45,7 @@ export const CommunityFeedPage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [keyword, setKeyword] = useState('');
   const feed = usePostFeed({ coords, distance, sort, type, keyword });
+  const pull = usePullToRefresh(feed.refetch);
 
   const distanceButtonRef = useRef<View>(null);
   const [distanceAnchor, setDistanceAnchor] = useState<PopoverAnchor | null>(null);
@@ -144,8 +146,8 @@ export const CommunityFeedPage = () => {
         }
         onEndReached={() => feed.hasNextPage && !feed.isFetchingNextPage && feed.fetchNextPage()}
         onEndReachedThreshold={0.5}
-        onRefresh={() => feed.refetch()}
-        refreshing={feed.isRefetching}
+        onRefresh={pull.onRefresh}
+        refreshing={pull.refreshing}
         contentContainerClassName="pb-[140px]"
       />
 

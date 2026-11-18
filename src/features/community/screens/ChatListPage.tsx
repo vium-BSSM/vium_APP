@@ -2,6 +2,7 @@ import React from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AppHeader, BackHeader, HeaderActions } from '@/shared/ui';
+import { usePullToRefresh } from '@/shared/lib/usePullToRefresh';
 import { useMyProfile } from '@/features/account';
 import { useChatRooms } from '../lib/useChat';
 import { ChatRoomRow } from '../ui/ChatRoomRow';
@@ -9,7 +10,8 @@ import { ChatRoomRow } from '../ui/ChatRoomRow';
 export const ChatListPage = () => {
   const router = useRouter();
   const { profile } = useMyProfile();
-  const { rooms, isLoading, error, hasNextPage, fetchNextPage, refetch, isRefetching } = useChatRooms();
+  const { rooms, isLoading, error, hasNextPage, fetchNextPage, refetch } = useChatRooms();
+  const pull = usePullToRefresh(refetch);
 
   return (
     <View className="flex-1 bg-white">
@@ -43,8 +45,8 @@ export const ChatListPage = () => {
         }
         onEndReached={() => hasNextPage && fetchNextPage()}
         onEndReachedThreshold={0.5}
-        onRefresh={() => refetch()}
-        refreshing={isRefetching}
+        onRefresh={pull.onRefresh}
+        refreshing={pull.refreshing}
         contentContainerClassName="px-screen md:px-10 lg:px-20 pt-2.5 pb-[140px]"
       />
     </View>
