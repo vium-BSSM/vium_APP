@@ -10,6 +10,7 @@ import { useCurrentLocation } from '@/shared/lib/useCurrentLocation';
 import { formatDday, formatDistance, formatDotDate, formatRelativeTime, getDaysLeft } from '@/shared/lib/dateFormat';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 import HeartIcon from '@/../assets/icons/heart-icon.svg';
+import HeartFilledIcon from '@/../assets/icons/heart-filled-icon.svg';
 import StarIcon from '@/../assets/icons/star-icon.svg';
 import { usePostDetail, useToggleLike } from '../lib/usePosts';
 import { useRequestTrade } from '../lib/useTrades';
@@ -207,7 +208,12 @@ export const PostDetailPage = () => {
           accessibilityLabel={post.likedByMe ? '좋아요 취소' : '좋아요'}
           accessibilityState={{ selected: post.likedByMe }}
         >
-          <HeartIcon width={26} height={26} color={post.likedByMe ? '#FF7171' : '#767676'} />
+          {/* 좋아요하면 채운 하트 (status-danger #FF7171) */}
+          {post.likedByMe ? (
+            <HeartFilledIcon width={26} height={26} color="#FF7171" />
+          ) : (
+            <HeartIcon width={26} height={26} color="#767676" />
+          )}
         </Pressable>
         <View className="flex-1">
           <Text className="text-text18 font-sans text-text-100">{formatPrice(post.price, post.type)}</Text>

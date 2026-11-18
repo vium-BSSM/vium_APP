@@ -1,6 +1,8 @@
-# Vium App
-
-Expo Router와 Feature-Based 아키텍처를 기반으로 한 React Native 애플리케이션입니다.
+# 🍅 Vium 
+1인 가구들을 위한 식재료 폐기 도우미 서비스, 비움입니다.
+소중한 식재료를 낭비하지 않도록 비움이 도와줄게요!
+<br>
+비움 웹 바로가기 >> https://vium.vercel.app
 
 ---
 

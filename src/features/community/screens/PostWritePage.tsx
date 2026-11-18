@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,8 +40,18 @@ export const PostWritePage = () => {
     params.inventoryItemId ? Number(params.inventoryItemId) : null
   );
   const [isPickerVisible, setIsPickerVisible] = useState(!params.inventoryItemId);
+  // 식재료 상세·소비기한 팝업에서 다른 재료로 다시 들어오면 그 재료로 바꿈 (화면이 이미 열려 있어도)
+  const [prevParamId, setPrevParamId] = useState(params.inventoryItemId);
+  if (prevParamId !== params.inventoryItemId) {
+    setPrevParamId(params.inventoryItemId);
+    if (params.inventoryItemId) {
+      setInventoryItemId(Number(params.inventoryItemId));
+      setIsPickerVisible(false);
+    }
+  }
   const selected = fridgeItems.find((item) => item.id === inventoryItemId) ?? null;
 
+  const descriptionRef = useRef<TextInput>(null);
   const form = usePostWrite({ inventoryItemId, defaultStorageMethodId: selected?.storageMethodId ?? null });
 
   // 게시할 수 없는 재료면 이유를 알려주고 다른 재료를 고르게 함
@@ -69,7 +79,8 @@ export const PostWritePage = () => {
   return (
     <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <AppHeader right={<HeaderActions profileImageUrl={profile.profileImageUrl} />} />
-      <View className="mt-2">
+      {/* BackHeader(높이 52)가 위쪽에 약 14px 여백을 품고 있어 +20px이면 홈과 같은 34px */}
+      <View className="mt-5">
         <BackHeader title="나눔·판매 글쓰기" />
       </View>
 
@@ -179,16 +190,23 @@ export const PostWritePage = () => {
           </View>
           <View className="gap-2">
             <FieldLabel>설명</FieldLabel>
-            <AppTextInput
-              value={form.description}
-              onChangeText={form.setDescription}
-              maxLength={DESCRIPTION_MAX_LENGTH}
-              multiline
-              placeholder="상태, 거래 가능한 시간 등을 적어주세요"
-              placeholderTextColor="#A7A9B5"
-              className="min-h-[42px] px-[14px] py-2.5 rounded-lg bg-neutral-10 text-text15 font-sans text-text-100"
-              textAlignVertical="top"
-            />
+            {/* AppTextInput은 세로 패딩을 0으로 고정하므로 여백·배경은 바깥 박스가 담당 */}
+            <Pressable
+              onPress={() => descriptionRef.current?.focus()}
+              className="min-h-[42px] px-[14px] py-2.5 rounded-lg bg-neutral-10"
+            >
+              <AppTextInput
+                ref={descriptionRef}
+                value={form.description}
+                onChangeText={form.setDescription}
+                maxLength={DESCRIPTION_MAX_LENGTH}
+                multiline
+                scrollEnabled={false}
+                placeholder="상태, 거래 가능한 시간 등을 적어주세요"
+                placeholderTextColor="#A7A9B5"
+                className="text-text15 font-sans text-text-100"
+              />
+            </Pressable>
           </View>
         </View>
       </ScrollView>

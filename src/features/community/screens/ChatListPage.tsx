@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { AppHeader, HeaderActions } from '@/shared/ui';
+import { AppHeader, BackHeader, HeaderActions } from '@/shared/ui';
 import { useMyProfile } from '@/features/account';
 import { useChatRooms } from '../lib/useChat';
 import { ChatRoomRow } from '../ui/ChatRoomRow';
@@ -13,12 +13,17 @@ export const ChatListPage = () => {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="mb-2">
+      {/* BackHeader(높이 52)가 위쪽에 약 14px 여백을 품고 있어 +20px이면 홈과 같은 34px */}
+      <View className="mb-5">
         <AppHeader right={<HeaderActions profileImageUrl={profile.profileImageUrl} />} />
       </View>
-      <View className="px-screen md:px-10 lg:px-20 pt-1.5 pb-[14px]">
+      {/* 피드 말풍선 아이콘으로 들어오므로, 돌아갈 화면이 없으면 나눔 피드로 */}
+      <BackHeader
+        onBack={() => (router.canGoBack() ? router.back() : router.replace('/community' as any))}
+        className="mb-1"
+      >
         <Text className="text-text22 font-medium font-sans text-text-100">채팅</Text>
-      </View>
+      </BackHeader>
 
       <FlatList
         data={rooms}

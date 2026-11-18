@@ -13,6 +13,7 @@ import {
   PillButton,
   SegmentedControl,
   UnderlineTabs,
+  Footer,
 } from '@/shared/ui';
 import { ConsumptionCheckSheet } from '@/features/notification';
 
@@ -240,6 +241,11 @@ export default function DebugPage() {
             onConsumed={() => setIsSheetVisible(false)}
             onDisposed={() => setIsSheetVisible(false)}
           />
+        </View>
+
+        <View className="mb-8">
+          <Text className="text-heading-md font-medium mb-3 text-text-100 font-sans">Footer</Text>
+          <Footer />
         </View>
 
         <View className="h-10" />

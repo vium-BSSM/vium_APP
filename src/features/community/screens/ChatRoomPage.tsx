@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader, AppTextInput, BackHeader, HeaderActions } from '@/shared/ui';
@@ -69,6 +69,7 @@ export const ChatRoomPage = () => {
   const leaveRoom = useLeaveChatRoom();
   const report = useReport();
   const toggleBlock = useToggleBlock();
+  const inputRef = useRef<TextInput>(null);
   const [text, setText] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
@@ -173,7 +174,8 @@ export const ChatRoomPage = () => {
   return (
     <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <AppHeader right={<HeaderActions profileImageUrl={profile.profileImageUrl} />} />
-      <View className="mt-2">
+      {/* BackHeader(높이 52)가 위쪽에 약 14px 여백을 품고 있어 +20px이면 홈과 같은 34px */}
+      <View className="mt-5">
         <BackHeader
           right={
             <Pressable onPress={handleMore} hitSlop={10} accessibilityLabel="더보기">
@@ -201,13 +203,13 @@ export const ChatRoomPage = () => {
         >
           <View className="flex-1 gap-1">
             <View className="flex-row items-center gap-1.5">
-              {badge && <CommunityBadge kind={badge} />}
-              <Text className="shrink text-text14 font-medium font-sans text-text-100" numberOfLines={1}>
+              {badge && <CommunityBadge kind={badge} size="md" />}
+              <Text className="shrink text-text16 font-medium font-sans text-text-100" numberOfLines={1}>
                 {room.post.title}
               </Text>
             </View>
             {trade && (
-              <Text className="text-text14 font-bold font-sans text-text-100">
+              <Text className="text-text16 font-bold font-sans text-text-100">
                 {formatPrice(trade.price, trade.post.type, '무료 나눔')}
               </Text>
             )}
@@ -221,7 +223,7 @@ export const ChatRoomPage = () => {
                 tradeAction.isPending ? 'opacity-50' : ''
               }`}
             >
-              <Text className={`text-text13 font-medium font-sans ${item.primary ? 'text-text-100' : 'text-text-200'}`}>
+              <Text className={`text-text15 font-medium font-sans ${item.primary ? 'text-text-100' : 'text-text-200'}`}>
                 {item.label}
               </Text>
             </Pressable>
@@ -251,7 +253,8 @@ export const ChatRoomPage = () => {
             ItemSeparatorComponent={() => <View className="h-[14px]" />}
             onEndReached={() => hasNextPage && fetchNextPage()}
             onEndReachedThreshold={0.3}
-            contentContainerClassName="px-screen md:px-10 lg:px-20 pt-4 pb-4"
+            // inverted 리스트는 메시지가 적으면 아래에 붙어 위가 비므로, 뒤집힌 기준의 끝(=화면 위)으로 모아 위부터 쌓이게
+            contentContainerClassName="grow justify-end px-screen md:px-10 lg:px-20 pt-4 pb-4"
           />
         )}
       </View>
@@ -263,15 +266,19 @@ export const ChatRoomPage = () => {
         <Pressable onPress={handleSendImage} disabled={isUploading} hitSlop={8} accessibilityLabel="사진 보내기">
           {isUploading ? <ActivityIndicator color="#737785" /> : <CameraLineIcon width={26} height={26} color="#737785" />}
         </Pressable>
-        <AppTextInput
-          value={text}
-          onChangeText={setText}
-          maxLength={MESSAGE_MAX_LENGTH}
-          placeholder="메시지 보내기"
-          placeholderTextColor="#A7A9B5"
-          multiline
-          className="flex-1 max-h-[100px] px-[14px] py-2.5 rounded-[20px] bg-neutral-10 text-text15 font-sans text-text-100"
-        />
+        {/* AppTextInput은 세로 패딩을 0으로 고정하므로 여백·배경은 바깥 박스가 담당 */}
+        <Pressable onPress={() => inputRef.current?.focus()} className="flex-1 px-[14px] py-2.5 rounded-[20px] bg-neutral-10">
+          <AppTextInput
+            ref={inputRef}
+            value={text}
+            onChangeText={setText}
+            maxLength={MESSAGE_MAX_LENGTH}
+            placeholder="메시지 보내기"
+            placeholderTextColor="#A7A9B5"
+            multiline
+            className="max-h-[80px] text-text15 font-sans text-text-100"
+          />
+        </Pressable>
         <Pressable
           onPress={handleSend}
           disabled={!text.trim() || sendMessage.isPending}

@@ -34,3 +34,5 @@ export { PillButton } from './PillButton';
 export { Avatar } from './Avatar';
 export { BottomSheet } from './BottomSheet';
 export { HeaderActions } from './HeaderActions';
+export { Footer } from './Footer';
+export type { FooterLink } from './Footer';

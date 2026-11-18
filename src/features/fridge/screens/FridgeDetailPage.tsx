@@ -39,7 +39,8 @@ export const FridgeDetailPage = () => {
 
   return (
     <View className="flex-1 bg-white">
-      <ScrollView className="flex-1">
+      {/* 하단 탭(약 140)에 버튼이 가리지 않도록 아래 여백 확보 */}
+      <ScrollView className="flex-1" contentContainerClassName="pb-[140px]">
         <AppHeader />
 
         <View className="px-screen pt-8">
@@ -82,6 +83,17 @@ export const FridgeDetailPage = () => {
                 <DetailInfoRow label="등록일자" value={item.registeredDate} />
                 <DetailInfoRow label="소비기한" value={item.expirationDate} />
               </View>
+
+              {/* 나눔·판매 글쓰기로 이동 — 이 재료가 미리 선택된 상태로 열림 */}
+              <Pressable
+                onPress={() =>
+                  router.navigate({ pathname: '/community/write', params: { inventoryItemId: String(itemId) } } as any)
+                }
+                accessibilityRole="button"
+                className="mt-10 h-12 rounded-3xl bg-primary-200 border border-primary-500 items-center justify-center"
+              >
+                <Text className="text-text16 font-sans text-primary-700">이웃에게 나눔하기</Text>
+              </Pressable>
             </View>
           </View>
         </View>

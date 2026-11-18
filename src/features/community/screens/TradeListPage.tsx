@@ -49,7 +49,8 @@ export const TradeListPage = () => {
   return (
     <View className="flex-1 bg-white">
       <AppHeader right={<HeaderActions profileImageUrl={profile.profileImageUrl} />} />
-      <View className="mt-2">
+      {/* BackHeader(높이 52)가 위쪽에 약 14px 여백을 품고 있어 +20px이면 홈과 같은 34px */}
+      <View className="mt-5">
         <BackHeader title="거래 내역" />
       </View>
       <UnderlineTabs options={ROLE_TABS} value={role} onChange={setRole} />
