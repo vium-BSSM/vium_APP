@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, ScrollView, Pressable, Keyboard } from 'react-native';
 import { AppTextInput } from '@/shared/ui';
 import { useRouter } from 'expo-router';
 import { pickImageFromLibrary } from '@/shared/lib/pickImage';
-import { ImageUpload, LabelInput, LabelInputWithUnit, DatePicker, Button, AppHeader } from '@/shared/ui';
+import {
+  ImageUpload,
+  LabelInput,
+  LabelInputWithUnit,
+  DatePicker,
+  Button,
+  AppHeader,
+  Coachmark,
+  CoachmarkStep,
+} from '@/shared/ui';
 import { useIngredientRegister } from '../lib/useIngredientRegister';
 import { toDateString } from '../lib/dateUtils';
 import { StorageMethodSelect, STORAGE_METHOD_OPTIONS } from '../ui/StorageMethodSelect';
 import { useIngredientCatalogSearch } from '../lib/useIngredientCatalogSearch';
 import { CatalogSuggestions } from '../ui/CatalogSuggestions';
 import { IngredientCatalogItem } from '../types';
+import { useCoachmarkSeen } from '@/shared/lib/hooks/useCoachmarkSeen';
 import BackIcon from '@/../assets/icons/back-icon.svg';
+import CharacterTomato from '@/../assets/splash/character-tomato.svg';
 
 export const FridgeAddPage: React.FC = () => {
   const router = useRouter();
@@ -25,6 +36,25 @@ export const FridgeAddPage: React.FC = () => {
   const [price, setPrice] = useState('');
   const [registeredDate, setRegisteredDate] = useState(new Date());
   const [expiryDate, setExpiryDate] = useState(new Date());
+
+  // 첫 진입 튜토리얼 — 재료 이름 → 소비기한
+  const nameInputRef = useRef<View>(null);
+  const expiryRef = useRef<View>(null);
+  const coachmark = useCoachmarkSeen('fridgeAdd');
+  const coachmarkSteps: CoachmarkStep[] = [
+    {
+      targetRef: nameInputRef,
+      speaker: '토마토',
+      message: '재료 이름을 쓰고 목록에서 골라줘.\n그래야 레시피 추천에 쓸 수 있어!',
+      character: <CharacterTomato width={62} height={66} />,
+    },
+    {
+      targetRef: expiryRef,
+      speaker: '토마토',
+      message: '소비기한을 넣어두면\n다가올 때 미리 알려줄게!',
+      character: <CharacterTomato width={62} height={66} />,
+    },
+  ];
 
   const handleImagePick = async () => {
     const uri = await pickImageFromLibrary({ aspect: [16, 9] });
@@ -87,7 +117,7 @@ export const FridgeAddPage: React.FC = () => {
           <View className="gap-6 w-full max-w-[346px]">
             <ImageUpload imageUri={imageUri} onPress={handleImagePick} />
 
-            <View className="gap-2">
+            <View ref={nameInputRef} collapsable={false} className="gap-2">
               <AppTextInput
                 className="text-heading-lg font-medium font-sans"
                 value={name}
@@ -128,11 +158,13 @@ export const FridgeAddPage: React.FC = () => {
                 value={registeredDate}
                 onChange={setRegisteredDate}
               />
-              <DatePicker
-                label="소비기한"
-                value={expiryDate}
-                onChange={setExpiryDate}
-              />
+              <View ref={expiryRef} collapsable={false}>
+                <DatePicker
+                  label="소비기한"
+                  value={expiryDate}
+                  onChange={setExpiryDate}
+                />
+              </View>
             </View>
           </View>
         </View>
@@ -143,6 +175,8 @@ export const FridgeAddPage: React.FC = () => {
           등록하기
         </Button>
       </View>
+
+      <Coachmark visible={coachmark.shouldShow} steps={coachmarkSteps} onFinish={coachmark.markSeen} />
     </View>
   );
 };

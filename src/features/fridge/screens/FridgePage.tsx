@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
@@ -17,7 +17,9 @@ import { ReceiptConfirmModal } from '../ui/ReceiptConfirmModal';
 import { FridgeStorageFilter, PurchaseDetail } from '../types';
 import { useMyProfile } from '@/features/account';
 import { ExpiryPopup } from '@/features/notification';
-import { AddButton, Card, HomeHeader } from '@/shared/ui';
+import { AddButton, Card, Coachmark, CoachmarkStep, HomeHeader } from '@/shared/ui';
+import { useCoachmarkSeen } from '@/shared/lib/hooks/useCoachmarkSeen';
+import CharacterTomato from '@/../assets/splash/character-tomato.svg';
 
 export const FridgePage = () => {
   const router = useRouter();
@@ -37,6 +39,24 @@ export const FridgePage = () => {
     () => (storageFilter === 'all' ? fridgeItems : fridgeItems.filter((item) => item.storageMethodId === storageFilter)),
     [fridgeItems, storageFilter]
   );
+  // 첫 진입 튜토리얼 — 필터·정렬 → + 버튼(영수증 등록·냉장고 관리)
+  const filterBarRef = useRef<View>(null);
+  const addButtonRef = useRef<View>(null);
+  const coachmark = useCoachmarkSeen('fridge');
+  const coachmarkSteps: CoachmarkStep[] = [
+    {
+      targetRef: filterBarRef,
+      speaker: '토마토',
+      message: '보관 방법별로 나눠 보고,\n소비기한 임박순으로 정렬할 수 있어!',
+      character: <CharacterTomato width={62} height={66} />,
+    },
+    {
+      targetRef: addButtonRef,
+      speaker: '토마토',
+      message: '+ 버튼으로 영수증을 찍어 한 번에 넣거나\n냉장고를 정리할 수 있어!',
+      character: <CharacterTomato width={62} height={66} />,
+    },
+  ];
   const expiringTitle = useMemo(() => formatExpiringTitle(pickExpiringIngredients(fridgeItems)), [fridgeItems]);
 
   const handleReceiptPress = () => {
@@ -148,12 +168,14 @@ export const FridgePage = () => {
           items={visibleItems}
           header={
             <FridgeHeader expiringTitle={expiringTitle} onBannerPress={handleBannerPress}>
-              <FridgeFilterBar
-                storageFilter={storageFilter}
-                onStorageFilterChange={setStorageFilter}
-                sortType={sortType}
-                onSortToggle={() => setSortType(sortType === 'expiry' ? 'recent' : 'expiry')}
-              />
+              <View ref={filterBarRef} collapsable={false}>
+                <FridgeFilterBar
+                  storageFilter={storageFilter}
+                  onStorageFilterChange={setStorageFilter}
+                  sortType={sortType}
+                  onSortToggle={() => setSortType(sortType === 'expiry' ? 'recent' : 'expiry')}
+                />
+              </View>
             </FridgeHeader>
           }
           onAddPress={() => router.push('/fridge/add' as any)}
@@ -218,11 +240,9 @@ export const FridgePage = () => {
 
       {/* AddButton - 일반 모드: 영수증 등록/냉장고 관리하기 메뉴, 삭제 모드: 냉장고 대청소 (목록을 불러온 뒤에만 표시) */}
       {isReady && (!isDeleteMode ? (
-        <AddButton
-          onReceiptPress={handleReceiptPress}
-          onManagePress={() => setIsDeleteMode(true)}
-          style={{ position: 'absolute', bottom: 120, right: 29 }}
-        />
+        <View ref={addButtonRef} collapsable={false} style={{ position: 'absolute', bottom: 120, right: 29 }}>
+          <AddButton onReceiptPress={handleReceiptPress} onManagePress={() => setIsDeleteMode(true)} />
+        </View>
       ) : (
         <AddButton
           onPress={openCleanupModal}
@@ -254,6 +274,12 @@ export const FridgePage = () => {
           <Text className="mt-4 text-text14 text-text-200 font-sans">영수증을 인식하는 중...</Text>
         </View>
       )}
+      <Coachmark
+        visible={coachmark.shouldShow && isReady && !isDeleteMode}
+        steps={coachmarkSteps}
+        onFinish={coachmark.markSeen}
+      />
+
       {/* 소비기한 임박 재료 팝업 (하루 한 번, '오늘은 그만 보기' 가능) */}
       <ExpiryPopup />
     </View>

@@ -2,7 +2,9 @@ import React, { useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AppHeader, AppTextInput, Chip, HeaderActions, UnderlineTabs } from '@/shared/ui';
+import { AppHeader, AppTextInput, Chip, Coachmark, CoachmarkStep, HeaderActions, UnderlineTabs } from '@/shared/ui';
+import { useCoachmarkSeen } from '@/shared/lib/hooks/useCoachmarkSeen';
+import CharacterTomato from '@/../assets/splash/character-tomato.svg';
 import { usePullToRefresh } from '@/shared/lib/usePullToRefresh';
 import { useMyProfile } from '@/features/account';
 import { useCurrentLocation } from '@/shared/lib/useCurrentLocation';
@@ -49,6 +51,24 @@ export const CommunityFeedPage = () => {
 
   const distanceButtonRef = useRef<View>(null);
   const [distanceAnchor, setDistanceAnchor] = useState<PopoverAnchor | null>(null);
+
+  // 첫 진입 튜토리얼 — 검색 반경 → 글쓰기
+  const writeButtonRef = useRef<View>(null);
+  const coachmark = useCoachmarkSeen('communityFeed');
+  const coachmarkSteps: CoachmarkStep[] = [
+    {
+      targetRef: distanceButtonRef,
+      speaker: '토마토',
+      message: '내 주변 이웃이 올린 재료를 볼 수 있어.\n거리를 눌러서 범위를 바꿔봐!',
+      character: <CharacterTomato width={62} height={66} />,
+    },
+    {
+      targetRef: writeButtonRef,
+      speaker: '토마토',
+      message: '다 못 먹을 것 같은 재료는\n버리기 전에 나눔하거나 팔아봐!',
+      character: <CharacterTomato width={62} height={66} />,
+    },
+  ];
 
   const openDistanceMenu = () =>
     distanceButtonRef.current?.measureInWindow((x, y, width, height) => setDistanceAnchor({ x, y, width, height }));
@@ -152,6 +172,7 @@ export const CommunityFeedPage = () => {
       />
 
       <Pressable
+        ref={writeButtonRef}
         onPress={() => router.push('/community/write' as any)}
         className="absolute right-[22px] flex-row items-center gap-1.5 pl-[18px] pr-5 py-3 rounded-3xl bg-neutral-500"
         style={{ bottom: insets.bottom + NAV_BAR_HEIGHT + FAB_GAP }}
@@ -160,6 +181,7 @@ export const CommunityFeedPage = () => {
         <PlusLineIcon width={18} height={18} color="#FFFFFF" />
         <Text className="text-text15 font-sans text-white">글쓰기</Text>
       </Pressable>
+      <Coachmark visible={coachmark.shouldShow} steps={coachmarkSteps} onFinish={coachmark.markSeen} />
       <PopoverMenu anchor={distanceAnchor} items={distanceItems} onClose={() => setDistanceAnchor(null)} align="left" />
     </View>
   );

@@ -36,3 +36,5 @@ export { BottomSheet } from './BottomSheet';
 export { HeaderActions } from './HeaderActions';
 export { Footer } from './Footer';
 export type { FooterLink } from './Footer';
+export { Coachmark } from './Coachmark';
+export type { CoachmarkStep } from './Coachmark';

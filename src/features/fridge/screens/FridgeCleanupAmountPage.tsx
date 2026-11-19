@@ -3,8 +3,10 @@ import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFridgeCleanupStore } from '../lib/fridgeCleanupStore';
 import { useFridgeCleanupFinish } from '../lib/useFridgeCleanupFinish';
-import { AppHeader, Button, PageTitle, QuantitySlider } from '@/shared/ui';
+import { AppHeader, Button, Coachmark, CoachmarkStep, PageTitle, QuantitySlider } from '@/shared/ui';
+import { useCoachmarkSeen } from '@/shared/lib/hooks/useCoachmarkSeen';
 import BackIcon from '@/../assets/icons/back-icon.svg';
+import CharacterPotato from '@/../assets/splash/character-potato.svg';
 
 export const FridgeCleanupAmountPage: React.FC = () => {
   const router = useRouter();
@@ -13,6 +15,24 @@ export const FridgeCleanupAmountPage: React.FC = () => {
   const isFinishingRef = useRef(false);
   // effect는 ref로, 렌더는 state로 확인 (store 비우기와 렌더 순서가 어긋나도 리다이렉트되지 않게)
   const [isFinishing, setIsFinishing] = useState(false);
+  // 첫 진입 튜토리얼 — 첫 재료의 슬라이더 → 정리 종료 버튼
+  const firstSliderRef = useRef<View>(null);
+  const finishButtonRef = useRef<View>(null);
+  const coachmark = useCoachmarkSeen('fridgeCleanupAmount');
+  const coachmarkSteps: CoachmarkStep[] = [
+    {
+      targetRef: firstSliderRef,
+      speaker: '감자',
+      message: '버린 만큼만 밀어줘.\n다 먹었으면 0까지 내리면 돼!',
+      character: <CharacterPotato width={64} height={67} />,
+    },
+    {
+      targetRef: finishButtonRef,
+      speaker: '감자',
+      message: '누르면 고른 재료가 냉장고에서 빠져.\n버린 양은 리포트에 모아둘게!',
+      character: <CharacterPotato width={64} height={67} />,
+    },
+  ];
 
   // 선택된 재료 없이 이 화면으로 바로 들어온 경우 선택 화면으로 돌려보냄
   // (단, 정리 종료로 인해 store가 비워진 경우는 제외)
@@ -64,8 +84,8 @@ export const FridgeCleanupAmountPage: React.FC = () => {
             </View>
 
             <View className="gap-7">
-              {items.map((item) => (
-                <View key={item.id} className="gap-[19px] p-2.5">
+              {items.map((item, index) => (
+                <View key={item.id} ref={index === 0 ? firstSliderRef : undefined} collapsable={false} className="gap-[19px] p-2.5">
                   <View className="gap-1">
                     <Text className="text-heading-md font-medium font-sans text-text-100">
                       {item.title}
@@ -86,10 +106,14 @@ export const FridgeCleanupAmountPage: React.FC = () => {
       </ScrollView>
 
       <View className="w-full items-center pb-[100px]">
-        <Button onPress={handleFinish} loading={isSubmitting}>
-          냉장고 정리 종료
-        </Button>
+        <View ref={finishButtonRef} collapsable={false}>
+          <Button onPress={handleFinish} loading={isSubmitting}>
+            냉장고 정리 종료
+          </Button>
+        </View>
       </View>
+
+      <Coachmark visible={coachmark.shouldShow && items.length > 0} steps={coachmarkSteps} onFinish={coachmark.markSeen} />
     </View>
   );
 };

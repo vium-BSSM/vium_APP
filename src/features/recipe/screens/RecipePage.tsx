@@ -1,16 +1,41 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { RecipeCategory } from '../types';
 import { useRecipesList } from '../lib/useRecipesList';
 import { RecipeCategoryFilter } from '../ui/RecipeCategoryFilter';
 import { RecipeListCard } from '../ui/RecipeListCard';
-import { AppHeader, BackTitle } from '@/shared/ui';
+import { AppHeader, BackTitle, Coachmark, CoachmarkStep } from '@/shared/ui';
+import { useCoachmarkSeen } from '@/shared/lib/hooks/useCoachmarkSeen';
+import CharacterOnion from '@/../assets/splash/character-onion.svg';
 
 export const RecipePage: React.FC = () => {
   const router = useRouter();
   const [category, setCategory] = useState<RecipeCategory>('전체');
   const { recipes, isLoading, error, needsCatalogIngredients, refresh } = useRecipesList(category);
+  // 첫 진입 튜토리얼 — 첫 레시피 카드 → 카테고리 (레시피가 없으면 카테고리만)
+  const categoryRef = useRef<View>(null);
+  const firstCardRef = useRef<View>(null);
+  const coachmark = useCoachmarkSeen('recipeList');
+  const hasRecipes = !error && !needsCatalogIngredients && recipes.length > 0;
+  const coachmarkSteps: CoachmarkStep[] = [
+    ...(hasRecipes
+      ? [
+          {
+            targetRef: firstCardRef,
+            speaker: '양파',
+            message: '냉장고 재료로 만들 수 있는 요리야.\n눌러서 재료와 순서를 확인해봐!',
+            character: <CharacterOnion width={58} height={73} />,
+          },
+        ]
+      : []),
+    {
+      targetRef: categoryRef,
+      speaker: '양파',
+      message: '먹고 싶은 종류만 골라볼 수도 있어!',
+      character: <CharacterOnion width={58} height={73} />,
+    },
+  ];
 
   return (
     <View className="flex-1 bg-white">
@@ -24,7 +49,9 @@ export const RecipePage: React.FC = () => {
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/main'))}
         />
 
-        <RecipeCategoryFilter selected={category} onSelect={setCategory} />
+        <View ref={categoryRef} collapsable={false}>
+          <RecipeCategoryFilter selected={category} onSelect={setCategory} />
+        </View>
       </View>
 
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 140 }}>
@@ -57,17 +84,18 @@ export const RecipePage: React.FC = () => {
             </Text>
           ) : (
             <View className="gap-[26px]">
-              {recipes.map((recipe) => (
-                <RecipeListCard
-                  key={recipe.id}
-                  recipe={recipe}
-                  onPress={() => router.push(`/recipe/${recipe.id}` as any)}
-                />
+              {recipes.map((recipe, index) => (
+                <View key={recipe.id} ref={index === 0 ? firstCardRef : undefined} collapsable={false}>
+                  <RecipeListCard recipe={recipe} onPress={() => router.push(`/recipe/${recipe.id}` as any)} />
+                </View>
               ))}
             </View>
           )}
         </View>
       </ScrollView>
+
+      {/* 추천이 끝난 뒤(로딩 중엔 카드 위치를 모름)에 띄움 */}
+      <Coachmark visible={coachmark.shouldShow && !isLoading} steps={coachmarkSteps} onFinish={coachmark.markSeen} />
     </View>
   );
 };
