@@ -7,6 +7,7 @@ import { isReceiptScanSupported, useReceiptScan } from '../lib/useReceiptScan';
 import { ReceiptItemForm, useReceiptConfirm } from '../lib/useReceiptConfirm';
 import { useIngredientsList } from '../lib/useIngredientsList';
 import { useIngredientDispose } from '../lib/useIngredientDispose';
+import { formatStatusFailures } from '../lib/useIngredientStatusUpdate';
 import { useFridgeCleanup } from '../lib/useFridgeCleanup';
 import { formatExpiringTitle, pickExpiringIngredients } from '../lib/expiringIngredients';
 import { FridgeHeader, FridgeFilterBar, FridgeSelectionBar } from '../ui/FridgeHeader';
@@ -95,14 +96,14 @@ export const FridgePage = () => {
           style: 'destructive',
           onPress: async () => {
             const targets = fridgeItems.filter((item) => selectedItems.has(item.id));
-            const failedCount = await disposeItems(targets);
+            const failures = await disposeItems(targets);
 
             setSelectedItems(new Set());
             setIsDeleteMode(false);
             refresh();
 
-            if (failedCount > 0) {
-              Alert.alert('오류', `${failedCount}개 항목을 삭제하지 못했습니다. 다시 시도해주세요.`);
+            if (failures.length > 0) {
+              Alert.alert(`${failures.length}개 항목을 삭제하지 못했어요`, formatStatusFailures(failures));
             }
           },
         },
