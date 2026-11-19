@@ -52,17 +52,26 @@ export const FridgeCleanupAmountPage: React.FC = () => {
               >
                 <BackIcon width={30} height={30} />
               </Pressable>
-              <PageTitle>
-                마지막 단계예요!{'\n'}얼마나 남겼는지 말해주세요
-              </PageTitle>
+              <View className="gap-3">
+                <PageTitle>
+                  마지막 단계예요!{'\n'}얼마나 버렸는지 말해주세요
+                </PageTitle>
+                {/* 정리 API는 고른 재료를 전량 처리(소진/폐기)함 — 슬라이더는 그중 버린 양만 기록 */}
+                <Text className="text-text14 font-sans text-text-200">
+                  고른 재료는 냉장고에서 모두 정리돼요.{'\n'}다 먹었다면 0으로 내려주세요.
+                </Text>
+              </View>
             </View>
 
             <View className="gap-7">
               {items.map((item) => (
                 <View key={item.id} className="gap-[19px] p-2.5">
-                  <Text className="text-heading-md font-medium font-sans text-text-100">
-                    {item.title}
-                  </Text>
+                  <View className="gap-1">
+                    <Text className="text-heading-md font-medium font-sans text-text-100">
+                      {item.title}
+                    </Text>
+                    <Text className="text-text14 font-sans text-text-200">버린 양</Text>
+                  </View>
                   <QuantitySlider
                     value={item.remainingAmount}
                     max={item.remainingQuantity}

@@ -11,7 +11,7 @@ export const RecipeWastePage: React.FC = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const recipeId = parseInt(id || '1', 10);
-  const { items, setRemainingAmount, reset } = useRecipeCookStore();
+  const { items, setUsedAmount, setWasteAmount, reset } = useRecipeCookStore();
   const { complete, isSubmitting } = useRecipeComplete();
   const { isLoading: isQuantityLoading } = useCookInventoryQuantities(items.length > 0);
   const isFinishingRef = useRef(false);
@@ -66,12 +66,29 @@ export const RecipeWastePage: React.FC = () => {
                     {item.maxQuantity == null ? (
                       <ActivityIndicator className="self-start" />
                     ) : (
-                      <QuantitySlider
-                        value={item.remainingAmount}
-                        max={item.maxQuantity}
-                        unit={item.unit}
-                        onChange={(value) => setRemainingAmount(item.id, value)}
-                      />
+                      <View className="gap-5">
+                        <View className="gap-2">
+                          <Text className="text-text14 font-sans text-text-200">사용한 양 (남긴 만큼 냉장고에 남아요)</Text>
+                          <QuantitySlider
+                            value={item.usedAmount}
+                            max={item.maxQuantity}
+                            unit={item.unit}
+                            onChange={(value) => setUsedAmount(item.id, value)}
+                          />
+                        </View>
+                        {/* 비율(%) 대체 모드는 수량을 몰라 폐기량을 기록할 수 없음 */}
+                        {item.unit !== '%' && (
+                          <View className="gap-2">
+                            <Text className="text-text14 font-sans text-text-200">그중 버린 양</Text>
+                            <QuantitySlider
+                              value={item.wasteAmount}
+                              max={item.usedAmount}
+                              unit={item.unit}
+                              onChange={(value) => setWasteAmount(item.id, value)}
+                            />
+                          </View>
+                        )}
+                      </View>
                     )}
                   </View>
                 ))}
