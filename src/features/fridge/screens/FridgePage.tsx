@@ -53,7 +53,15 @@ export const FridgePage = () => {
     {
       targetRef: addButtonRef,
       speaker: '토마토',
-      message: '+ 버튼으로 영수증을 찍어 한 번에 넣거나\n냉장고를 정리할 수 있어!',
+      message: "+ 버튼을 누르면 메뉴가 나와.\n'영수증 등록'으로 장 본 재료를 한 번에 넣을 수 있어!",
+      character: <CharacterTomato width={62} height={66} />,
+    },
+    {
+      targetRef: addButtonRef,
+      speaker: '토마토',
+      // 관리 모드: 선택 삭제는 폐기(disposed)로 기록, + 버튼은 대청소로 바뀜
+      message:
+        "'냉장고 관리하기'를 누르면 재료를 골라 삭제할 수 있어.\n삭제한 재료는 버린 걸로 기록돼!\n그때 + 버튼은 '냉장고 대청소'로 바뀌어.",
       character: <CharacterTomato width={62} height={66} />,
     },
   ];
