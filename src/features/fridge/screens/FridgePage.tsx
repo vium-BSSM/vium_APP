@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import { Alert } from '@/shared/lib/alert';
 import { useRouter } from 'expo-router';
@@ -7,6 +7,7 @@ import { isReceiptScanSupported, useReceiptScan } from '../lib/useReceiptScan';
 import { ReceiptItemForm, useReceiptConfirm } from '../lib/useReceiptConfirm';
 import { useIngredientsList } from '../lib/useIngredientsList';
 import { useIngredientDispose } from '../lib/useIngredientDispose';
+import { formatStatusFailures } from '../lib/useIngredientStatusUpdate';
 import { useFridgeCleanup } from '../lib/useFridgeCleanup';
 import { formatExpiringTitle, pickExpiringIngredients } from '../lib/expiringIngredients';
 import { FridgeHeader, FridgeFilterBar, FridgeSelectionBar } from '../ui/FridgeHeader';
@@ -16,7 +17,9 @@ import { ReceiptConfirmModal } from '../ui/ReceiptConfirmModal';
 import { FridgeStorageFilter, PurchaseDetail } from '../types';
 import { useMyProfile } from '@/features/account';
 import { ExpiryPopup } from '@/features/notification';
-import { AddButton, Card, HomeHeader } from '@/shared/ui';
+import { AddButton, Card, Coachmark, CoachmarkStep, HomeHeader } from '@/shared/ui';
+import { useCoachmarkSeen } from '@/shared/lib/hooks/useCoachmarkSeen';
+import CharacterTomato from '@/../assets/splash/character-tomato.svg';
 
 export const FridgePage = () => {
   const router = useRouter();
@@ -36,6 +39,32 @@ export const FridgePage = () => {
     () => (storageFilter === 'all' ? fridgeItems : fridgeItems.filter((item) => item.storageMethodId === storageFilter)),
     [fridgeItems, storageFilter]
   );
+  // 첫 진입 튜토리얼 — 필터·정렬 → + 버튼(영수증 등록·냉장고 관리)
+  const filterBarRef = useRef<View>(null);
+  const addButtonRef = useRef<View>(null);
+  const coachmark = useCoachmarkSeen('fridge');
+  const coachmarkSteps: CoachmarkStep[] = [
+    {
+      targetRef: filterBarRef,
+      speaker: '토마토',
+      message: '보관 방법별로 나눠 보고,\n소비기한 임박순으로 정렬할 수 있어!',
+      character: <CharacterTomato width={62} height={66} />,
+    },
+    {
+      targetRef: addButtonRef,
+      speaker: '토마토',
+      message: "+ 버튼을 누르면 메뉴가 나와.\n'영수증 등록'으로 장 본 재료를 한 번에 넣을 수 있어!",
+      character: <CharacterTomato width={62} height={66} />,
+    },
+    {
+      targetRef: addButtonRef,
+      speaker: '토마토',
+      // 관리 모드: 선택 삭제는 폐기(disposed)로 기록, + 버튼은 대청소로 바뀜
+      message:
+        "'냉장고 관리하기'를 누르면 재료를 골라 삭제할 수 있어.\n삭제한 재료는 버린 걸로 기록돼!\n그때 + 버튼은 '냉장고 대청소'로 바뀌어.",
+      character: <CharacterTomato width={62} height={66} />,
+    },
+  ];
   const expiringTitle = useMemo(() => formatExpiringTitle(pickExpiringIngredients(fridgeItems)), [fridgeItems]);
 
   const handleReceiptPress = () => {
@@ -95,14 +124,14 @@ export const FridgePage = () => {
           style: 'destructive',
           onPress: async () => {
             const targets = fridgeItems.filter((item) => selectedItems.has(item.id));
-            const failedCount = await disposeItems(targets);
+            const failures = await disposeItems(targets);
 
             setSelectedItems(new Set());
             setIsDeleteMode(false);
             refresh();
 
-            if (failedCount > 0) {
-              Alert.alert('오류', `${failedCount}개 항목을 삭제하지 못했습니다. 다시 시도해주세요.`);
+            if (failures.length > 0) {
+              Alert.alert(`${failures.length}개 항목을 삭제하지 못했어요`, formatStatusFailures(failures));
             }
           },
         },
@@ -147,12 +176,14 @@ export const FridgePage = () => {
           items={visibleItems}
           header={
             <FridgeHeader expiringTitle={expiringTitle} onBannerPress={handleBannerPress}>
-              <FridgeFilterBar
-                storageFilter={storageFilter}
-                onStorageFilterChange={setStorageFilter}
-                sortType={sortType}
-                onSortToggle={() => setSortType(sortType === 'expiry' ? 'recent' : 'expiry')}
-              />
+              <View ref={filterBarRef} collapsable={false}>
+                <FridgeFilterBar
+                  storageFilter={storageFilter}
+                  onStorageFilterChange={setStorageFilter}
+                  sortType={sortType}
+                  onSortToggle={() => setSortType(sortType === 'expiry' ? 'recent' : 'expiry')}
+                />
+              </View>
             </FridgeHeader>
           }
           onAddPress={() => router.push('/fridge/add' as any)}
@@ -217,11 +248,9 @@ export const FridgePage = () => {
 
       {/* AddButton - 일반 모드: 영수증 등록/냉장고 관리하기 메뉴, 삭제 모드: 냉장고 대청소 (목록을 불러온 뒤에만 표시) */}
       {isReady && (!isDeleteMode ? (
-        <AddButton
-          onReceiptPress={handleReceiptPress}
-          onManagePress={() => setIsDeleteMode(true)}
-          style={{ position: 'absolute', bottom: 120, right: 29 }}
-        />
+        <View ref={addButtonRef} collapsable={false} style={{ position: 'absolute', bottom: 120, right: 29 }}>
+          <AddButton onReceiptPress={handleReceiptPress} onManagePress={() => setIsDeleteMode(true)} />
+        </View>
       ) : (
         <AddButton
           onPress={openCleanupModal}
@@ -253,6 +282,12 @@ export const FridgePage = () => {
           <Text className="mt-4 text-text14 text-text-200 font-sans">영수증을 인식하는 중...</Text>
         </View>
       )}
+      <Coachmark
+        visible={coachmark.shouldShow && isReady && !isDeleteMode}
+        steps={coachmarkSteps}
+        onFinish={coachmark.markSeen}
+      />
+
       {/* 소비기한 임박 재료 팝업 (하루 한 번, '오늘은 그만 보기' 가능) */}
       <ExpiryPopup />
     </View>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert } from '@/shared/lib/alert';
 import { IngredientStatusUpdateRequest } from '../types';
-import { useIngredientStatusUpdate } from './useIngredientStatusUpdate';
+import { formatStatusFailures, useIngredientStatusUpdate } from './useIngredientStatusUpdate';
 import { CleanupItem, fridgeCleanupStore } from './fridgeCleanupStore';
 
 /**
@@ -31,10 +31,12 @@ export const useFridgeCleanupFinish = () => {
     );
     setIsSubmitting(false);
 
-    const failedCount = results.filter((ok) => !ok).length;
-    if (failedCount > 0) {
-      fridgeCleanupStore.removeItems(targets.filter((_, index) => results[index]).map((item) => item.id));
-      Alert.alert('오류', `${failedCount}개 재료를 정리하지 못했습니다. 다시 시도해주세요.`);
+    const failures = results.flatMap((result, index) =>
+      result.ok ? [] : [{ title: targets[index].title, message: result.message }]
+    );
+    if (failures.length > 0) {
+      fridgeCleanupStore.removeItems(targets.filter((_, index) => results[index].ok).map((item) => item.id));
+      Alert.alert(`${failures.length}개 재료를 정리하지 못했어요`, formatStatusFailures(failures));
       return false;
     }
     return true;

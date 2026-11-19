@@ -10,20 +10,23 @@ import { recipeListCache } from './recipeListCache';
 type CookUsage = RecipeCompleteRequest['usages'][number];
 type CookInventoryItem = CookUsageItem & { inventoryId: number; maxQuantity: number };
 
+// 슬라이더 값의 부동소수점 오차 제거 (서버는 소수 3자리까지만 허용)
+const round3 = (value: number) => Math.round(value * 1000) / 1000;
+
 /**
- * 냉장고 정리와 같은 규칙: 남은 재고는 전부 사용 처리하고, 슬라이더의 남긴 수량만큼 폐기로 기록
- * - 0: 전부 먹음 → 폐기 없음
- * - 최대값: 전부 버림 → 서버가 disposed로 종료
+ * 서버 규칙(usedQuantity / wasteQuantity)과 같은 의미로 변환
+ * - usedQuantity: 재고에서 빠지는 양 — 재고 전체보다 적으면 나머지는 냉장고에 남음
+ * - wasteQuantity: usedQuantity 중 버린 양 (usedQuantity 이하)
+ * - 전부 사용 + 전부 버림이면 서버가 disposed로, 전부 사용이면 consumed로 종료
  */
 const toUsage = (item: CookInventoryItem): CookUsage => {
-  // 재고 수량을 못 불러와 비율(%) 슬라이더로 대체된 경우 — 수량을 몰라 폐기는 기록 못 하고 전부 사용만 처리
+  // 재고 수량을 못 불러와 비율(%) 슬라이더로 대체된 경우 — 수량을 몰라 폐기는 기록 못 하고 사용 비율만 보냄
   if (item.unit === '%') {
-    return { inventoryId: item.inventoryId, usageRate: 100 };
+    return { inventoryId: item.inventoryId, usageRate: Math.round(Math.min(Math.max(item.usedAmount, 0), 100)) };
   }
 
-  const usedQuantity = item.maxQuantity;
-  // 슬라이더 값의 부동소수점 오차 제거 (서버는 소수 3자리까지만 허용)
-  const wasteQuantity = Math.min(Math.round(item.remainingAmount * 1000) / 1000, usedQuantity);
+  const usedQuantity = Math.min(round3(item.usedAmount), item.maxQuantity);
+  const wasteQuantity = Math.min(round3(item.wasteAmount), usedQuantity);
   return wasteQuantity > 0
     ? { inventoryId: item.inventoryId, usedQuantity, wasteQuantity }
     : { inventoryId: item.inventoryId, usedQuantity };

@@ -2,15 +2,20 @@ import { useState } from 'react';
 import { useIngredientStatusUpdate } from './useIngredientStatusUpdate';
 import { FridgeItem } from '../types';
 
+export interface DisposeFailure {
+  title: string;
+  message: string;
+}
+
 /**
  * 선택한 재료를 남은 수량 전부 폐기(disposed) 처리
- * 실패한 재료 개수를 반환
+ * 실패한 재료와 서버 사유를 반환
  */
 export const useIngredientDispose = () => {
   const { updateStatus } = useIngredientStatusUpdate();
   const [isDisposing, setIsDisposing] = useState(false);
 
-  const disposeItems = async (items: FridgeItem[]): Promise<number> => {
+  const disposeItems = async (items: FridgeItem[]): Promise<DisposeFailure[]> => {
     const targets = items.filter((item) => item.remainingQuantity > 0);
 
     setIsDisposing(true);
@@ -25,7 +30,9 @@ export const useIngredientDispose = () => {
     );
     setIsDisposing(false);
 
-    return results.filter((ok) => !ok).length;
+    return results.flatMap((result, index) =>
+      result.ok ? [] : [{ title: targets[index].title, message: result.message }]
+    );
   };
 
   return {

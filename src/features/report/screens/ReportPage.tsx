@@ -10,6 +10,9 @@ import { YearMonth, getCurrentYearMonth } from '../lib/reportMonths';
 import { useReportShare } from '../lib/useReportShare';
 import { ReportMonthPicker } from '../ui/ReportMonthPicker';
 import { WasteBar } from '../ui/WasteBar';
+import { Coachmark, CoachmarkStep } from '@/shared/ui';
+import { useCoachmarkSeen } from '@/shared/lib/hooks/useCoachmarkSeen';
+import CharacterPotato from '@/../assets/splash/character-potato.svg';
 
 const BAR_MAX_HEIGHT = 153;
 const BAR_MIN_HEIGHT = 11;
@@ -21,6 +24,25 @@ export const ReportPage: React.FC = () => {
     selectedMonth.year,
     selectedMonth.month
   );
+
+  // 첫 진입 튜토리얼 — 월 선택 → 이번 달 금액
+  const monthPickerRef = useRef<View>(null);
+  const summaryRef = useRef<View>(null);
+  const coachmark = useCoachmarkSeen('report');
+  const coachmarkSteps: CoachmarkStep[] = [
+    {
+      targetRef: monthPickerRef,
+      speaker: '감자',
+      message: '달을 바꿔서 지난 리포트도 볼 수 있어!',
+      character: <CharacterPotato width={64} height={67} />,
+    },
+    {
+      targetRef: summaryRef,
+      speaker: '감자',
+      message: '이번 달에 버린 금액이야.\n자주 버리는 재료는 아래에 모아뒀어.\n다음 장보기 땐 조금만 사보자!',
+      character: <CharacterPotato width={64} height={67} />,
+    },
+  ];
 
   const animationKey = `${report.year}-${report.month}`;
   const captureTargetRef = useRef<View>(null);
@@ -47,12 +69,14 @@ export const ReportPage: React.FC = () => {
         className="flex-1 bg-white px-screen md:px-10 lg:px-20 pt-8 pb-8 mt-[43px] items-center"
       >
         <View className="flex-1 w-full max-w-[480px] items-center gap-[50px]">
-          <ReportMonthPicker
-            value={selectedMonth}
-            onChange={setSelectedMonth}
-            selectableMonths={selectableMonths}
-            disabled={isLoading || !!error}
-          />
+          <View ref={monthPickerRef} collapsable={false}>
+            <ReportMonthPicker
+              value={selectedMonth}
+              onChange={setSelectedMonth}
+              selectableMonths={selectableMonths}
+              disabled={isLoading || !!error}
+            />
+          </View>
 
           {isLoading ? (
             <View className="w-full flex-1 items-center justify-center">
@@ -73,7 +97,7 @@ export const ReportPage: React.FC = () => {
             </View>
           ) : (
             <View className="w-full gap-[54px]">
-              <View className="gap-4">
+              <View ref={summaryRef} collapsable={false} className="gap-4">
                 <Text className="text-text18 font-medium font-sans text-text-100">
                   {hasSpent ? '이번달 식비' : '이번달 폐기 금액'}
                 </Text>
@@ -200,6 +224,12 @@ export const ReportPage: React.FC = () => {
           </View>
         </View>
       </View>
+
+      <Coachmark
+        visible={coachmark.shouldShow && !isLoading && !error}
+        steps={coachmarkSteps}
+        onFinish={coachmark.markSeen}
+      />
     </ScrollView>
   );
 };
