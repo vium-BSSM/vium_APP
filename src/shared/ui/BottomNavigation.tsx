@@ -13,6 +13,7 @@ const VISIBLE_PATTERNS = [
   /^\/recipe$/,
   /^\/mypage$/,
   /^\/mypage\/credit$/,
+  /^\/mypage\/settings$/,
   /^\/notifications$/,
   /^\/community$/,
   /^\/community\/chat$/,

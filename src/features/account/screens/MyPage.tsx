@@ -71,7 +71,7 @@ export const MyPage: React.FC = () => {
       return;
     }
     if (key === 'settings') {
-      router.push('/debug');
+      router.push('/mypage/settings' as any);
       return;
     }
     if (key === 'logout') {
