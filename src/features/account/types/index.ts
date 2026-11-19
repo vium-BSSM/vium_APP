@@ -54,3 +54,8 @@ export interface ImageUploadApiResponse {
     message: string;
   };
 }
+
+// 설정 화면 — 기기 권한
+export type PermissionKey = 'location' | 'photos' | 'camera';
+// limited: iOS에서 사진 일부만 허용 / undetermined: 아직 안 물어봄(앱에서 요청 가능) / denied: 기기 설정에서만 변경 가능
+export type PermissionState = 'granted' | 'limited' | 'undetermined' | 'denied';
