@@ -96,6 +96,14 @@
         "projectId": "061074a9-2855-4362-9833-31427026dd41"
       },
       "apiBaseUrl": "https://api.vium.site"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/061074a9-2855-4362-9833-31427026dd41",
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
     }
   }
 }
