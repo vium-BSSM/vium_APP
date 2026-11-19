@@ -7,6 +7,7 @@ import { useIngredientDetail } from '../lib/useIngredientDetail';
 import { getIngredientImage } from '../lib/ingredientImageFixtures';
 import BackIcon from '@/../assets/icons/back-icon.svg';
 import EditIcon from '@/../assets/icons/edit-icon.svg';
+import ShareIcon from '@/../assets/icons/share-icon.svg';
 
 export const FridgeDetailPage = () => {
   const router = useRouter();
@@ -44,13 +45,28 @@ export const FridgeDetailPage = () => {
         <AppHeader />
 
         <View className="px-screen pt-8">
-          <TouchableOpacity
-            onPress={() => router.back()}
-            hitSlop={8}
-            className="w-[30px] h-[30px] items-center justify-center"
-          >
-            <BackIcon width={30} height={30} />
-          </TouchableOpacity>
+          <View className="flex-row items-center justify-between">
+            <TouchableOpacity
+              onPress={() => router.back()}
+              hitSlop={8}
+              className="w-[30px] h-[30px] items-center justify-center"
+            >
+              <BackIcon width={30} height={30} />
+            </TouchableOpacity>
+
+            {/* 나눔·판매 글쓰기로 이동 — 이 재료가 미리 선택된 상태로 열림 */}
+            <Pressable
+              onPress={() =>
+                router.navigate({ pathname: '/community/write', params: { inventoryItemId: String(itemId) } } as any)
+              }
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="이웃에게 나눔하기"
+              className="w-[30px] h-[30px] items-center justify-center"
+            >
+              <ShareIcon width={24} height={24} color="#767676" />
+            </Pressable>
+          </View>
 
           <View className="pt-[41px]">
             <View className="w-full h-[241px] rounded-2xl overflow-hidden bg-neutral-10 items-center justify-center">
@@ -83,17 +99,6 @@ export const FridgeDetailPage = () => {
                 <DetailInfoRow label="등록일자" value={item.registeredDate} />
                 <DetailInfoRow label="소비기한" value={item.expirationDate} />
               </View>
-
-              {/* 나눔·판매 글쓰기로 이동 — 이 재료가 미리 선택된 상태로 열림 */}
-              <Pressable
-                onPress={() =>
-                  router.navigate({ pathname: '/community/write', params: { inventoryItemId: String(itemId) } } as any)
-                }
-                accessibilityRole="button"
-                className="mt-10 h-12 rounded-3xl bg-primary-200 border border-primary-500 items-center justify-center"
-              >
-                <Text className="text-text16 font-sans text-primary-700">이웃에게 나눔하기</Text>
-              </Pressable>
             </View>
           </View>
         </View>

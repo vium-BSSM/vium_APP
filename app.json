@@ -29,7 +29,6 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./public/favicon.png",
       "name": "vium",
       "shortName": "vium",
       "themeColor": "#ffffff",
