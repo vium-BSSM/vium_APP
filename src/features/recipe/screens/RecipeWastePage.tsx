@@ -63,11 +63,11 @@ export const RecipeWastePage: React.FC = () => {
   };
 
   if (items.length === 0 && !isFinishing) {
-    return <View className="flex-1" />;
+    return <View className="flex-1 bg-white" />;
   }
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-white">
       <ScrollView className="flex-1">
         <AppHeader />
 
