@@ -34,7 +34,10 @@ const InfoRow: React.FC<{ label: string; value: string }> = ({ label, value }) =
 export const PostDetailPage = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
+  const { width: windowWidth } = useWindowDimensions();
+  // 사진 칸 실제 너비 — 웹은 창이 아니라 402px 폰 프레임이라 창 너비를 쓰면 사진이 늘어남
+  const [imageAreaWidth, setImageAreaWidth] = useState<number | null>(null);
+  const width = imageAreaWidth ?? windowWidth;
   const { id } = useLocalSearchParams<{ id: string }>();
   const postId = Number(id);
   const { coords } = useCurrentLocation();
@@ -137,7 +140,11 @@ export const PostDetailPage = () => {
   return (
     <View className="flex-1 bg-white">
       <ScrollView contentContainerClassName="pb-[120px]">
-        <View className="bg-neutral-10" style={{ height: IMAGE_HEIGHT + insets.top }}>
+        <View
+          className="bg-neutral-10"
+          style={{ height: IMAGE_HEIGHT + insets.top }}
+          onLayout={(event) => setImageAreaWidth(event.nativeEvent.layout.width)}
+        >
           {/* 사진이 없으면 회색 칸만 둠 */}
           {post.images.length > 0 && (
             <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={handleImageScroll}>
