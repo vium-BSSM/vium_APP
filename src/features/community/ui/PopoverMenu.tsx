@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, Pressable, Text, View, useWindowDimensions } from 'react-native';
+import { getAppFrame } from '@/shared/lib/appFrame';
 
 export interface PopoverMenuItem {
   label: string;
@@ -24,7 +25,11 @@ interface PopoverMenuProps {
 
 /** 버튼 아래에 뜨는 작은 메뉴 (냉장고 + 버튼 메뉴와 같은 모양) */
 export const PopoverMenu: React.FC<PopoverMenuProps> = ({ anchor, items, onClose, align = 'right' }) => {
-  const { width: windowWidth } = useWindowDimensions();
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  // measureInWindow는 브라우저 창 기준 → 웹 폰 프레임(body) 기준으로 바꿈
+  const frame = getAppFrame(windowWidth, windowHeight);
+  const x = anchor ? anchor.x - frame.x : 0;
+  const y = anchor ? anchor.y - frame.y : 0;
 
   return (
     <Modal visible={anchor !== null} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
@@ -33,10 +38,10 @@ export const PopoverMenu: React.FC<PopoverMenuProps> = ({ anchor, items, onClose
           <View
             className="absolute bg-white border border-neutral-50 rounded-lg p-2.5 gap-2 w-[153px] md:w-[180px]"
             style={{
-              top: anchor.y + anchor.height + 6,
+              top: y + anchor.height + 6,
               ...(align === 'left'
-                ? { left: Math.max(anchor.x, 8) }
-                : { right: Math.max(windowWidth - (anchor.x + anchor.width), 8) }),
+                ? { left: Math.max(x, 8) }
+                : { right: Math.max(frame.width - (x + anchor.width), 8) }),
             }}
           >
             {items.map((item) => (

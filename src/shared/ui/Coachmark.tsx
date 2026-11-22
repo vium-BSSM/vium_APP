@@ -1,6 +1,7 @@
 import React, { ReactNode, RefObject, useEffect, useState } from 'react';
-import { Modal, Platform, Pressable, Text, View, useWindowDimensions } from 'react-native';
+import { Modal, Pressable, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import { getAppFrame } from '../lib/appFrame';
 
 export interface CoachmarkStep {
   // 강조할 영역 — measureInWindow로 위치를 잼
@@ -50,16 +51,6 @@ const dimPath = (
     `V${top + r}A${r} ${r} 0 0 1 ${left + r} ${top}Z`,
   ].join('');
 };
-// 오버레이가 깔리는 영역의 위치·크기
-// 웹은 body가 402px 폰 프레임(+html.tsx)이고 모달이 body 안에 깔려 브라우저 창 원점·크기와 다름
-const getOverlayFrame = (windowWidth: number, windowHeight: number) => {
-  if (Platform.OS === 'web' && typeof document !== 'undefined') {
-    const box = document.body.getBoundingClientRect();
-    return { x: box.left, y: box.top, width: box.width, height: box.height };
-  }
-  return { x: 0, y: 0, width: windowWidth, height: windowHeight };
-};
-
 type BoxReader = { getBoundingClientRect?: () => { x: number; y: number; width: number; height: number } };
 
 // 창 기준 위치를 바로(동기) 읽음 — 새 아키텍처·웹 모두 getBoundingClientRect 지원
@@ -91,7 +82,7 @@ export const Coachmark: React.FC<CoachmarkProps> = ({ visible, steps, onFinish }
     }
     // 레이아웃이 끝난 뒤 재도록 한 프레임 미룸
     const raf = requestAnimationFrame(() => {
-      const frame = getOverlayFrame(windowSize.width, windowSize.height);
+      const frame = getAppFrame(windowSize.width, windowSize.height);
       setLayout({
         rects: steps.map((item) => {
           const rect = measureTarget(item.targetRef.current);
