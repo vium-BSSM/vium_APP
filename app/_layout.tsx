@@ -15,7 +15,7 @@ const RootNavigator = () => {
   const isLoggedIn = user !== null;
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#FFFFFF' } }}>
       <Stack.Protected guard={isLoggedIn}>
         <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
       </Stack.Protected>
