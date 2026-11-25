@@ -5,3 +5,4 @@ export { TradeListPage } from './screens/TradeListPage';
 export { TradeReviewPage } from './screens/TradeReviewPage';
 export { ChatListPage } from './screens/ChatListPage';
 export { ChatRoomPage } from './screens/ChatRoomPage';
+export { ChatEventsWatcher } from './ui/ChatEventsWatcher';

@@ -5,7 +5,7 @@ import { sessionUserStore } from '@/shared/lib/sessionUser';
 import { tokenStorage } from '@/shared/lib/tokenStorage';
 
 // .env(개인 환경, 예: 로컬 서버)가 app.json 기본값(배포 서버)보다 우선
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || Constants.expoConfig?.extra?.apiBaseUrl || 'http://localhost:8080';
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || Constants.expoConfig?.extra?.apiBaseUrl || 'http://localhost:8080';
 
 const REFRESH_PATH = '/api/auth/token/refresh';
 // 토큰 없이 호출하는 인증 API — 401이어도 재발급하지 않고 그대로 에러 전달 (예: 비밀번호 오류)
@@ -62,6 +62,14 @@ const refreshAccessToken = async (): Promise<string | null> => {
   }
 };
 
+/** 동시 재발급을 하나로 합침 — axios 밖(SSE 등)에서 401을 받았을 때도 사용 */
+export const refreshAccessTokenOnce = (): Promise<string | null> => {
+  refreshPromise ??= refreshAccessToken().finally(() => {
+    refreshPromise = null;
+  });
+  return refreshPromise;
+};
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -73,10 +81,7 @@ apiClient.interceptors.response.use(
     }
 
     originalRequest._retry = true;
-    refreshPromise ??= refreshAccessToken().finally(() => {
-      refreshPromise = null;
-    });
-    const newAccessToken = await refreshPromise;
+    const newAccessToken = await refreshAccessTokenOnce();
 
     if (!newAccessToken) {
       await tokenStorage.clearTokens();
