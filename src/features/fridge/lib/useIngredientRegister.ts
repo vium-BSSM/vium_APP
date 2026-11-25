@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Alert } from '@/shared/lib/alert';
-import { registerIngredient } from '../api/ingredientsApi';
+import { registerIngredient, uploadIngredientImage } from '../api/ingredientsApi';
 import { notifyInventoryChanged } from './inventoryEvents';
 import { IngredientRegisterRequest } from '../types';
 
@@ -47,6 +47,17 @@ export const useIngredientRegister = () => {
         return false;
       }
 
+      // 사진은 먼저 올려서 imageId를 받은 뒤 등록 요청에 포함
+      let imageId: number | undefined;
+      if (formData.imageUri) {
+        const upload = await uploadIngredientImage(formData.imageUri);
+        if (!upload.success || !upload.data) {
+          Alert.alert('오류', upload.error?.message || '사진 업로드에 실패했습니다.');
+          return false;
+        }
+        imageId = upload.data.imageId;
+      }
+
       const request: IngredientRegisterRequest = {
         ingredientCatalogId: formData.ingredientCatalogId,
         customName: formData.name,
@@ -56,6 +67,7 @@ export const useIngredientRegister = () => {
         purchasedOn: formData.registeredDate || undefined,
         expiresOn: formData.expiryDate,
         amount: formData.price ? parseInt(formData.price.replace(/,/g, ''), 10) : undefined,
+        imageId,
       };
 
       const response = await registerIngredient(request);

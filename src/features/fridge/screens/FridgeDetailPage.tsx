@@ -36,7 +36,7 @@ export const FridgeDetailPage = () => {
     );
   }
 
-  const detailImage = getIngredientImage(item.title, 'large');
+  const detailImage = item.uploadedImageUrl ?? getIngredientImage(item.title, 'large');
 
   return (
     <View className="flex-1 bg-white">
