@@ -7,6 +7,8 @@ import { useChatStreamStore } from './chatStreamStore';
 
 // 실시간 스트림(SSE, useChatEventStream)이 끊겨 있을 때만 쓰는 대체 폴링 주기
 const CHAT_POLL_MS = 5000;
+// SSE는 새 메시지만 알려줌 — 방 나가기·새 방·다른 기기 읽음 처리 같은 목록 변경은 연결 중에도 긴 주기로 맞춤
+const CHAT_ROOMS_STREAM_POLL_MS = 60 * 1000;
 
 export const useChatRooms = () => {
   const streamConnected = useChatStreamStore((state) => state.connected);
@@ -15,7 +17,7 @@ export const useChatRooms = () => {
     queryFn: async ({ pageParam }) => unwrap(await getChatRooms(pageParam)),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => (lastPage.hasNext ? (lastPage.nextCursor ?? undefined) : undefined),
-    refetchInterval: streamConnected ? false : CHAT_POLL_MS * 2,
+    refetchInterval: streamConnected ? CHAT_ROOMS_STREAM_POLL_MS : CHAT_POLL_MS * 2,
   });
 
   return {

@@ -12,16 +12,26 @@ export interface SseConnection {
   close: () => void;
 }
 
+// 응답 헤더가 이 시간 안에 오지 않으면 연결 실패로 처리 (요청이 멈춘 채 남지 않도록)
+const CONNECT_TIMEOUT_MS = 15 * 1000;
+
 export const connectSse = (url: string, headers: Record<string, string>, handlers: SseHandlers): SseConnection => {
   const xhr = new XMLHttpRequest();
   let cursor = 0;
   let buffer = '';
   let opened = false;
   let closed = false;
+  let connectTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const clearConnectTimer = () => {
+    if (connectTimer) clearTimeout(connectTimer);
+    connectTimer = null;
+  };
 
   const finish = (status: number) => {
     if (closed) return;
     closed = true;
+    clearConnectTimer();
     handlers.onClose(status);
   };
 
@@ -54,6 +64,7 @@ export const connectSse = (url: string, headers: Record<string, string>, handler
   xhr.onreadystatechange = () => {
     if (closed) return;
     if (xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
+      clearConnectTimer();
       if (xhr.status === 200 && !opened) {
         opened = true;
         handlers.onOpen?.();
@@ -73,10 +84,16 @@ export const connectSse = (url: string, headers: Record<string, string>, handler
   Object.entries(headers).forEach(([key, value]) => xhr.setRequestHeader(key, value));
   xhr.send();
 
+  connectTimer = setTimeout(() => {
+    xhr.abort();
+    finish(0);
+  }, CONNECT_TIMEOUT_MS);
+
   return {
     close: () => {
       if (closed) return;
       closed = true;
+      clearConnectTimer();
       xhr.abort();
     },
   };
