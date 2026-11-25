@@ -45,7 +45,11 @@ const FridgeEditForm: React.FC<{ ingredient: IngredientApiResponse }> = ({ ingre
   const isCatalogItem = ingredient.ingredientCatalogId !== null;
   const { save, isSaving } = useIngredientEdit(ingredient.inventoryItemId, isCatalogItem);
 
-  const [imageUri, setImageUri] = useState<string | undefined>(getIngredientImage(ingredient.name, 'large'));
+  const [imageUri, setImageUri] = useState<string | undefined>(
+    ingredient.imageUrl ?? getIngredientImage(ingredient.name, 'large')
+  );
+  // 이번에 새로 고른 사진만 업로드 (기존 사진·기본 이미지는 다시 올리지 않음)
+  const [newImageUri, setNewImageUri] = useState<string | undefined>(undefined);
   const [name, setName] = useState(ingredient.name);
   const [quantity, setQuantity] = useState(String(ingredient.initialQuantity));
   const [unitId, setUnitId] = useState(ingredient.unitId);
@@ -59,14 +63,16 @@ const FridgeEditForm: React.FC<{ ingredient: IngredientApiResponse }> = ({ ingre
   // 백엔드 수량 정밀도(소수 3자리)에 맞춰 부동소수점 오차 제거
   const processedQuantity = Math.round((ingredient.initialQuantity - ingredient.remainingQuantity) * 1000) / 1000;
 
-  // TODO: 이미지 업로드 API 연동 전 — 등록 화면과 동일하게 선택만 가능
   const handleImagePick = async () => {
     const uri = await pickImageFromLibrary({ aspect: [16, 9] });
-    if (uri) setImageUri(uri);
+    if (uri) {
+      setImageUri(uri);
+      setNewImageUri(uri);
+    }
   };
 
   const handleSave = async () => {
-    const success = await save({ name, quantity, unitId, storageMethodId, purchasedOn, expiresOn });
+    const success = await save({ name, quantity, unitId, storageMethodId, purchasedOn, expiresOn, newImageUri });
     if (success) router.back();
   };
 

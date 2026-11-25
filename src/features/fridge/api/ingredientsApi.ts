@@ -8,6 +8,7 @@ import {
   IngredientStatusUpdateApiResponse,
   IngredientUpdateRequest,
   IngredientUpdateApiResponse,
+  IngredientImageUploadApiResponse,
 } from '../types';
 
 
@@ -53,5 +54,19 @@ export const updateIngredient = async (
     `/api/me/ingredients/${ingredientId}`,
     request
   );
+  return response.data;
+};
+
+
+/** 재료 사진 업로드. 받은 imageId를 등록·수정 요청에 같이 보냄 */
+export const uploadIngredientImage = async (uri: string): Promise<IngredientImageUploadApiResponse> => {
+  const formData = new FormData();
+  // React Native FormData는 { uri, name, type } 객체로 파일을 받음
+  formData.append('file', { uri, name: 'ingredient.jpg', type: 'image/jpeg' } as unknown as Blob);
+  formData.append('purpose', 'INGREDIENT');
+
+  const response = await apiClient.post<IngredientImageUploadApiResponse>('/api/me/images', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return response.data;
 };

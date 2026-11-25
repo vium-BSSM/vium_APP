@@ -36,7 +36,7 @@ export const FridgeDetailPage = () => {
     );
   }
 
-  const detailImage = getIngredientImage(item.title, 'large');
+  const detailImage = item.uploadedImageUrl ?? getIngredientImage(item.title, 'large');
 
   return (
     <View className="flex-1 bg-white">
@@ -70,8 +70,11 @@ export const FridgeDetailPage = () => {
 
           <View className="pt-[41px]">
             <View className="w-full h-[241px] rounded-2xl overflow-hidden bg-neutral-10 items-center justify-center">
-              {detailImage && (
-                <Image source={{ uri: detailImage }} contentFit="contain" className="w-[70%] h-[80%]" />
+              {/* 직접 올린 사진은 칸을 꽉 채우고, 기본 이미지(배경 없는 재료 그림)는 가운데 작게 */}
+              {item.uploadedImageUrl ? (
+                <Image source={{ uri: item.uploadedImageUrl }} contentFit="cover" className="w-full h-full" />
+              ) : (
+                detailImage && <Image source={{ uri: detailImage }} contentFit="contain" className="w-[70%] h-[80%]" />
               )}
             </View>
 

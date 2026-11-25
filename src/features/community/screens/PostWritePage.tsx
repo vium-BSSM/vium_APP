@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader, AppTextInput, BackHeader, Button, HeaderActions, SegmentedControl } from '@/shared/ui';
 import { useMyProfile } from '@/features/account';
-import { useIngredientsList } from '@/features/fridge';
+import { getIngredientImage, useIngredientsList } from '@/features/fridge';
 import { Alert } from '@/shared/lib/alert';
 import { useCurrentLocation } from '@/shared/lib/useCurrentLocation';
 import { formatDday, formatDotDate, getDaysLeft } from '@/shared/lib/dateFormat';
@@ -52,7 +52,11 @@ export const PostWritePage = () => {
   const selected = fridgeItems.find((item) => item.id === inventoryItemId) ?? null;
 
   const descriptionRef = useRef<TextInput>(null);
-  const form = usePostWrite({ inventoryItemId, defaultStorageMethodId: selected?.storageMethodId ?? null });
+  const form = usePostWrite({
+    inventoryItemId,
+    defaultStorageMethodId: selected?.storageMethodId ?? null,
+    fallbackImageUrl: selected ? (selected.uploadedImageUrl ?? getIngredientImage(selected.title, 'large')) : undefined,
+  });
 
   // 게시할 수 없는 재료면 이유를 알려주고 다른 재료를 고르게 함
   useEffect(() => {

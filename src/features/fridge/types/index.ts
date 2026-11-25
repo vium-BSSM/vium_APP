@@ -15,6 +15,8 @@ export interface FridgeItem {
   // 보관 방법 id (1 냉장, 2 냉동, 3 실온), 보관 방법 없이 등록된 재료는 null
   storageMethodId: number | null;
   image?: string;
+  // 사용자가 직접 올린 사진 (없으면 undefined — 화면에서 이름 기반 기본 이미지 사용)
+  uploadedImageUrl?: string;
   expiresOn: string; // 원본 'YYYY-MM-DD', 소비기한 순 정렬 키
 }
 
@@ -44,6 +46,7 @@ export interface IngredientListItemApiResponse {
   unit: string;
   storageMethodId: number | null;
   storageMethodName: string | null;
+  imageUrl: string | null;
 }
 
 // GET /api/me/ingredients/{id}
@@ -62,6 +65,7 @@ export interface IngredientApiResponse {
   statusCode: string;
   purchasedOn: string;
   expiresOn: string;
+  imageUrl: string | null;
 }
 
 export interface IngredientsListApiResponse {
@@ -93,6 +97,8 @@ export interface IngredientRegisterRequest {
   purchasedOn?: string;
   expiresOn?: string;
   amount?: number;
+  // POST /api/me/images (purpose=INGREDIENT)로 받은 id
+  imageId?: number;
 }
 
 export interface IngredientRegisterApiResponse {
@@ -148,6 +154,8 @@ export interface IngredientUpdateRequest {
   storageMethodId: number;
   purchasedOn: string;
   expiresOn: string;
+  // 새 사진을 고른 경우만 전송 (생략하면 기존 사진 유지)
+  imageId?: number;
 }
 
 export interface IngredientUpdateApiResponse {
@@ -299,6 +307,18 @@ export interface PurchaseConfirmResult {
     expiresOn: string;
   }[];
 }
+
+export interface IngredientImageUploadResult {
+  imageId: number;
+  purpose: 'INGREDIENT';
+  visibility: string;
+  contentType: string;
+  sizeBytes: number;
+  url: string;
+  createdAt: string;
+}
+
+export type IngredientImageUploadApiResponse = ApiResponse<IngredientImageUploadResult>;
 
 export interface ReceiptImageUploadResult {
   imageId: number;

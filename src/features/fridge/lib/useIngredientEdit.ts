@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert } from '@/shared/lib/alert';
 import { isAxiosError } from 'axios';
-import { updateIngredient } from '../api/ingredientsApi';
+import { updateIngredient, uploadIngredientImage } from '../api/ingredientsApi';
 import { toDateString } from './dateUtils';
 import { notifyInventoryChanged } from './inventoryEvents';
 
@@ -12,6 +12,8 @@ export interface IngredientEditFormData {
   storageMethodId: number;
   purchasedOn: Date;
   expiresOn: Date;
+  // 새로 고른 사진의 로컬 uri (고르지 않았으면 undefined — 기존 사진 유지)
+  newImageUri?: string;
 }
 
 /**
@@ -49,6 +51,17 @@ export const useIngredientEdit = (ingredientId: number, isCatalogItem: boolean) 
 
     try {
       setIsSaving(true);
+
+      let imageId: number | undefined;
+      if (form.newImageUri) {
+        const upload = await uploadIngredientImage(form.newImageUri);
+        if (!upload.success || !upload.data) {
+          Alert.alert('오류', upload.error?.message || '사진 업로드에 실패했습니다.');
+          return false;
+        }
+        imageId = upload.data.imageId;
+      }
+
       const response = await updateIngredient(ingredientId, {
         customName: isCatalogItem ? null : name,
         quantity,
@@ -56,6 +69,7 @@ export const useIngredientEdit = (ingredientId: number, isCatalogItem: boolean) 
         storageMethodId: form.storageMethodId,
         purchasedOn,
         expiresOn,
+        imageId,
       });
 
       if (response.success) {

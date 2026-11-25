@@ -17,7 +17,8 @@ const mapIngredientToListItem = (
     remainingQuantity: ingredient.remainingQuantity,
     unit: ingredient.unit,
     storageMethodId: ingredient.storageMethodId,
-    image: getIngredientImage(ingredient.name),
+    image: ingredient.imageUrl ?? getIngredientImage(ingredient.name),
+    uploadedImageUrl: ingredient.imageUrl ?? undefined,
     expiresOn: ingredient.expiresOn,
   };
 };

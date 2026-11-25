@@ -37,10 +37,25 @@ export const usePostPreview = (inventoryItemId: number | null) => {
 interface WriteForm {
   inventoryItemId: number | null;
   defaultStorageMethodId: number | null;
+  // 사진을 하나도 안 고르면 대신 올릴 재료 사진 URL (직접 올린 사진, 없으면 기본 이미지)
+  fallbackImageUrl?: string;
 }
 
+/** 원격 재료 사진을 게시물 사진(POST)으로 다시 올림 — 서버는 POST 용도 사진만 게시물에 붙일 수 있음 */
+const uploadFallbackImage = async (url: string): Promise<number | null> => {
+  try {
+    const contentType = /\.png($|\?)/i.test(url) ? 'image/png' : 'image/jpeg';
+    const image: PickedImage = { uri: url, width: 0, height: 0 };
+    return unwrap(await uploadImage(image, contentType, 'POST')).imageId;
+  } catch (err) {
+    // 기본 사진은 보조 기능이라 실패해도 사진 없이 게시
+    console.warn('Failed to upload fallback post image:', err);
+    return null;
+  }
+};
+
 /** 나눔·판매 글쓰기 폼 상태와 등록 (사진 업로드 → 게시물 등록) */
-export const usePostWrite = ({ inventoryItemId, defaultStorageMethodId }: WriteForm) => {
+export const usePostWrite = ({ inventoryItemId, defaultStorageMethodId, fallbackImageUrl }: WriteForm) => {
   const queryClient = useQueryClient();
   const { preview, ineligibleMessage, isLoading: isPreviewLoading } = usePostPreview(inventoryItemId);
 
@@ -99,6 +114,10 @@ export const usePostWrite = ({ inventoryItemId, defaultStorageMethodId }: WriteF
       const imageIds: number[] = [];
       for (const picked of images) {
         imageIds.push(unwrap(await uploadImage(picked.image, picked.contentType, 'POST')).imageId);
+      }
+      if (imageIds.length === 0 && fallbackImageUrl) {
+        const fallbackId = await uploadFallbackImage(fallbackImageUrl);
+        if (fallbackId !== null) imageIds.push(fallbackId);
       }
       return unwrap(
         await createPost({
