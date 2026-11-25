@@ -3,15 +3,15 @@ import { unwrap } from '@/shared/api/types';
 import { createChatRoom, getChatMessages, getChatRooms, leaveChatRoom, sendChatMessage } from '../api/chatApi';
 import { communityKeys } from './queryKeys';
 import { SendMessageRequest } from '../types';
-import { useChatStreamStore } from './chatStreamStore';
+import { useUserEventStreamStore } from '@/shared/lib/userEventStream';
 
-// 실시간 스트림(SSE, useChatEventStream)이 끊겨 있을 때만 쓰는 대체 폴링 주기
+// 실시간 스트림(SSE, useUserEventStream)이 끊겨 있을 때만 쓰는 대체 폴링 주기
 const CHAT_POLL_MS = 5000;
 // SSE는 새 메시지만 알려줌 — 방 나가기·새 방·다른 기기 읽음 처리 같은 목록 변경은 연결 중에도 긴 주기로 맞춤
 const CHAT_ROOMS_STREAM_POLL_MS = 60 * 1000;
 
 export const useChatRooms = () => {
-  const streamConnected = useChatStreamStore((state) => state.connected);
+  const streamConnected = useUserEventStreamStore((state) => state.connected);
   const result = useInfiniteQuery({
     queryKey: communityKeys.chatRooms,
     queryFn: async ({ pageParam }) => unwrap(await getChatRooms(pageParam)),
@@ -33,7 +33,7 @@ export const useChatRooms = () => {
 
 /** 메시지는 최신순으로 오므로 inverted 리스트에 그대로 사용 */
 export const useChatMessages = (chatRoomId: number) => {
-  const streamConnected = useChatStreamStore((state) => state.connected);
+  const streamConnected = useUserEventStreamStore((state) => state.connected);
   const result = useInfiniteQuery({
     queryKey: communityKeys.chatMessages(chatRoomId),
     queryFn: async ({ pageParam }) => unwrap(await getChatMessages(chatRoomId, pageParam)),

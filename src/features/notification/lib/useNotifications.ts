@@ -7,13 +7,15 @@ import { NotificationFilter } from '../types';
 
 export const notificationKeys = {
   all: ['notifications'] as const,
+  list: ['notifications', 'list'] as const,
   expiryPopup: ['notifications', 'expiryPopup'] as const,
+  consumptionCheck: ['notifications', 'consumptionCheck'] as const,
 };
 
 /** 알림 목록 — '안 읽음' 개수도 필요해서 전체를 받아 화면에서 거름 */
-export const useNotifications = (filter: NotificationFilter, options?: { refetchInterval?: number }) => {
+export const useNotifications = (filter: NotificationFilter, options?: { refetchInterval?: number | false }) => {
   const query = useQuery({
-    queryKey: notificationKeys.all,
+    queryKey: notificationKeys.list,
     queryFn: async () => unwrap(await getNotifications()).notifications.map(mapNotification),
     refetchInterval: options?.refetchInterval,
   });

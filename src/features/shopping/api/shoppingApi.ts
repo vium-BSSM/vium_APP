@@ -1,5 +1,6 @@
 import { apiClient } from '@/shared/api/client';
 import {
+  PurchaseSuggestionsApiResponse,
   ShoppingHelperApiResponse,
   ShoppingListApiResponse,
   ShoppingListItemDeleteApiResponse,
@@ -38,5 +39,11 @@ export const updateShoppingListItemCheck = async (
 
 export const deleteShoppingListItem = async (itemId: number): Promise<ShoppingListItemDeleteApiResponse> => {
   const response = await apiClient.delete<ShoppingListItemDeleteApiResponse>(`/api/me/shopping-list-items/${itemId}`);
+  return response.data;
+};
+
+/** 다음 구매량 제안 (지난달 소진·폐기 기준, 데이터가 없으면 최근 3개월) */
+export const getPurchaseSuggestions = async (): Promise<PurchaseSuggestionsApiResponse> => {
+  const response = await apiClient.get<PurchaseSuggestionsApiResponse>('/api/me/purchase-suggestions');
   return response.data;
 };

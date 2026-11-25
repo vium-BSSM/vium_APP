@@ -12,9 +12,9 @@ export interface ApiResponse<T> {
   error: ApiError | null;
 }
 
-// 커서 기반 무한 스크롤 응답의 공통 필드
-export interface CursorPage {
-  nextCursor: string | null;
+// 커서 기반 무한 스크롤 응답의 공통 필드 — 대부분 문자열, 크레딧 내역은 숫자(int64)
+export interface CursorPage<TCursor = string> {
+  nextCursor: TCursor | null;
   hasNext: boolean;
 }
 

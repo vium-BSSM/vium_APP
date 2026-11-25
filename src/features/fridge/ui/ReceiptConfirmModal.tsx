@@ -136,7 +136,11 @@ export const ReceiptConfirmModal: React.FC<ReceiptConfirmModalProps> = ({
                     )}
 
                     {isEditing && (
-                      <ReceiptItemEditor item={form} onChange={(patch) => updateForm(form.purchaseItemId, patch)} />
+                      <ReceiptItemEditor
+                        item={form}
+                        purchasedOn={purchasedOn}
+                        onChange={(patch) => updateForm(form.purchaseItemId, patch)}
+                      />
                     )}
                   </View>
                 );

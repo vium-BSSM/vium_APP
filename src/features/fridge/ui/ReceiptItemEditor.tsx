@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, Text } from 'react-native';
 import { AppTextInput, DatePicker, LabelInputWithUnit } from '@/shared/ui';
+import { estimateExpiry } from '../api/ingredientCatalogApi';
 import { useIngredientCatalogSearch } from '../lib/useIngredientCatalogSearch';
 import { parseDateString, toDateString } from '../lib/dateUtils';
 import { ReceiptItemForm, requiresExpiry } from '../lib/useReceiptConfirm';
 import { CatalogSuggestions } from './CatalogSuggestions';
+import { IngredientCatalogItem } from '../types';
 
 interface ReceiptItemEditorProps {
   item: ReceiptItemForm;
   onChange: (patch: Partial<ReceiptItemForm>) => void;
+  // 구매일 'YYYY-MM-DD' — 소비기한 자동 추정 기준
+  purchasedOn: string;
 }
 
 const getExpiryHint = (item: ReceiptItemForm) => {
@@ -19,9 +23,32 @@ const getExpiryHint = (item: ReceiptItemForm) => {
 };
 
 /** 영수증 인식 품목 하나의 이름·수량·단위·소비기한 수정 */
-export const ReceiptItemEditor: React.FC<ReceiptItemEditorProps> = ({ item, onChange }) => {
+export const ReceiptItemEditor: React.FC<ReceiptItemEditorProps> = ({ item, onChange, purchasedOn }) => {
   // 카탈로그 재료를 고른 상태면 검색하지 않음
   const { items: catalogItems, isLoading } = useIngredientCatalogSearch(item.name, item.ingredientCatalogId === null);
+  // 재료를 연달아 바꾸면 마지막으로 고른 재료의 추정값만 반영
+  const estimateSeq = useRef(0);
+
+  const handleSelectCatalog = async (catalog: IngredientCatalogItem) => {
+    onChange({ name: catalog.name, ingredientCatalogId: catalog.ingredientCatalogId, needsExpiry: false });
+    if (item.expiryEdited) return;
+
+    // 재료가 바뀌었으니 소비기한 기본값을 다시 채움 (GET /api/ingredients/estimate-expiry)
+    const seq = ++estimateSeq.current;
+    try {
+      const response = await estimateExpiry({
+        ingredientCatalogId: catalog.ingredientCatalogId,
+        storageMethodId: item.storageMethodId ?? undefined,
+        purchasedOn: purchasedOn || undefined,
+      });
+      if (seq !== estimateSeq.current || !response.success) return;
+      const date = response.data?.estimatedExpiryDate ?? null;
+      // 규칙이 없으면 직접 정해야 하는 품목으로 표시
+      onChange({ expiresOn: date, needsExpiry: date === null });
+    } catch (err) {
+      console.warn('Failed to estimate expiry:', err);
+    }
+  };
 
   return (
     <View className="gap-3 pb-3">
@@ -39,10 +66,7 @@ export const ReceiptItemEditor: React.FC<ReceiptItemEditorProps> = ({ item, onCh
           <CatalogSuggestions
             items={catalogItems}
             isLoading={isLoading}
-            // 새로 고른 재료는 자동 계산 가능 여부를 미리 알 수 없어 필수 표시를 풂 (실패하면 등록 시 안내)
-            onSelect={(catalog) =>
-              onChange({ name: catalog.name, ingredientCatalogId: catalog.ingredientCatalogId, needsExpiry: false })
-            }
+            onSelect={handleSelectCatalog}
           />
         )}
       </View>
@@ -59,7 +83,7 @@ export const ReceiptItemEditor: React.FC<ReceiptItemEditorProps> = ({ item, onCh
       <DatePicker
         label="소비기한"
         value={item.expiresOn ? parseDateString(item.expiresOn) : null}
-        onChange={(date) => onChange({ expiresOn: toDateString(date) })}
+        onChange={(date) => onChange({ expiresOn: toDateString(date), expiryEdited: true })}
       />
       {!item.expiresOn && (
         <Text className="text-text12 font-sans text-text-300">{getExpiryHint(item)}</Text>

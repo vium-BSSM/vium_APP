@@ -144,6 +144,15 @@ export const ShoppingPage: React.FC = () => {
                 )}
               </View>
 
+              {/* 다음 구매량 제안 (지난달 먹은 양·버린 양 기준) */}
+              <Pressable
+                onPress={() => router.navigate('/purchase-suggestions' as any)}
+                className="flex-row items-center justify-between rounded-lg bg-primary-100 px-5 py-4 active:bg-primary-200"
+              >
+                <Text className="text-text14 font-medium font-sans text-text-100">다음엔 얼마나 살까요?</Text>
+                <Text className="text-text14 font-sans text-primary-800">구매량 제안 보기</Text>
+              </Pressable>
+
               <View className="h-px bg-neutral-100" />
 
               {/* 장보기 리스트 */}

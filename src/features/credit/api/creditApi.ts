@@ -8,7 +8,7 @@ export const getCredits = async (): Promise<ApiResponse<CreditBalance>> => {
 };
 
 /** 적립·사용·보류·환불 내역 최신순 */
-export const getCreditTransactions = async (cursor?: string): Promise<ApiResponse<CreditTransactionsPage>> => {
+export const getCreditTransactions = async (cursor?: number): Promise<ApiResponse<CreditTransactionsPage>> => {
   const response = await apiClient.get<ApiResponse<CreditTransactionsPage>>('/api/me/credits/transactions', {
     params: { cursor, size: 20 },
   });

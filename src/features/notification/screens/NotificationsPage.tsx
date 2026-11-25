@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { AppHeader, BackHeader, Chip, HeaderActions } from '@/shared/ui';
 import { useMyProfile } from '@/features/account';
 import { useMarkNotificationsRead, useNotifications } from '../lib/useNotifications';
+import { openConsumptionCheck } from '../lib/useConsumptionCheck';
 import { NotificationRow } from '../ui/NotificationRow';
 import { NotificationFilter, NotificationItem } from '../types';
 
 export const NotificationsPage = () => {
+  const router = useRouter();
   const { profile } = useMyProfile();
   const [filter, setFilter] = useState<NotificationFilter>('all');
   const { items, unreadCount, isLoading, error } = useNotifications(filter);
@@ -19,7 +22,10 @@ export const NotificationsPage = () => {
 
   const handlePress = (item: NotificationItem) => {
     if (item.unread) markRead([item.id]);
-    // TODO: 알림 응답에 대상 id(게시물·거래·채팅방·재고)가 없어 해당 화면으로 이동하지 못함 — BE에 필드 추가 요청
+    // 알림 응답에 재고 id가 없어 종류별 화면으로만 이동
+    if (item.type === 'consume_check') openConsumptionCheck();
+    else if (item.type === 'expiry') router.navigate('/fridge' as any);
+    else if (item.type === 'shopping_reminder') router.navigate('/shopping' as any);
   };
 
   return (
