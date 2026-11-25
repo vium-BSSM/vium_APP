@@ -17,6 +17,7 @@ import { useIngredientRegister } from '../lib/useIngredientRegister';
 import { toDateString } from '../lib/dateUtils';
 import { StorageMethodSelect, STORAGE_METHOD_OPTIONS } from '../ui/StorageMethodSelect';
 import { useIngredientCatalogSearch } from '../lib/useIngredientCatalogSearch';
+import { useEstimatedExpiry } from '../lib/useEstimatedExpiry';
 import { CatalogSuggestions } from '../ui/CatalogSuggestions';
 import { IngredientCatalogItem } from '../types';
 import { useCoachmarkSeen } from '@/shared/lib/hooks/useCoachmarkSeen';
@@ -36,6 +37,22 @@ export const FridgeAddPage: React.FC = () => {
   const [price, setPrice] = useState('');
   const [registeredDate, setRegisteredDate] = useState(new Date());
   const [expiryDate, setExpiryDate] = useState(new Date());
+  // 소비기한을 직접 고르면 자동 추정값으로 덮어쓰지 않음
+  const [expiryEdited, setExpiryEdited] = useState(false);
+
+  // 카탈로그 재료·보관방법·등록일로 소비기한 기본값 채우기 (사용자 수정 가능)
+  useEstimatedExpiry({
+    ingredientCatalogId: catalogItem?.ingredientCatalogId,
+    storageMethodId,
+    purchasedOn: registeredDate,
+    enabled: !expiryEdited,
+    onEstimate: setExpiryDate,
+  });
+
+  const handleExpiryChange = (date: Date) => {
+    setExpiryDate(date);
+    setExpiryEdited(true);
+  };
 
   // 첫 진입 튜토리얼 — 재료 이름 → 소비기한
   const nameInputRef = useRef<View>(null);
@@ -162,7 +179,7 @@ export const FridgeAddPage: React.FC = () => {
                 <DatePicker
                   label="소비기한"
                   value={expiryDate}
-                  onChange={setExpiryDate}
+                  onChange={handleExpiryChange}
                 />
               </View>
             </View>

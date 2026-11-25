@@ -19,6 +19,8 @@ export interface ReceiptItemForm {
   expiresOn: string | null; // 'YYYY-MM-DD'
   // 재료는 찾았지만 소비기한 자동 계산에 실패한 품목 (날짜를 직접 정해야 서버가 받아줌)
   needsExpiry: boolean;
+  // 사용자가 소비기한을 직접 골랐으면 재료를 바꿔도 자동 추정값으로 덮어쓰지 않음
+  expiryEdited: boolean;
 }
 
 export const toReceiptItemForm = (item: PurchaseItemDraft): ReceiptItemForm => ({
@@ -32,6 +34,7 @@ export const toReceiptItemForm = (item: PurchaseItemDraft): ReceiptItemForm => (
   amount: item.amount,
   expiresOn: item.expiresOn,
   needsExpiry: item.ingredientCatalogId !== null && item.expiresOn === null,
+  expiryEdited: false,
 });
 
 /** 소비기한을 직접 정해야 하는 품목인지 (목록에 없는 재료 또는 자동 계산 실패) */

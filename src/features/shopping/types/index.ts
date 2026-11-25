@@ -96,3 +96,41 @@ export interface ShoppingListItem {
   reason: string | null;
   isChecked: boolean;
 }
+
+// ── GET /api/me/purchase-suggestions ──
+// 줄여야 할 품목(낭비 비율 높은 순)이 위로 정렬돼서 옴
+export type PurchaseAdjustment = 'HAVE_ENOUGH' | 'SKIP' | 'REDUCE_HALF' | 'REDUCE_SOME' | 'KEEP';
+
+export interface PurchaseSuggestionItemApiResponse {
+  ingredientCatalogId: number;
+  ingredientName: string;
+  unitId: number;
+  unit: string;
+  consumedQuantity: number;
+  disposedQuantity: number;
+  currentQuantity: number;
+  // 폐기량 ÷ (소진량 + 폐기량), 0~1
+  wasteRatio: number;
+  suggestedQuantity: number;
+  adjustment: PurchaseAdjustment;
+  // 서버가 만든 안내 문구 — 그대로 표시
+  message: string;
+}
+
+export interface PurchaseSuggestionsApiData {
+  available: boolean;
+  basedOnPeriodStart: string | null;
+  basedOnPeriodEnd: string | null;
+  items: PurchaseSuggestionItemApiResponse[];
+}
+
+export type PurchaseSuggestionsApiResponse = ApiEnvelope<PurchaseSuggestionsApiData>;
+
+export interface PurchaseSuggestion {
+  key: string;
+  name: string;
+  suggestedLabel: string;
+  wastePercent: number;
+  adjustment: PurchaseAdjustment;
+  message: string;
+}

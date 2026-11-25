@@ -24,7 +24,8 @@ export interface CreditTransaction {
   createdAt: string;
 }
 
-export interface CreditTransactionsPage extends CursorPage {
+// 크레딧 내역 cursor/nextCursor는 숫자(int64)
+export interface CreditTransactionsPage extends CursorPage<number> {
   transactions: CreditTransaction[];
 }
 

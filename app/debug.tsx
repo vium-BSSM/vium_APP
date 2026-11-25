@@ -231,7 +231,7 @@ export default function DebugPage() {
               <PillButton label="네, 다 먹었어요" className="flex-1" onPress={() => setIsSheetVisible(true)} />
             </View>
           </View>
-          {/* TODO: 소진 확인 시트 — GET consumption-check 응답 형식이 명세에 없어 아직 실제 화면에 연결하지 않음 */}
+          {/* 소진 확인 시트 — 실제 화면은 (tabs) 레이아웃의 ConsumptionCheckPrompt */}
           <ConsumptionCheckSheet
             visible={isSheetVisible}
             ingredientName="두부"

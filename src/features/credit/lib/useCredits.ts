@@ -30,7 +30,7 @@ export const useCreditTransactions = (filter: CreditFilter) => {
   const result = useInfiniteQuery({
     queryKey: creditKeys.transactions,
     queryFn: async ({ pageParam }) => unwrap(await getCreditTransactions(pageParam)),
-    initialPageParam: undefined as string | undefined,
+    initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => (lastPage.hasNext ? (lastPage.nextCursor ?? undefined) : undefined),
   });
 

@@ -336,3 +336,23 @@ export type PurchaseListApiResponse = ApiResponse<{ purchases: PurchaseSummary[]
 export type PurchaseConfirmApiResponse = ApiResponse<PurchaseConfirmResult>;
 export type PurchaseDeleteApiResponse = ApiResponse<null>;
 export type ReceiptImageUploadApiResponse = ApiResponse<ReceiptImageUploadResult>;
+
+// GET /api/ingredients/estimate-expiry — 유효한 보관 규칙이 없으면 shelfLifeDays·estimatedExpiryDate가 null
+export interface EstimateExpiryData {
+  ingredientCatalogId: number;
+  ingredientName: string;
+  storageMethodId: number | null;
+  storageMethodName: string | null;
+  purchasedOn: string;
+  shelfLifeDays: number | null;
+  estimatedExpiryDate: string | null;
+}
+
+export interface EstimateExpiryApiResponse {
+  success: boolean;
+  data: EstimateExpiryData | null;
+  error: null | {
+    code: string;
+    message: string;
+  };
+}
