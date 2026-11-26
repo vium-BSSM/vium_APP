@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { Platform } from 'react-native';
 import { isAxiosError } from 'axios';
 import { Alert } from '@/shared/lib/alert';
+import { cropSquareImageOnWeb } from '@/shared/lib/cropSquareImageOnWeb';
 import { PickedImage, pickImageAssetFromLibrary } from '@/shared/lib/pickImage';
 import { sessionUserStore } from '@/shared/lib/sessionUser';
 import { updateMe, uploadProfileImage } from '../api/accountApi';
@@ -9,6 +11,8 @@ import { checkProfileImage, ProfileImageType } from './profileImage';
 import { useMyProfile } from './useMyProfile';
 
 export const NICKNAME_MAX_LENGTH = 8;
+// 웹에서 다시 만드는 프로필 사진의 한 변 최대 픽셀 (프로필은 작게 보여서 충분함)
+const WEB_PROFILE_MAX_SIDE = 1024;
 
 const toSaveErrorMessage = (err: unknown) => {
   if (!isAxiosError(err) || !err.response) return '서버와 연결할 수 없습니다.';
@@ -29,8 +33,13 @@ export const useProfileEdit = () => {
 
   const pickImage = async () => {
     // 서버 용량 제한(5MB)을 넘지 않도록 압축해서 받음
-    const image = await pickImageAssetFromLibrary({ aspect: [1, 1], quality: 0.8 });
-    if (!image) return;
+    const picked = await pickImageAssetFromLibrary({ aspect: [1, 1], quality: 0.8 });
+    if (!picked) return;
+    // 웹은 자르기·압축 옵션이 무시되어 원본이 오므로 정사각형 JPEG로 직접 만듦 (실패하면 원본으로 검사)
+    const image =
+      Platform.OS === 'web'
+        ? (await cropSquareImageOnWeb(picked, { maxSide: WEB_PROFILE_MAX_SIDE, quality: 0.8 })) ?? picked
+        : picked;
     const checked = checkProfileImage(image);
     if (!checked.ok) {
       Alert.alert('알림', checked.message);

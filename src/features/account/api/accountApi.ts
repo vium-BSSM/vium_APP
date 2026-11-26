@@ -25,7 +25,8 @@ const toFilePart = async (image: PickedImage, contentType: string) => {
   // 웹은 실제 Blob이 필요하고, React Native는 { uri, name, type } 객체로 파일을 받음
   if (Platform.OS === 'web') {
     const blob = await (await fetch(image.uri)).blob();
-    return { part: blob, name };
+    // 서버는 파트의 Content-Type이 정확히 image/jpeg·image/png여야 받음 (브라우저는 image/jpg 등을 줄 수 있음)
+    return { part: new Blob([blob], { type: contentType }), name };
   }
   return { part: { uri: image.uri, name, type: contentType } as unknown as Blob, name };
 };
